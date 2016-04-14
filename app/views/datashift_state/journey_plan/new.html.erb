@@ -1,0 +1,10 @@
+<%= backto_start_link %>
+
+<%= render 'shared/errors' %>
+
+<%= form_for @journey_plan, html: { novalidate: true } do |form| %>
+    <%= render 'journey_plans/states/unregistered', form: form %>
+
+    <%= form.submit "Continue", class:'button' %>
+
+<% end %>

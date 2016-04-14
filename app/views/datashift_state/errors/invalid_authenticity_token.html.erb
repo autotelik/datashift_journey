@@ -1,0 +1,14 @@
+<% content_for :page_title, create_title('global.invalid_authenticity_token.heading') %>
+
+<%= yield :error_header %>
+
+<header>
+  <h1 style="font-size: 48px; font-weight:bold; margin-top: 30px; margin-bottom: 15px;">
+    <%=t 'global.invalid_authenticity_token.heading'%>
+  </h1>
+</header>
+
+<p>
+  <%= t 'global.invalid_authenticity_token.message_html',
+        link: link_to('cookies', main_app.page_path('cookies')) %>
+</p>

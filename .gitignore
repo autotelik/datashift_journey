@@ -1,0 +1,42 @@
+/.rspec-local
+# not sure where this is comign from so for now ignoring
+coverage
+# A developer can override the project's .rspec by adding thier own .rspec-local
+.rspec-local
+
+/.idea
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore the default SQLite database.
+/db/*.sqlite3
+/db/*.sqlite3-journal
+
+# Ignore all logfiles and tempfiles.
+/log/*
+!/log/.keep
+/tmp
+log/*.log
+pkg/
+
+/* dummy app for testing an engine */
+spec/dummy/db/*.sqlite3
+spec/dummy/db/*.sqlite3-journal
+spec/dummy/log/*.log
+spec/dummy/tmp/
+spec/dummy/.sass-cache
+
+.byebug_history
+
+# Ignore direnv config file https://github.com/direnv/direnv
+# (note, this is different to the dotenv-rails gem)
+.envrc
+
+# Ignore  .env file as this may contain actual credentials. The .env.example
+# file gets committed which acts as documentation on what environment
+# variables will need to be set up (dotenv-rails gem)
+.env
+
+#  however we do need the spec/dummy env for travis
+!spec/dummy/.env

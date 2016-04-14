@@ -1,0 +1,12 @@
+<% if errors_object.errors.any? %>
+
+  <% href_prefix = local_assigns.has_key?(:href_prefix) ? href_prefix : nil %>
+
+  <div id="error_explanation" class="validation-summary">
+    <h1 class="heading-medium"><%= t 'errors.errorMessage', :count => pluralize(errors.count, t('errors.error')) %></h1>
+    <% @error_object.errors.each do |attr,msg| %>
+      <li><a class="error-text" href="#<%= href_prefix %><%= attr %>"><%= msg %></a></li>
+      <br/>
+    <% end %>
+  </div>
+<% end %>

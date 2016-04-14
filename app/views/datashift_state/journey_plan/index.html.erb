@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Registrations</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @journey_plans.each do |journey_plan| %>
+      <tr>
+        <td><%= link_to 'Show', journey_plan %></td>
+        <td><%= link_to 'Edit', edit_journey_plan_path(journey_plan) %></td>
+        <td><%= link_to 'Destroy', journey_plan, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br/>
+
+<%= link_to 'New Registration', new_journey_plan_path %>

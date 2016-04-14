@@ -1,0 +1,29 @@
+<%
+  page = if(@render_state_partial)
+           @render_state_partial
+         else
+           journey_plan_partial_location(@journey_plan.state)
+         end
+
+  form_opts = { html: { novalidate: true } }
+  form_opts[:url] = @journey_plan_form_url if @journey_plan_form_url.present?
+  form_opts[:method] = @journey_plan_form_method if @journey_plan_form_method.present?
+%>
+
+<%= form_for @journey_plan, form_opts do |f| %>
+  <% rendered_state = @rendered_state || @journey_plan.state %>
+
+  <%= hidden_field_tag "rendered_state", rendered_state %>
+
+  <%= backto_start_link(@journey_plan) %>
+
+  <%= render 'shared/errors' %>
+
+  <%= render page, form: f %>
+
+  <% if policy(@journey_plan).show_continue_button? %>
+    <div class="actions">
+      <%= f.submit submit_button_text(@journey_plan), class: "button"  %>
+    </div>
+  <% end %>
+<% end %>

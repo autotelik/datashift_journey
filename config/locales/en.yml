@@ -1,0 +1,31 @@
+---
+en:
+  global:
+    404_notfound:
+      heading: Page not found
+      message1: Sorry, the page you’re looking for cannot be found.
+      message2: Please check the web address you entered was correct.
+    422_unprocessable_entity:
+      heading: The change you wanted was rejected
+      message1: Maybe you tried to change something you didn't have access to?
+    500_internal_server_error:
+      heading: Something went wrong
+      message1: Sorry, there is a technical problem.
+      message2: Please try again in a few minutes.
+    siteHeader_html: Override global.siteHeader_html in en.yml
+    401_unauthorized:
+      heading: Unauthorised
+      message1: You are not permitted to see this page.
+      message2: This page is restricted to certain users only.
+    403_forbidden:
+      # As per https://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html#sec10.4.4
+      # We do not wish to make this information available to the client, therefore using messaging for 404-not-found instead.
+      heading: Page not found
+      message1: Sorry, the page you’re looking for cannot be found.
+      message2: Please check the web address you entered was correct.
+    503_bad_gateway:
+      heading: Service unavailable
+      message1: Please try again later. If the problem persists, call the Environment Agency helpline 03708 506 506.
+    invalid_authenticity_token:
+      heading: The cookies in your browser have been disabled
+      message_html: "To carry on with your registration please enable session %{link} in your browser."
