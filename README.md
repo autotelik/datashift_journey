@@ -1,6 +1,6 @@
 ## DataShift State
 
-[![Build Status](https://travis-ci.org/autotelik/datashift.svg?branch=master)](https://travis-ci.org/autotelik/datashift)
+[![Build Status](https://travis-ci.org/autotelik/datashift_state.svg?branch=master)](https://travis-ci.org/autotelik/datashift_state)
 
 Define journeys via simple state based DSL
 
