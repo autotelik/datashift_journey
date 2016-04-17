@@ -6,6 +6,15 @@ Define journeys via simple state based DSL
 
 Collect data as you go
 
+If you need to set the location of the partials for rendering states, over ride the path via helper
+`enrollment_partial_location` in `app/helpers/application_helper.rb`
+
+```ruby
+    def journey_plan_partial_location(state)
+      "my_path/states/#{state}"
+    end
+```
+
 ## License
 
 Author ::   Tom Statter
