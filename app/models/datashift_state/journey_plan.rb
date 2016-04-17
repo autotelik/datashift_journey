@@ -5,33 +5,6 @@ module DatashiftState
 
     validates_presence_of :token, on: :save
 
-    # STATE HELPERS
-
-    # BACK - Create a 'back' event for each step (apart from first) in journey
-    # You can exclude any other steps with the except list
-    #
-    def create_back_transitions( journey, except = [] )
-      state_machine do
-        journey.drop(1).each_with_index do |t, i|
-          next if(except.include?(t))
-          transition( {t => get_transitions[i - 1] }.merge(on: :back) )
-        end
-      end
-    end
-
-
-    # NEXT - Create a 'next' event for each step (apart from last) in journey
-    # You can exclude  any other steps with the except list
-    #
-    def create_next_transitions( journey, except = [] ) )
-      state_machine do
-        journey[0...-1].each_with_index do |t, i|
-          next if(except.include?(t))
-          transition( { get_transitions[i] => get_transitions[i+1] }.merge(on: :next) )
-        end
-      end
-    end
-
     # Array of StateMachines::Event
     def valid_for
       DatashiftState::JourneyPlan.state_machine.events.valid_for(self)
