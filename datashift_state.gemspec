@@ -22,7 +22,6 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 4.2"
   s.add_dependency "state_machines-activerecord", "~> 0.2"
-  s.add_dependency "dotenv-rails", "~> 2.1" # We use Env Vars to drive some config. This gem loads environment variables from .env into ENV.
   s.add_dependency "sass-rails", "~> 5.0"
   s.add_dependency "coffee-rails", "~> 4.1"
   s.add_dependency "high_voltage", "~> 2.4" # Rails engine for static pages. https://github.com/thoughtbot/high_voltage

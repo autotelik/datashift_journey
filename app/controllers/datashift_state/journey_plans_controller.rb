@@ -15,7 +15,7 @@ module DatashiftState
 
     # GET /journey_plans/new
     def new
-      @journey_plan = DatashiftState::JourneyPlan.new
+      @journey_plan = DatashiftState.journey_class.new
     end
 
     # GET /journey_plans/1/edit
@@ -45,7 +45,7 @@ module DatashiftState
     # POST /journey_plans
 
     def create
-      @journey_plan = DatashiftState::JourneyPlan.new(journey_plan_params)
+      @journey_plan = DatashiftState.journey_class.new(journey_plan_params)
 
       respond_to do |format|
         if @journey_plan.save

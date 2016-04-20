@@ -20,5 +20,3 @@ module DatashiftState
   end
 
 end
-
-DatashiftState::CoreException.generate("AddressServiceNA")

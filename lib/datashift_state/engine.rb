@@ -1,22 +1,7 @@
-require "countries"
-require "core_ext/country"
-require "high_voltage"
-require "paper_trail"
-require "phonelib"
-require "uk_postcode"
-require "devise"
-require "rolify"
-require "state_machines-activerecord"
-
 module DatashiftState
-  # Although these are in the gemspec, without manually pulling them in here,
-  # they do not seem to get picked up, properly e.g  intializers will complain
-  # about missing symbols, or views about missing templates
-
-  require "dotenv-rails"
-  Dotenv.load(".env")
 
   class Engine < ::Rails::Engine
+
     isolate_namespace DatashiftState
 
     # Add a load path for this specific Engine
@@ -93,4 +78,16 @@ module DatashiftState
 end
 
 # Make config available for block form in initializers
-require "datashift_state/configuration"
+begin
+  require "datashift_state/exceptions"
+  require "datashift_state/configuration"
+  require "datashift_state/datashift_state"
+  require "datashift_state/journey_plan"
+  require "datashift_state/state_machines/state_machine_core_ext"
+rescue =>x
+  # TODO - remove this block once gem stable
+  puts x.inspect
+end
+
+
+puts "DONE #{DatashiftState::Engine.class}"

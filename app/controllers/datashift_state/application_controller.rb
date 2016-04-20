@@ -9,8 +9,8 @@ module DatashiftState
     # helper "datashift_state/user"
 
     # This form seems to work - helpers now available in views
-    include DatashiftState::ApplicationHelper
-    include DatashiftState::BackLinkHelper
+    #include DatashiftState::ApplicationHelper
+    #include DatashiftState::BackLinkHelper
 
     before_action :set_i18n_locale_from_params
 
