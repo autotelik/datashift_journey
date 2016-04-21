@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe DatashiftState::JourneyPlan, type: :model do
   class Enrollment
-    belongs_to :journey_plan, class_name: 'DatashiftState::JourneyPlan'
+    belongs_to :journey_plans, class_name: 'DatashiftState::JourneyPlan'
   end
 
   before(:all) do

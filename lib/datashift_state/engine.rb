@@ -75,6 +75,9 @@ module DatashiftState
 
   end
 
+  # To avoid a ton of warnings when the state machine is re-defined
+  #StateMachines::Machine.ignore_method_conflicts = true
+
 end
 
 # Make config available for block form in initializers

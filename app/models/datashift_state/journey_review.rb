@@ -13,7 +13,7 @@ module DatashiftState
     include PrepareDataForReview
 
     attr_reader :journey_plan, :root_i18n_scope
-    delegate :state, :state_name, to: :journey_plan
+    delegate :state, :state_name, to: :journey_plans
 
     # This class can be reused anywhere that requires yaml-parsed summary data for an journey_plan.
     # Hence the root_i18n_scope specifies the scope under which there must be a :common key at

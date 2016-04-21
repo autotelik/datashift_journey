@@ -2,8 +2,6 @@ module DatashiftState
 
   class ApplicationController < ActionController::Base
 
-    layout ->(_) { DatashiftState.layout }
-
     # This form does NOT seem to work - helpers cause missing method in views
     # helper DatashiftState::Engine.helpers
     # helper "datashift_state/user"

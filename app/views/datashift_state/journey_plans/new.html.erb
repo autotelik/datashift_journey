@@ -3,8 +3,7 @@
 <%= render 'shared/errors' %>
 
 <%= form_for @journey_plan, html: { novalidate: true } do |form| %>
-    <%= render 'journey_plans/states/unregistered', form: form %>
+  <%= render  journey_plan_partial_location(@journey_plan.state), form: form %>
 
-    <%= form.submit "Continue", class:'button' %>
-
+  <%= form.submit "Continue", class:'button' %>
 <% end %>

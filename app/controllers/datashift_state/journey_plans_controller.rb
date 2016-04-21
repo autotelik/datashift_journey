@@ -2,8 +2,6 @@ module DatashiftState
 
   class JourneyPlansController < ::ApplicationController
 
-    layout ->(_) { DatashiftState.layout }
-
     include DatashiftState::ReviewRenderer
 
     # We want this to run BEFORE other filters to ensure the current
@@ -15,7 +13,22 @@ module DatashiftState
 
     # GET /journey_plans/new
     def new
-      @journey_plan = DatashiftState.journey_class.new
+      @journey_plan = DatashiftState.journey_plan_class.new
+
+      @form = form_object
+    end
+
+    def create
+      @journey_plan = DatashiftState.journey_plan_class.new(journey_plan_params)
+
+      @form = form_object
+
+      if(@form.validate(params) && @form.save)
+        redirect_to(datashift_state.journey_plan_state_path(@journey_plan.state, @journey_plan)) && return
+      else
+        # Perhaps should happen in Reform Form validation - we must have an answer
+        render :new
+      end
     end
 
     # GET /journey_plans/1/edit
@@ -38,22 +51,6 @@ module DatashiftState
 
         else
           format.html { render :edit }
-        end
-      end
-    end
-
-    # POST /journey_plans
-
-    def create
-      @journey_plan = DatashiftState.journey_class.new(journey_plan_params)
-
-      respond_to do |format|
-        if @journey_plan.save
-          format.html do
-            redirect_to(datashift_state.journey_plan_state_path(@journey_plan.state, @journey_plan)) && return
-          end
-        else
-          format.html { render :new }
         end
       end
     end
@@ -157,6 +154,15 @@ module DatashiftState
           end
         end
       end
+    end # UPDATE
+
+    private
+
+    # TODO - Move to an external factory
+    def form_object
+      "DatashiftState::Steps::#{@journey_plan.state.classify}Form".constantize.factory(@journey_plan)
     end
+
+
   end
 end
