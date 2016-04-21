@@ -1,8 +1,6 @@
 class CreateJourneyPlans < ActiveRecord::Migration
   def change
 
-    puts  DatashiftState.journey_plan_class, DatashiftState.journey_plan_class.name.tableize
-
     decorate_class = DatashiftState.journey_plan_class.name.tableize.gsub('/', '_')
 
     add_column decorate_class, :state, :string

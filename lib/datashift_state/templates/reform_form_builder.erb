@@ -1,0 +1,17 @@
+module States
+  module <%= @reform_module_name %>
+
+    class FormBuilder
+      def self.call(<%= @reform_form_object -%>)
+        new.call <%= @reform_form_object %>
+      end
+
+      def call(<%= @reform_form_object -%>)
+          <%= @reform_form_object -%>.<%= @reform_form_attribute  -%> = <%= @reform_class -%>.new
+
+          <%= @reform_module_name -%>::Form.new(<%= @reform_form_object -%>.<%= @reform_form_attribute  -%>)
+      end
+    end
+  end
+end
+
