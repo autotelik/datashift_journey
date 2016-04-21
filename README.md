@@ -4,22 +4,40 @@
 
 Define journeys via simple state based DSL
 
-Collect data as you go
+Take any ActiveRecord model and add a state machine that manages a multi-page forms based journey
+such as a questionnaire, survey or registration process.
+
+Collect data as you go via Reform Forms.
+
+Provide high level syntactic sugar to program the journey steps, and manage the views and underlyiong forms (Reform)
+
+The gems we are using :
+
+https://github.com/state-machines/state_machines
+https://github.com/state-machines/state_machines-activerecord
+https://github.com/apotonick/reform
+
+The app model is decorated with an association to the state machine.
+
+A straightforward description of a Decorator is relatively easy to write in plain old ruby:
+
+“a class that surrounds a given class, adds new capabilities to it, and passes all the unchanged methods to the underlying class”
 
 
 ### Journey Model
 
-You need to set which database model will be used to host the journey plan
+The app must inform datashift_state of the model to host the journey plan and to store data collected on the journey.
 
-This will be the parent model off which all the data to be collcted should hang, the concept is 
+
+This will be the parent model off which all the data to be collected should hang, the concept is 
  like a Registration or Enrollment
 
 For example, in `config/initializers/datashift_state.rb`
 
-
 ```
 DatashiftState.journey_plan_class = "Enrollment"
 ```
+
 
 ### Rendering Views
 

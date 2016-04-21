@@ -14,7 +14,6 @@ Bundler.require(*Rails.groups)
 # needed in the real app
 
 require "datashift_state"
-require 'paper_trail'
 
 module Dummy
   class Application < Rails::Application

@@ -18,7 +18,7 @@ module DatashiftState
         content_tag(:br)
       else
         title, url = link_arguments(text)
-        link_to title, url, html_opts.merge(class: "back-link")
+        link_to title, url, html_opts.merge(class: 'back-link')
       end
     end
 
@@ -29,7 +29,7 @@ module DatashiftState
     end
 
     def link_text
-      I18n.t(journey_plan_is_mid_registration? ? "back" : "backto_start_link")
+      I18n.t(journey_plan_is_mid_registration? ? 'back' : 'backto_start_link')
     end
 
     def link_url
@@ -55,7 +55,7 @@ module DatashiftState
     end
 
     def journey_plan_reviewing_path
-      engine_routes.journey_plan_state_path("reviewing", journey_plan)
+      engine_routes.journey_plan_state_path('reviewing', journey_plan)
     end
 
     def journey_plan_is_already_complete?

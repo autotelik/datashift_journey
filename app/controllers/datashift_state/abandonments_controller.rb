@@ -9,7 +9,7 @@ module DatashiftState
     # static helper page (N.B served up from views/pages)
 
     def show
-      logger.info("User has abandoned")
+      logger.info('User has abandoned')
       super
     end
   end

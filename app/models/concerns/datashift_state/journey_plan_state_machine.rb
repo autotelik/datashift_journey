@@ -1,5 +1,11 @@
 module DatashiftState
-  module  JourneyPlan
+
+  # A set of extensions to
+  #     https://github.com/state-machines/state_machines
+  #     https://github.com/state-machines/state_machines-activerecord
+  # that provide helper methods useful for the JourneyPlan model
+
+  module JourneyPlanStateMachine
 
     # Array of StateMachines::Event
     def valid_for
@@ -30,7 +36,7 @@ module DatashiftState
     end
 
     def current_state_index
-      DatashiftState::JourneyPlan.state_names.index(self.state_name).to_i
+      DatashiftState::JourneyPlan.state_names.index(state_name).to_i
     end
 
     # Returns strings
@@ -52,7 +58,6 @@ module DatashiftState
     def self.state_names
       DatashiftState::JourneyPlan.state_machine.states.map(&:name)
     end
-
 
   end
 end

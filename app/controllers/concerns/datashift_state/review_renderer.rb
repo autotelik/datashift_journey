@@ -14,7 +14,7 @@ module DatashiftState
       # so use the over ride member @render_state_partial to drive which view to render
       @render_state_partial = view_context.journey_plan_partial_location(@rendered_state)
 
-      render template: "/datashift_state/journey_plans/edit"
+      render template: '/datashift_state/journey_plans/edit'
     end
 
   end

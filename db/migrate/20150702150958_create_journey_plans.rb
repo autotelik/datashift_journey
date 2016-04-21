@@ -1,4 +1,4 @@
-class CreateJourneyPLans < ActiveRecord::Migration
+class CreateJourneyPlans < ActiveRecord::Migration
   def change
     create_table :datashift_state_journey_plans do |t|
       t.string      :state

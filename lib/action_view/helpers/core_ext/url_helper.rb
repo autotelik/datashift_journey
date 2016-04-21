@@ -7,16 +7,16 @@ module UrlHelper
   # https://github.com/rails/rails/blob/e8b2c0535c203119e6733a982dc22734f3da1219/actionview/lib/action_view/helpers/url_helper.rb
   # for details.
   def _back_url # :nodoc:
-    _filtered_referrer || "javascript:history.back()"
+    _filtered_referrer || 'javascript:history.back()'
   end
   protected :_back_url
 
   def _filtered_referrer # :nodoc:
     if controller.respond_to?(:request)
-      referrer = controller.request.env["HTTP_REFERER"]
+      referrer = controller.request.env['HTTP_REFERER']
       # The code is copied as is from the Rails project so have not tried to resolve
       # the rubocop violation but instead have added this inline exception
-      if referrer && URI(referrer).scheme != "javascript" # rubocop:disable IfUnlessModifier
+      if referrer && URI(referrer).scheme != 'javascript' # rubocop:disable IfUnlessModifier
         referrer
       end
     end

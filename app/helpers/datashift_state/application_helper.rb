@@ -20,22 +20,22 @@ module DatashiftState
     # <% end %>
     #
     def form_group_and_validation(model, attribute, &block)
-      content = block_given? ? capture(&block) : ""
+      content = block_given? ? capture(&block) : ''
 
       options = { id: error_link_id(attribute),
-                  role: "group",
-                  'aria-labelledby': "groupLabel"
+                  role: 'group',
+                  'aria-labelledby': 'groupLabel'
       }
 
-      if(model && model.errors[attribute].any?)
+      if model && model.errors[attribute].any?
 
         content = content_tag(:span, model.errors[attribute].first.to_s.html_safe,
-                              class: "error-message") + content
+                              class: 'error-message') + content
 
-        content_tag(:div, content, options.merge(class: "form-group error"))
+        content_tag(:div, content, options.merge(class: 'form-group error'))
 
       else
-        content_tag(:div, content, options.merge(class: "form-group"))
+        content_tag(:div, content, options.merge(class: 'form-group'))
       end
     end
 
@@ -59,16 +59,16 @@ module DatashiftState
       if model.errors[attribute].any?
         # Note: Calling raw() forces the characters to be un-escaped
         # and thus HTML elements can be defined here
-        raw("<span class=\"error-text\">"\
+        raw('<span class="error-text">'\
             "#{model.errors[attribute].first}</span>")
       else
-        ""
+        ''
       end
     end
 
     def friendly_date(date)
       formatted_date = date && l(date.to_date, format: :long)
-      formatted_date || ""
+      formatted_date || ''
     end
 
   end

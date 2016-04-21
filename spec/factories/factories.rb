@@ -1,4 +1,4 @@
-require "ffaker"
+require 'ffaker'
 
 FactoryGirl.define do
 end

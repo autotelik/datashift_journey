@@ -20,7 +20,7 @@ module DatashiftState
     # least. It is recommended that the root_i18n_scopeis a folder under a config/locales
     # directory containing at least a common.en.yml file, and probably organisation-
     # specific yml files too, which override common sections (see #prepare_review_data_list).
-    def initialize(journey_plan, root_i18n_scope = ".journey_plan_review")
+    def initialize(journey_plan, root_i18n_scope = '.journey_plan_review')
       @journey_plan = journey_plan
       @root_i18n_scope = root_i18n_scope
     end

@@ -1,7 +1,7 @@
-require "rails_helper"
+require 'rails_helper'
 
 module DatashiftState
-  describe "exceptions", type: :feature do
+  describe 'exceptions', type: :feature do
     around :each do |example|
       config = Rails.application.config
 
@@ -18,12 +18,12 @@ module DatashiftState
       @routes = Engine.routes
     end
 
-    context "401" do
-      scenario "authentication required but failed or not been provided" do
-        visit "/401"
+    context '401' do
+      scenario 'authentication required but failed or not been provided' do
+        visit '/401'
         expect(page.status_code).to eq 401
-        expect(page).to have_text I18n.t("global.401_unauthorized.heading")
-        expect(page).to have_text I18n.t("global.401_unauthorized.message1")
+        expect(page).to have_text I18n.t('global.401_unauthorized.heading')
+        expect(page).to have_text I18n.t('global.401_unauthorized.message1')
       end
     end
 
@@ -31,39 +31,39 @@ module DatashiftState
     # a real controller action that triggers the required error/exception,
     # for example for 403, visit an unauthorised action
 
-    context "403" do
-      scenario "Forbidden page - authenticating makes no difference" do
-        visit "/403"
+    context '403' do
+      scenario 'Forbidden page - authenticating makes no difference' do
+        visit '/403'
         expect(page.status_code).to eq 403
-        expect(page).to have_text I18n.t("global.403_forbidden.heading")
-        expect(page).to have_text I18n.t("global.403_forbidden.message1")
+        expect(page).to have_text I18n.t('global.403_forbidden.heading')
+        expect(page).to have_text I18n.t('global.403_forbidden.message1')
       end
     end
 
-    context "422" do
-      scenario "visitor tries to visit an unprocessable entity " do
-        visit "/422"
+    context '422' do
+      scenario 'visitor tries to visit an unprocessable entity ' do
+        visit '/422'
         expect(page.status_code).to eq 422
-        expect(page).to have_text I18n.t("global.422_unprocessable_entity.heading")
-        expect(page).to have_text I18n.t("global.422_unprocessable_entity.message1")
+        expect(page).to have_text I18n.t('global.422_unprocessable_entity.heading')
+        expect(page).to have_text I18n.t('global.422_unprocessable_entity.message1')
       end
     end
 
-    context "500" do
-      scenario "internal server error" do
-        visit "/500"
+    context '500' do
+      scenario 'internal server error' do
+        visit '/500'
         expect(page.status_code).to eq 500
-        expect(page).to have_text I18n.t("global.500_internal_server_error.heading")
-        expect(page).to have_text I18n.t("global.500_internal_server_error.message1")
+        expect(page).to have_text I18n.t('global.500_internal_server_error.heading')
+        expect(page).to have_text I18n.t('global.500_internal_server_error.message1')
       end
     end
 
-    context "503" do
-      scenario "valid page but the server is currently unavailable" do
-        visit "/503"
+    context '503' do
+      scenario 'valid page but the server is currently unavailable' do
+        visit '/503'
         expect(page.status_code).to eq 503
-        expect(page).to have_text I18n.t("global.503_bad_gateway.heading")
-        expect(page).to have_text I18n.t("global.503_bad_gateway.message1")
+        expect(page).to have_text I18n.t('global.503_bad_gateway.heading')
+        expect(page).to have_text I18n.t('global.503_bad_gateway.message1')
       end
     end
   end

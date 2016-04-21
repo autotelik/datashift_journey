@@ -11,7 +11,7 @@ module DatashiftState
 
     prepend_before_filter :set_journey_plan, only: [:show, :edit, :update, :destroy, :find_addresses, :back_a_step]
 
-    before_action :back_button_cache_buster, only: %i[new edit create update]
+    before_action :back_button_cache_buster, only: %i(new edit create update)
 
     # GET /journey_plans/new
     def new
@@ -28,7 +28,7 @@ module DatashiftState
 
         @journey_plan.back # Move state engine back
 
-        if(@journey_plan.save)
+        if @journey_plan.save
 
           logger.debug("Successfully back a step - state now [#{@journey_plan.state}]")
 
@@ -95,7 +95,7 @@ module DatashiftState
 
         logger.debug("Filters passed - Calling UPDATE with #{prepared_params.inspect}")
 
-        if(@journey_plan.update(prepared_params))
+        if @journey_plan.update(prepared_params)
 
           logger.debug("UPDATE SUCCESS !!! #{@journey_plan.inspect} - calling after_state_updated hooks")
 
@@ -107,13 +107,13 @@ module DatashiftState
             Rails.logger.error "AfterStateUpdated: failed : #{ex}"
           end
 
-          if(prepared_params[:redirect_to])
+          if prepared_params[:redirect_to]
             logger.debug("REDIRECT specified !!! Calling [#{prepared_params[:redirect_to]}]")
             redirect_to(prepared_params[:redirect_to]) && return
           end
 
           # Move to next state unless received explicit call to fire specific event, OR reviewing
-          if(state_event)
+          if state_event
 
             # So state transitions can depend on data values on Enrollment. so need to call reload to update our
             # in memory variable. Restricting scope to this branch, as reqment currently restricted to state_event calls
@@ -128,11 +128,11 @@ module DatashiftState
               raise
             end
 
-          elsif(!@journey_plan.under_review)
+          elsif !@journey_plan.under_review
             logger.debug("Calling next on state [#{@journey_plan.state.inspect}]")
             @journey_plan.next!
             logger.debug("Now state @  [#{@journey_plan.state.inspect}]")
-          elsif(@journey_plan.under_review && !@journey_plan.reviewing?)
+          elsif @journey_plan.under_review && !@journey_plan.reviewing?
             logger.debug("State's out of sync under review - resetting to reviewing")
             @journey_plan.review!
             logger.debug("Now state @  [#{@journey_plan.state.inspect}]")
@@ -145,10 +145,10 @@ module DatashiftState
           format.html do
             logger.error("UPDATE FAILED! #{@journey_plan.errors.inspect}")
 
-            if(@journey_plan.under_review && params["rendered_state"])
+            if @journey_plan.under_review && params['rendered_state']
               logger.debug("Validation failed during update via review - stay on page [#{params['rendered_state']}]")
 
-              setup_view_data_for_state(params["rendered_state"])
+              setup_view_data_for_state(params['rendered_state'])
 
               render_state_under_review(params)
             else

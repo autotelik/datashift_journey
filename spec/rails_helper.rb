@@ -1,13 +1,11 @@
 
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-ENV["RAILS_ENV"] ||= "test"
-require "spec_helper"
+ENV['RAILS_ENV'] ||= 'test'
+require 'spec_helper'
 
 # For stubbing external services
 # https://github.com/vcr/vcr
-require "vcr"
-
-require "paper_trail/frameworks/rspec"
+require 'vcr'
 
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
@@ -22,8 +20,8 @@ require "paper_trail/frameworks/rspec"
 # directory. Alternatively, in the individual `*_spec.rb` files, manually
 # require only the support files necessary.
 #
-unless $LOAD_PATH.include?("spec/support/base")
-  $LOAD_PATH.unshift("spec/support/base")
+unless $LOAD_PATH.include?('spec/support/base')
+  $LOAD_PATH.unshift('spec/support/base')
 end
 
 # Load support files
@@ -32,7 +30,7 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 Dir["#{File.dirname(__FILE__)}/shared_examples/**/*.rb"].each { |f| require f }
 
 # "spatial_ref_sys" is a Postgis (postgres) table that should not be truncated (defines SRIDs etc)
-DB_CLEANER_TRUNCATION_OPTS = { except: %w[spatial_ref_sys] }.freeze
+DB_CLEANER_TRUNCATION_OPTS = { except: %w(spatial_ref_sys) }.freeze
 
 RSpec.configure do |config|
   config.use_transactional_fixtures = false
@@ -92,13 +90,13 @@ RSpec.configure do |config|
 end
 
 VCR.configure do |c|
-  c.cassette_library_dir = "spec/cassettes"
+  c.cassette_library_dir = 'spec/cassettes'
   c.hook_into :webmock
 
   # to quickly ignore certain hosts can use following style
   # c.ignore_hosts 'addressfacade.cloudapp.net'
-  c.ignore_hosts "127.0.0.1"
-  #c.allow_http_connections_when_no_cassette = true
+  c.ignore_hosts '127.0.0.1'
+  # c.allow_http_connections_when_no_cassette = true
 end
 
 Shoulda::Matchers.configure do |config|

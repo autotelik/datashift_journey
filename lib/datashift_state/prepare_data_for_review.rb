@@ -4,7 +4,7 @@ module DatashiftState
 
     extend ActiveSupport::Concern
 
-    def self.included base
+    def self.included(base)
       base.send :include, InstanceMethods
     end
 
@@ -89,12 +89,12 @@ module DatashiftState
       #
       attr_reader :review_data
 
-      def prepare_from_locale(model, locale_key = ".journey_plan_review")
+      def prepare_from_locale(model, locale_key = '.journey_plan_review')
         sections = I18n.t("#{locale_key}.sections", default: {})
 
         Rails.logger.debug("Review Sections: #{sections.inspect}")
 
-        unless(sections.is_a?(Hash))
+        unless sections.is_a?(Hash)
           Rails.logger.error("Bad syntax in your review YAML - Expect a 'sections' Hash element")
           raise RuntimeError.new("Bad syntax in your review YAML - Expect a 'sections' Hash element")
         end
@@ -104,7 +104,7 @@ module DatashiftState
         # Return a collection of Sections (ReviewData), each section has multiple rows
 
         sections.collect do |section, data|
-          next unless(data[:section_heading])
+          next unless data[:section_heading]
 
           @current_section = section
 
@@ -118,7 +118,7 @@ module DatashiftState
           # Direct data on parent Model, where key is - direct:
           key = "#{locale_key}.sections.#{section}.direct"
 
-          if(I18n.exists?(key))
+          if I18n.exists?(key)
             I18n.t(key).each { |column| row_to_review_data(model_object, column) }
           end
 
@@ -126,13 +126,13 @@ module DatashiftState
 
           key = "#{locale_key}.sections.#{current_section}.associations"
 
-          if(I18n.exists?(key))
+          if I18n.exists?(key)
 
             association_list = I18n.t("#{locale_key}.sections.#{current_section}.associations", default: [])
 
             association_list.each do |association_data|
-              unless(association_data.size == 2)
-                Rails.logger.error("Bad syntax in your review YAML - expect each association to have name and fields")
+              unless association_data.size == 2
+                Rails.logger.error('Bad syntax in your review YAML - expect each association to have name and fields')
                 next
               end
 
@@ -140,8 +140,8 @@ module DatashiftState
               #  -  :title: Business trading name
               #     :name: full_name
               #
-              unless(association_data[1].respond_to?(:each))
-                Rails.logger.error("Bad syntax in review YAML - each row needs a title, method and optional link")
+              unless association_data[1].respond_to?(:each)
+                Rails.logger.error('Bad syntax in review YAML - each row needs a title, method and optional link')
                 next
               end
 
@@ -157,7 +157,7 @@ module DatashiftState
                 next
               end
 
-              unless(review_object)
+              unless review_object
                 Rails.logger.error("Nil association for #{association_method} on #{model} - no review data available")
                 next
               end
@@ -185,11 +185,11 @@ module DatashiftState
         @current_review_object = review_object
 
         # The review partial can support whole objects, or low level data from method call defined in the DSL
-        if(row[:method].blank?)
+        if row[:method].blank?
           review_data.add(row[:title], review_object, link_state.to_s, link_title)
         else
           # rubocop:disable Style/IfInsideElse
-          if(review_object.respond_to?(:each))
+          if review_object.respond_to?(:each)
             review_object.each do |o|
               @current_review_object = o
               review_data.add(row[:title], send_chain(row[:method]), link_state.to_s, link_title)
@@ -202,18 +202,18 @@ module DatashiftState
       end
 
       def find_association(method_chain)
-        arr = method_chain.to_s.split(".")
+        arr = method_chain.to_s.split('.')
 
-        arr.inject(model_object) {|o, a| o.send(a) }
+        arr.inject(model_object) { |o, a| o.send(a) }
       end
 
       def send_chain(method_chain)
-        arr = method_chain.to_s.split(".")
+        arr = method_chain.to_s.split('.')
         begin
-          arr.inject(current_review_object) {|o, a| o.send(a) }
+          arr.inject(current_review_object) { |o, a| o.send(a) }
         rescue => e
           Rails.logger.error("Failed to process method chain #{method_chain} : #{e.message}")
-          return I18n.t(".journey_plan_review.missing_data")
+          return I18n.t('.journey_plan_review.missing_data')
         end
       end
 

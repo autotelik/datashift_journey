@@ -1,8 +1,8 @@
 module DatashiftState
   class ErrorsController < ::ApplicationController
     def show
-      @exception = env["action_dispatch.exception"]
-      action = request.path[1..-1].gsub(/[^0-9]/, "")
+      @exception = env['action_dispatch.exception']
+      action = request.path[1..-1].gsub(/[^0-9]/, '')
       action = 500 if action.blank?
 
       status_code =

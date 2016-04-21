@@ -7,7 +7,7 @@ module DatashiftState
       logger.info("User has abandoned #{params}")
 
       # high voltage expects  id => name of page
-      params[:id] = params["page"]
+      params[:id] = params['page']
       super
     end
   end

@@ -11,13 +11,12 @@ module DatashiftState
   #       DatashiftState.setup do |config|
   #         config.public_subdomain = 'localhost'
   #       end
-  def self.setup(&block)
-    self.set_default_configuration
+  def self.setup
+    set_default_configuration
 
     yield self
   end
 
   def self.set_default_configuration
-    self.layout = "application"
   end
 end

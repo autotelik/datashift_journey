@@ -14,7 +14,7 @@ module DatashiftState
 
       respond_to do |format|
         format.html do
-          setup_view_data_for_state(params["state"])
+          setup_view_data_for_state(params['state'])
 
           render_state_under_review(params)
         end
@@ -27,7 +27,7 @@ module DatashiftState
     def set_journey_plan
       id = params[:id]
       if id && id.length == DatashiftState::SecureToken::TOKEN_LENGTH
-        fail "Expected an id but got a token"
+        raise 'Expected an id but got a token'
       end
       @journey_plan = DatashiftState::JourneyPlan.find(id)
     end

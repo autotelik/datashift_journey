@@ -8,9 +8,9 @@ module DatashiftState
     # :link_state - The target url for Change This. If not specified, defaults to the section page/state
     #               Supports :none to leave column empty
     #
-    Struct.new("ReviewDataRow", :title, :data, :link_state, :link_title, :heading) do
+    Struct.new('ReviewDataRow', :title, :data, :link_state, :link_title, :heading) do
       def target(journey_plan)
-        return nil if(link_state.to_sym == :none)
+        return nil if link_state.to_sym == :none
         DatashiftState::Engine.routes.url_helpers.review_state_path(link_state, journey_plan)
       end
     end
