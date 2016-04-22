@@ -1,9 +1,9 @@
 module DatashiftState
   module ApplicationHelper
 
-    # helper to return the default location of partials for a particular state
+    # helper to return the location of a partial for a particular state
     def journey_plan_partial_location(state)
-      "journey_plans/states/#{state}"
+      "#{DatashiftState::Configuration.call.partial_location}/#{state}"
     end
 
     # This helper  adds a form-group DIV around form elements,
@@ -22,10 +22,7 @@ module DatashiftState
     def form_group_and_validation(model, attribute, &block)
       content = block_given? ? capture(&block) : ''
 
-      options = { id: error_link_id(attribute),
-                  role: 'group',
-                  'aria-labelledby': 'groupLabel'
-      }
+      options = { id: error_link_id(attribute), role: 'group'}
 
       if model && model.errors[attribute].any?
 
@@ -59,8 +56,7 @@ module DatashiftState
       if model.errors[attribute].any?
         # Note: Calling raw() forces the characters to be un-escaped
         # and thus HTML elements can be defined here
-        raw('<span class="error-text">'\
-            "#{model.errors[attribute].first}</span>")
+        raw("<span class=\"error-text\">#{model.errors[attribute].first}</span>")
       else
         ''
       end

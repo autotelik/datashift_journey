@@ -1,9 +1,17 @@
 <%= backto_start_link %>
 
-<%= render 'shared/errors' %>
+<%= render 'datashift_state/shared/errors', form: form %>
 
-<%= form_for @journey_plan, html: { novalidate: true } do |form| %>
-  <%= render  journey_plan_partial_location(@journey_plan.state), form: form %>
+<% state = form.journey_plan.state %>
 
-  <%= form.submit "Continue", class:'button' %>
+<%= form_for form,
+             as: state,
+             url: url_for(:controller => 'journey_plans', :action => 'create'),
+             method: :patch, class: 'form' do |f| %>
+
+    <%= render  journey_plan_partial_location(state), form: form, f: f %>
+
+    <div class="form-group">
+      <%= f.submit 'Continue' %>
+    </div>
 <% end %>

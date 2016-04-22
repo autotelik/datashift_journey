@@ -1,22 +1,41 @@
 module DatashiftState
 
-  # List here all config parameters we make available via the main Engine
-  # i.e Can access via form  : DatashiftState.public_subdomain
-  class << self
-  end
+  class Configuration
 
-  # You can yield your own object encapsulating your configuration logic/state
-  # Example usage in initializers etc
-  #
-  #       DatashiftState.setup do |config|
-  #         config.public_subdomain = 'localhost'
-  #       end
-  def self.setup
-    set_default_configuration
+    # Forms and views generated in a sub modules of Parent module above
+    # This usually equates to state/step/page
+    attr_accessor :state_module_name
 
-    yield self
-  end
+    # The location of the partials for the Reform forms
+    attr_accessor :partial_location
 
-  def self.set_default_configuration
+    def initialize
+      @state_module_name = 'States'
+      @partial_location  = "journey_plans/states"
+    end
+
+    # @return [DatashiftState::Configuration] current configuration
+    def self.call
+      @configuration ||= DatashiftState::Configuration.new
+    end
+
+    def self.reset
+      @configuration = DatashiftState::Configuration.new
+    end
+
+    # @param config [DatashiftState::Configuration]
+    class << self
+      attr_writer :configuration
+    end
+
+    # Modify current DatashiftState configuration
+    # ```
+    #   DatashiftState::Configuration.configure do |config|
+    #     config.html_only = false
+    #   end
+    # ```
+    def self.configure
+      yield call
+    end
   end
 end

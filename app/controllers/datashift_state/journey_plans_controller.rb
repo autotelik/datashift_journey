@@ -11,11 +11,13 @@ module DatashiftState
 
     before_action :back_button_cache_buster, only: %i(new edit create update)
 
-    # GET /journey_plans/new
     def new
-      @journey_plan = DatashiftState.journey_plan_class.new
+      journey_plan = DatashiftState.journey_plan_class.new
 
-      @form = form_object
+      render locals: {
+        journey_plan: journey_plan,
+        form: form_object(journey_plan)
+      }
     end
 
     def create
@@ -159,8 +161,10 @@ module DatashiftState
     private
 
     # TODO - Move to an external factory
-    def form_object
-      "DatashiftState::Steps::#{@journey_plan.state.classify}Form".constantize.factory(@journey_plan)
+    def form_object(journey_plan)
+      mod = "DatashiftState::#{Configuration.call.state_module_name}"
+
+      "#{mod}::#{journey_plan.state.classify}Form".constantize.factory(journey_plan)
     end
 
 

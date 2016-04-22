@@ -1,12 +1,18 @@
-<% if errors_object.errors.any? %>
+<% errors = local_assigns[:errors] || form.errors || [] %>
+<% if errors.any? %>
+    <div class="error-summary" role="group" aria-labelledby="groupLabel" tabindex="-1">
 
-  <% href_prefix = local_assigns.has_key?(:href_prefix) ? href_prefix : nil %>
+      <h1 class="heading-medium error-summary-heading" id="error-summary-heading">
+        <%= t '.you_have' %> <%= pluralize(errors.count, "error") %>
+      </h1>
 
-  <div id="error_explanation" class="validation-summary">
-    <h1 class="heading-medium"><%= t 'errors.errorMessage', :count => pluralize(errors.count, t('errors.error')) %></h1>
-    <% @error_object.errors.each do |attr,msg| %>
-      <li><a class="error-text" href="#<%= href_prefix %><%= attr %>"><%= msg %></a></li>
-      <br/>
-    <% end %>
-  </div>
+      <ul class="error-summary-list">
+        <% errors.each do |attr, msg| %>
+            <li>
+              <%= link_to msg.html_safe, "##{error_link_id(attr)}", class: "error-text" %>
+            </li>
+        <% end %>
+      </ul>
+    </div>
 <% end %>
+
