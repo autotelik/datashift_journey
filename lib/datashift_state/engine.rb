@@ -76,7 +76,7 @@ module DatashiftState
   end
 
   # To avoid a ton of warnings when the state machine is re-defined
-  #StateMachines::Machine.ignore_method_conflicts = true
+  # StateMachines::Machine.ignore_method_conflicts = true
 
 end
 

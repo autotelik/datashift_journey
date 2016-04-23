@@ -1,7 +1,6 @@
 require 'rails_helper'
 
 RSpec.describe Registration, type: :model do
-
   # in dummy init we set
   #  DatashiftState.journey_plan_class = 'Registration'
 

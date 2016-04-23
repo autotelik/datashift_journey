@@ -25,7 +25,7 @@ module DatashiftState
 
       @form = form_object
 
-      if(@form.validate(params) && @form.save)
+      if @form.validate(params) && @form.save
         redirect_to(datashift_state.journey_plan_state_path(@journey_plan.state, @journey_plan)) && return
       else
         # Perhaps should happen in Reform Form validation - we must have an answer
@@ -160,13 +160,12 @@ module DatashiftState
 
     private
 
-    # TODO - Move to an external factory
+    # TODO: - Move to an external factory
     def form_object(journey_plan)
       mod = "DatashiftState::#{Configuration.call.state_module_name}"
 
       "#{mod}::#{journey_plan.state.classify}Form".constantize.factory(journey_plan)
     end
-
 
   end
 end

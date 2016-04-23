@@ -22,7 +22,7 @@ module DatashiftState
     def form_group_and_validation(model, attribute, &block)
       content = block_given? ? capture(&block) : ''
 
-      options = { id: error_link_id(attribute), role: 'group'}
+      options = { id: error_link_id(attribute), role: 'group' }
 
       if model && model.errors[attribute].any?
 

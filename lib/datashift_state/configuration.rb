@@ -11,7 +11,7 @@ module DatashiftState
 
     def initialize
       @state_module_name = 'States'
-      @partial_location  = "journey_plans/states"
+      @partial_location  = 'journey_plans/states'
     end
 
     # @return [DatashiftState::Configuration] current configuration
