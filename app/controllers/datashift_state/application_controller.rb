@@ -42,8 +42,8 @@ module DatashiftState
       if id && id.length == DatashiftState::SecureToken::TOKEN_LENGTH
         raise 'Expected an id but got a token'
       end
-      @journey_plan = DatashiftState::JourneyPlan.find(id)
-      logger.debug("Processing Enrollment: #{@journey_plan.inspect}")
+      @journey_plan = DatashiftState.journey_plan_class.find(id)
+      logger.debug("Processing Journey: #{@journey_plan.inspect}")
     end
 
     def handle_invalid_authenticity_token(exception)

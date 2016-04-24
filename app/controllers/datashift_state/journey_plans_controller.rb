@@ -1,19 +1,20 @@
 module DatashiftState
 
-  class JourneyPlansController < ::ApplicationController
+  class JourneyPlansController < DatashiftState::ApplicationController
 
     include DatashiftState::ReviewRenderer
 
     # We want this to run BEFORE other filters to ensure the current
     # journey_plan object has been selected from the DB
 
-    prepend_before_filter :set_journey_plan, only: [:show, :edit, :update, :destroy, :find_addresses, :back_a_step]
+    prepend_before_filter :set_journey_plan, only: [:show, :edit, :update, :destroy, :back_a_step]
 
     before_action :back_button_cache_buster, only: %i(new edit create update)
 
     def new
       journey_plan = DatashiftState.journey_plan_class.new
 
+      logger.info "Rendering initial state [#{journey_plan.state}]"
       render locals: {
         journey_plan: journey_plan,
         form: form_object(journey_plan)
@@ -21,20 +22,27 @@ module DatashiftState
     end
 
     def create
-      @journey_plan = DatashiftState.journey_plan_class.new(journey_plan_params)
 
-      @form = form_object
+      jp_instance = DatashiftState.journey_plan_class.new
 
-      if @form.validate(params) && @form.save
-        redirect_to(datashift_state.journey_plan_state_path(@journey_plan.state, @journey_plan)) && return
+      form = form_object(jp_instance)
+
+      if form.validate(params) && form.save
+        journey_plan = form.journey_plan
+        logger.info "Saved JourneyPlan : [#{journey_plan}]"
+        journey_plan.next!
+        redirect_to(datashift_state.journey_plan_state_path(journey_plan.state, journey_plan)) && return
       else
         # Perhaps should happen in Reform Form validation - we must have an answer
         render :new
       end
     end
 
-    # GET /journey_plans/1/edit
     def edit
+      render locals: {
+        journey_plan: @journey_plan,
+        form: form_object(@journey_plan)
+      }
     end
 
     def back_a_step

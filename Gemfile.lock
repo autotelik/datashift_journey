@@ -3,7 +3,7 @@ PATH
   specs:
     datashift_state (1.0.0)
       coffee-rails (~> 4.1)
-      high_voltage (~> 2.4)
+      high_voltage (~> 3)
       rails (~> 4.2)
       rest-client (~> 2.0.0.rc2)
       sass-rails (~> 5.0)
@@ -98,7 +98,7 @@ GEM
     globalid (0.3.6)
       activesupport (>= 4.1.0)
     hashdiff (0.3.0)
-    high_voltage (2.4.0)
+    high_voltage (3.0.0)
     highline (1.7.8)
     http-cookie (1.0.2)
       domain_name (~> 0.5)

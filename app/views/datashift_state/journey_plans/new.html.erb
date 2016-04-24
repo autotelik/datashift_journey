@@ -1,17 +1,2 @@
-<%= backto_start_link %>
+<%= render 'form', form: form, form_url: url_for(:controller => 'journey_plans', :action => 'create') %>
 
-<%= render 'datashift_state/shared/errors', form: form %>
-
-<% state = form.journey_plan.state %>
-
-<%= form_for form,
-             as: state,
-             url: url_for(:controller => 'journey_plans', :action => 'create'),
-             method: :patch, class: 'form' do |f| %>
-
-    <%= render  journey_plan_partial_location(state), form: form, f: f %>
-
-    <div class="form-group">
-      <%= f.submit 'Continue' %>
-    </div>
-<% end %>

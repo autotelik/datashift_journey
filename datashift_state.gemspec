@@ -24,7 +24,7 @@ Gem::Specification.new do |s|
   s.add_dependency "state_machines-activerecord", "~> 0.2"
   s.add_dependency "sass-rails", "~> 5.0"
   s.add_dependency "coffee-rails", "~> 4.1"
-  s.add_dependency "high_voltage", "~> 2.4" # Rails engine for static pages. https://github.com/thoughtbot/high_voltage
+  s.add_dependency "high_voltage", "~> 3" # Rails engine for static pages. https://github.com/thoughtbot/high_voltage
   s.add_dependency "thor", "~> 0.19"
   s.add_dependency "rest-client", "~> 2.0.0.rc2"
 
