@@ -6,10 +6,7 @@ module DatashiftState
 
     # We want this to run BEFORE other filters to ensure the current
     # journey_plan object has been selected from the DB
-
     prepend_before_filter :set_journey_plan, only: [:show, :edit, :update, :destroy, :back_a_step]
-
-    before_action :back_button_cache_buster, only: %i(new edit create update)
 
     def new
       journey_plan = DatashiftState.journey_plan_class.new
@@ -22,7 +19,6 @@ module DatashiftState
     end
 
     def create
-
       jp_instance = DatashiftState.journey_plan_class.new
 
       form = form_object(jp_instance)
@@ -91,6 +87,19 @@ module DatashiftState
     # rubocop:disable Metrics/PerceivedComplexity
     #
     def update
+
+      form = form_object(@journey_plan)
+
+      logger.debug("Update #{@journey_plan} via Form [#{form.inspect}]")
+
+      if(form.validate(params) && form.save)
+        @journey_plan.next!
+        redirect_to(datashift_state.journey_plan_state_path(@journey_plan.state, @journey_plan)) && return
+      else
+        # Perhaps should happen in Reform Form validation - we must have an answer
+        render :edit
+      end
+=begin
       # proceed as normal - update model and then move sate engine fwd
 
       respond_to do |format|
@@ -164,6 +173,7 @@ module DatashiftState
           end
         end
       end
+=end
     end # UPDATE
 
     private
