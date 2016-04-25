@@ -1,1 +1,4 @@
-<%= render 'form', form: form %>
+<%= render 'form', form: form,
+           form_method: :patch,
+           form_url: datashift_state.journey_plan_path(journey_plan)
+%>
