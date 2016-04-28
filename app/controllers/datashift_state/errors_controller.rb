@@ -1,5 +1,5 @@
 module DatashiftState
-  class ErrorsController < ::ApplicationController
+  class ErrorsController < ApplicationController
     def show
       @exception = env['action_dispatch.exception']
       action = request.path[1..-1].gsub(/[^0-9]/, '')

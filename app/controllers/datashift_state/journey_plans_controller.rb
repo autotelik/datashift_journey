@@ -1,8 +1,9 @@
 module DatashiftState
 
-  class JourneyPlansController < DatashiftState::ApplicationController
+  class JourneyPlansController < ApplicationController
 
     include DatashiftState::ReviewRenderer
+    include TokenBasedAccess
 
     # We want this to run BEFORE other filters to ensure the current
     # journey_plan object has been selected from the DB
@@ -29,7 +30,6 @@ module DatashiftState
         journey_plan.next!
         redirect_to(datashift_state.journey_plan_state_path(journey_plan.state, journey_plan)) && return
       else
-        # Perhaps should happen in Reform Form validation - we must have an answer
         render :new
       end
     end

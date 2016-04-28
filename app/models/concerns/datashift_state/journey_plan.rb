@@ -3,8 +3,6 @@ module DatashiftState
 
     extend ActiveSupport::Concern
 
-    extend SecureToken
-
     included do
       validates_presence_of :token, on: :save
 

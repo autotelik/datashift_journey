@@ -2,6 +2,10 @@ module DatashiftState
 
   class ApplicationController < ActionController::Base
 
+    include TokenBasedAccess
+
+    layout ->(_) { Configuration.call.layout }
+
     # This form does NOT seem to work - helpers cause missing method in views
     # helper DatashiftState::Engine.helpers
     # helper "datashift_state/user"
@@ -36,15 +40,6 @@ module DatashiftState
       response.headers['Expires'] = 'Fri, 01 Jan 1990 00:00:00 GMT'
     end
 
-    # Use callbacks to share common setup or constraints between actions.
-    def set_journey_plan
-      id = params[:id] || params[:journey_plan_id]
-      if id && id.length == DatashiftState::SecureToken::TOKEN_LENGTH
-        raise 'Expected an id but got a token'
-      end
-      @journey_plan = DatashiftState.journey_plan_class.find(id)
-      logger.debug("Processing Journey: #{@journey_plan.inspect}")
-    end
 
     def handle_invalid_authenticity_token(exception)
       Airbrake.notify(exception) if defined? Airbrake

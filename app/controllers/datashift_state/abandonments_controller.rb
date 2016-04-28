@@ -1,6 +1,6 @@
 module DatashiftState
 
-  class AbandonmentsController < ::ApplicationController
+  class AbandonmentsController < ApplicationController
 
     include HighVoltage::StaticPage
 

@@ -12,7 +12,7 @@ module DatashiftState
         if token && token.length < DatashiftState::SecureToken::TOKEN_LENGTH
           raise 'Expected an journey_plan token but got an journey_plan id'
         end
-        @journey_plan = DatashiftState::JourneyPlan.find_by!(token: token)
+        @journey_plan = DatashiftState.journey_plan_class.find_by!(token: token)
         logger.debug("Processing Enrollment: #{@journey_plan.inspect}")
       end
     end

@@ -33,21 +33,19 @@ module DatashiftState
     # <tt>validates_uniqueness_of</tt> can. You're encouraged to add a unique index in the database to deal
     # with this even more unlikely scenario.
 
-    included do
-      def has_secure_token(attribute = :token)
-        # Load securerandom only when has_secure_token is used.
-        require 'active_support/core_ext/securerandom'
-        define_method("regenerate_#{attribute}") do
-          update_attributes attribute => self.class.generate_unique_secure_token
-        end
-        before_create do
-          send("#{attribute}=", self.class.generate_unique_secure_token) unless send("#{attribute}?")
-        end
+    def has_secure_token(attribute = :token)
+      # Load securerandom only when has_secure_token is used.
+      require 'active_support/core_ext/securerandom'
+      define_method("regenerate_#{attribute}") do
+        update_attributes attribute => self.class.generate_unique_secure_token
       end
+      before_create do
+        send("#{attribute}=", self.class.generate_unique_secure_token) unless send("#{attribute}?")
+      end
+    end
 
-      def generate_unique_secure_token(length = TOKEN_LENGTH)
-        SecureRandom.base58(length)
-      end
+    def generate_unique_secure_token(length = TOKEN_LENGTH)
+      SecureRandom.base58(length)
     end
 
   end
