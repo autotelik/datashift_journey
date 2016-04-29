@@ -35,7 +35,7 @@ module DatashiftState
     end
 
     def edit
-      logger.debug "Editing journey_plan [#{journey_plan.inspect}]"
+      logger.debug "Editing journey_plan [#{@journey_plan.inspect}]"
       render locals: {
         journey_plan: @journey_plan,
         form: form_object(@journey_plan)
@@ -90,6 +90,8 @@ module DatashiftState
     def update
 
       form = form_object(@journey_plan)
+
+      logger.debug("CALLING VALIDATE ON Form")
 
       if(form.validate(params) && form.save)
         logger.debug("SUCCESS - Updated #{@journey_plan} via Form [#{form.inspect}]")
