@@ -6,6 +6,25 @@ module DatashiftState
       "#{DatashiftState::Configuration.call.partial_location}/#{state}"
     end
 
+    def submit_button_text(form)
+      t("global.continue")
+    end
+
+
+    def page_title(title)
+      return unless title.present?
+
+      stripped_title = title.gsub(/’/, %('))
+
+      if content_for? :page_title
+        content_for :page_title, " | #{stripped_title}"
+      else
+        content_for :page_title, "GOV.UK | #{stripped_title}"
+      end
+
+      title
+    end
+
     # This helper  adds a form-group DIV around form elements,
     # and takes the actual form fields as a content block.
     #

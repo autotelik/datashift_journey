@@ -1,0 +1,7 @@
+<% if(Rails.env.development? && ENV['ADD_STATE_JUMPER_TOOLBAR'] == 'true') %>
+  <div id="dev_tool_bar">
+    <ul>
+      <li><%#= link_to 'LocalAuth Name', main_app.build_and_display_path( :page_choosing_organisation_type) %></li>
+    </ul>
+  </div>
+<% end %>
