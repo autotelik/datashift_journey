@@ -80,12 +80,12 @@ module DatashiftState
 
 end
 
-# Make config available for block form in initializers
 begin
-  require 'datashift_state/exceptions'
-  require 'datashift_state/configuration'
-  require 'datashift_state/datashift_state'
-  require 'datashift_state/state_machines/state_machine_core_ext'
+  require_relative 'exceptions'
+  require_relative 'configuration'
+  require_relative 'datashift_state'
+  require_relative 'states/form_object_factory.rb'
+  require_relative 'state_machines/state_machine_core_ext'
 rescue => x
   # TODO: - remove this block once gem stable
   puts x.inspect
