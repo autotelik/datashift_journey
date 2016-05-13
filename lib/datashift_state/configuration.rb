@@ -2,14 +2,20 @@ module DatashiftState
 
   class Configuration
 
-    # Forms and views generated in a sub modules of Parent module above
-    # This usually equates to state/step/page
+    # The module under which to find Forms
+    # Default Form factory will look for a Form class related to a state called
+    #
+    #   "#{mod}::#{journey_plan.state}Form"
+    #
+    attr_accessor :forms_module_name
+
     attr_accessor :state_module_name
 
     # The location of the partials for the Reform forms
     attr_accessor :partial_location
 
     def initialize
+      @forms_module_name = "Datashift::State"
       @state_module_name = 'States'
       @partial_location  = 'journey_plans/states'
     end

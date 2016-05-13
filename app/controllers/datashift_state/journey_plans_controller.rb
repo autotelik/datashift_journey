@@ -11,7 +11,8 @@ module DatashiftState
     def new
       journey_plan = DatashiftState.journey_plan_class.new
 
-      logger.info "Rendering initial state [#{journey_plan.state}]"
+      logger.info "Rendering #{DatashiftState.journey_plan_class} initial state [#{journey_plan.state}]"
+
       render locals: {
         journey_plan: journey_plan,
         form: form_object(journey_plan)
@@ -180,9 +181,7 @@ module DatashiftState
 
     # TODO: - Move to an external factory
     def form_object(journey_plan)
-      mod = "DatashiftState::#{Configuration.call.state_module_name}"
-
-      "#{mod}::#{journey_plan.state.classify}Form".constantize.factory(journey_plan)
+      @form ||= DatashiftState::FormObjectFactory.form_object_for(journey_plan)
     end
 
   end
