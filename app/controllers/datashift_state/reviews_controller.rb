@@ -1,6 +1,6 @@
 module DatashiftState
 
-  class ReviewsController < ::ApplicationController
+  class ReviewsController < ApplicationController
 
     include DatashiftState::ReviewRenderer
 
@@ -22,15 +22,6 @@ module DatashiftState
     end
 
     private
-
-    # Use callbacks to share common setup or constraints between actions.
-    def set_journey_plan
-      id = params[:id]
-      if id && id.length == DatashiftState::SecureToken::TOKEN_LENGTH
-        raise 'Expected an id but got a token'
-      end
-      @journey_plan = DatashiftState::JourneyPlan.find(id)
-    end
 
     # Never trust parameters, only allow the white list through.
     def review_params

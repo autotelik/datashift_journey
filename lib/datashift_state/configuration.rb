@@ -14,10 +14,13 @@ module DatashiftState
     # The location of the partials for the Reform forms
     attr_accessor :partial_location
 
+    attr_accessor :layout
+
     def initialize
       @forms_module_name = "Datashift::State"
       @state_module_name = 'States'
       @partial_location  = 'journey_plans/states'
+      self.layout = 'application'
     end
 
     # @return [DatashiftState::Configuration] current configuration

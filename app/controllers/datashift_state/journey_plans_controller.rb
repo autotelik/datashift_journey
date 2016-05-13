@@ -1,8 +1,9 @@
 module DatashiftState
 
-  class JourneyPlansController < DatashiftState::ApplicationController
+  class JourneyPlansController < ApplicationController
 
     include DatashiftState::ReviewRenderer
+    include TokenBasedAccess
 
     # We want this to run BEFORE other filters to ensure the current
     # journey_plan object has been selected from the DB
@@ -11,8 +12,7 @@ module DatashiftState
     def new
       journey_plan = DatashiftState.journey_plan_class.new
 
-      logger.info "Rendering #{DatashiftState.journey_plan_class} initial state [#{journey_plan.state}]"
-
+      logger.debug "Rendering initial state [#{journey_plan.state}]"
       render locals: {
         journey_plan: journey_plan,
         form: form_object(journey_plan)
@@ -30,12 +30,12 @@ module DatashiftState
         journey_plan.next!
         redirect_to(datashift_state.journey_plan_state_path(journey_plan.state, journey_plan)) && return
       else
-        # Perhaps should happen in Reform Form validation - we must have an answer
         render :new
       end
     end
 
     def edit
+      logger.debug "Editing journey_plan [#{@journey_plan.inspect}]"
       render locals: {
         journey_plan: @journey_plan,
         form: form_object(@journey_plan)
@@ -91,14 +91,18 @@ module DatashiftState
 
       form = form_object(@journey_plan)
 
-      logger.debug("Update #{@journey_plan} via Form [#{form.inspect}]")
+      logger.debug("CALLING VALIDATE ON Form")
 
       if(form.validate(params) && form.save)
+        logger.debug("SUCCESS - Updated #{@journey_plan} via Form [#{form.inspect}]")
         @journey_plan.next!
         redirect_to(datashift_state.journey_plan_state_path(@journey_plan.state, @journey_plan)) && return
       else
-        # Perhaps should happen in Reform Form validation - we must have an answer
-        render :edit
+        logger.debug("FAILED - Form Errors [#{form.errors.inspect}]")
+        render :edit, locals: {
+          journey_plan: @journey_plan,
+          form: form
+        }
       end
 =begin
       # proceed as normal - update model and then move sate engine fwd
@@ -179,9 +183,8 @@ module DatashiftState
 
     private
 
-    # TODO: - Move to an external factory
     def form_object(journey_plan)
-      @form ||= DatashiftState::FormObjectFactory.form_object_for(journey_plan)
+      DatashiftState::States::FormObjectFactory.form_object_for(journey_plan)
     end
 
   end

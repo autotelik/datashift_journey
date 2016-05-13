@@ -1,5 +1,3 @@
-<%= backto_start_link %>
-
 <%= render 'datashift_state/shared/errors', form: form %>
 
 <% state = form.journey_plan.state %>
@@ -15,6 +13,6 @@
     <%= render  journey_plan_partial_location(state), form: form, f: f %>
 
     <div class="form-group">
-      <%= f.submit 'Continue' %>
+      <%= f.submit submit_button_text(form), class: "button"  %>
     </div>
 <% end %>
