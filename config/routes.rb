@@ -5,7 +5,7 @@ DatashiftState::Engine.routes.draw do
   # Note on using get rather than patch  :
   # We use these to provide nicer links - to jump between states & fwd/backwards,
   # but if the Visitor has JS disabled, link_to falls back to get even if patch, put etc specified
-  get 'journey_plans/step/back/*id', :to => '/datashift_state/journey_plans#back_a_step', :as => :back_a_step
+  get 'journey_plans/state/back/*id', :to => '/datashift_state/journey_plans#back_a_state', :as => :back_a_state
 
   patch '/journey_plans/update/:state', :to => 'journey_plans#update', :as => :update_journey_plan
 

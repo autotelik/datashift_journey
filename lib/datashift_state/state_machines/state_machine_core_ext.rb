@@ -5,6 +5,7 @@ StateMachines::Machine.class_eval do
   def create_back_transitions(journey, except = [])
     journey.drop(1).each_with_index do |t, i|
       next if except.include?(t)
+      puts "Creating Back transition from #{t} tp #{journey[i - 1]}"
       transition({ t => journey[i - 1] }.merge(on: :back))
     end
   end

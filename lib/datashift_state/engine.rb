@@ -84,7 +84,6 @@ begin
   require_relative 'exceptions'
   require_relative 'configuration'
   require_relative 'datashift_state'
-  require_relative 'states/form_object_factory.rb'
   require_relative 'state_machines/state_machine_core_ext'
 rescue => x
   # TODO: - remove this block once gem stable
