@@ -14,33 +14,33 @@
 ActiveRecord::Schema.define(version: 20160421220000) do
 
   create_table "addresses", force: :cascade do |t|
-    t.string   "premises",        limit: 200
-    t.string   "street_address",  limit: 160
-    t.string   "locality",        limit: 70
-    t.string   "city",            limit: 30
-    t.string   "postcode",        limit: 8
-    t.string   "country_iso",     limit: 3
-    t.integer  "address_type",                default: 0, null: false
-    t.integer  "registration_id"
-    t.datetime "created_at",                              null: false
-    t.datetime "updated_at",                              null: false
+    t.string   "premises",       limit: 200
+    t.string   "street_address", limit: 160
+    t.string   "locality",       limit: 70
+    t.string   "city",           limit: 30
+    t.string   "postcode",       limit: 8
+    t.string   "country_iso",    limit: 3
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
-  create_table "registrations", force: :cascade do |t|
+  create_table "checkouts", force: :cascade do |t|
+    t.datetime "created_at",      null: false
+    t.datetime "updated_at",      null: false
+    t.integer  "bill_address_id"
+    t.integer  "ship_address_id"
+    t.integer  "payments_id"
+  end
+
+  add_index "checkouts", ["bill_address_id"], name: "index_checkouts_on_bill_address_id"
+  add_index "checkouts", ["payments_id"], name: "index_checkouts_on_payments_id"
+  add_index "checkouts", ["ship_address_id"], name: "index_checkouts_on_ship_address_id"
+
+  create_table "payments", force: :cascade do |t|
     t.string   "name"
-    t.boolean  "a_boolean"
-    t.string   "some_string1"
-    t.text     "some_text"
-    t.datetime "created_at",                   null: false
-    t.datetime "updated_at",                   null: false
-    t.string   "state"
-    t.boolean  "under_review", default: false
-    t.datetime "submitted_at"
-    t.datetime "completed_at"
-    t.string   "token"
+    t.string   "card"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
-
-  add_index "registrations", ["completed_at"], name: "index_registrations_on_completed_at"
-  add_index "registrations", ["state"], name: "index_registrations_on_state"
 
 end

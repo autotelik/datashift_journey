@@ -49,7 +49,11 @@ module DatashiftState
       respond_to do |format|
         logger.debug("BACK !!! - Request to go back a step - current state [#{@journey_plan.state}]")
 
+        logger.debug("Back to previous state [#{DatashiftState.journey_plan_class.previous_state_name}]")
+
         @journey_plan.back # Move state engine back
+
+        logger.debug("Gone back a step - current state [#{@journey_plan.state}]")
 
         if @journey_plan.save
 

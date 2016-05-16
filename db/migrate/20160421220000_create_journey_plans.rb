@@ -1,5 +1,6 @@
 class CreateJourneyPlans < ActiveRecord::Migration
   def change
+=begin  To become Part of an Installer
 
     decorate_class = DatashiftState.journey_plan_class.name.tableize.gsub('/', '_')
 
@@ -12,7 +13,6 @@ class CreateJourneyPlans < ActiveRecord::Migration
     add_index decorate_class, :state
     add_index decorate_class, :completed_at
 
-=begin
       t.integer     :status, null: false, default: 0, index: true
       t.timestamps null: false
     end

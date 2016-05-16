@@ -1,13 +1,6 @@
-class CreateDummyRegistration < ActiveRecord::Migration
+class CreateDummyCheckout < ActiveRecord::Migration
   def change
-    create_table :registrations do |t|
-      t.string :name
-
-      t.boolean :a_boolean
-      t.string :some_string1
-      t.text :some_text
-
-      # These are real
+    create_table :checkouts do |t|
       t.timestamps null: false
     end
 
@@ -18,12 +11,18 @@ class CreateDummyRegistration < ActiveRecord::Migration
       t.string :city,               limit: 30
       t.string :postcode,           limit: 8
       t.string :country_iso,        limit: 3
-      t.integer :address_type,      default: 0, null: false
-
-      t.references :registration
-
       t.timestamps null: false
     end
+
+    create_table :payments do |t|
+      t.string :name
+      t.string :card
+      t.timestamps null: false
+    end
+
+    add_reference :checkouts, :bill_address,index: true
+    add_reference :checkouts, :ship_address, index: true
+    add_reference :checkouts, :payments, index: true
 
   end
 end
