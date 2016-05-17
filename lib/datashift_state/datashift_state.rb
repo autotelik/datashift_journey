@@ -6,7 +6,10 @@ module DatashiftState
   def self.journey_plan_class=(x)
     @@journey_plan_class = x
 
-    journey_plan_class.send :include, DatashiftState::JourneyPlan
+    puts "Auto Extend #{journey_plan_class} with DatashiftState::JourneyPlanStateMachine Modules"
+
+    journey_plan_class.send :include, DatashiftState::JourneyPlanStateMachine
+    journey_plan_class.send :extend, DatashiftState::JourneyPlanStateMachine
   end
 
   def self.journey_plan_class

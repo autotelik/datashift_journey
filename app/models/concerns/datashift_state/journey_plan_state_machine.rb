@@ -18,11 +18,15 @@ module DatashiftState
     end
 
     def transitions_for
-      DatashiftState::JourneyPlan.state_machine.events.transitions_for(self)
+      state_machine.events.transitions_for(self)
     end
 
     def next_state_name
       transitions_for.find { |t| t.event == :next }.try(:to_name)
+    end
+
+    def previous_state_name
+      transitions_for.find { |t| t.event == :back }.try(:to_name)
     end
 
     def valid_state?(state_name)

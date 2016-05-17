@@ -7,7 +7,7 @@ module DatashiftState
 
     # We want this to run BEFORE other filters to ensure the current
     # journey_plan object has been selected from the DB
-    prepend_before_filter :set_journey_plan, only: [:show, :edit, :update, :destroy, :back_a_step]
+    prepend_before_filter :set_journey_plan, only: [:show, :edit, :update, :destroy, :back_a_state]
 
     def new
       journey_plan = DatashiftState.journey_plan_class.new
@@ -36,17 +36,24 @@ module DatashiftState
 
     def edit
       logger.debug "Editing journey_plan [#{@journey_plan.inspect}]"
+
+      form = form_object(@journey_plan)
+
       render locals: {
         journey_plan: @journey_plan,
-        form: form_object(@journey_plan)
+        form: form
       }
     end
 
-    def back_a_step
+    def back_a_state
       respond_to do |format|
         logger.debug("BACK !!! - Request to go back a step - current state [#{@journey_plan.state}]")
 
+        logger.debug("Back to previous state [#{DatashiftState.journey_plan_class.previous_state_name}]")
+
         @journey_plan.back # Move state engine back
+
+        logger.debug("Gone back a step - current state [#{@journey_plan.state}]")
 
         if @journey_plan.save
 
@@ -91,7 +98,7 @@ module DatashiftState
 
       form = form_object(@journey_plan)
 
-      logger.debug("CALLING VALIDATE ON Form")
+      logger.debug("CALLING VALIDATE ON Form #{form.class}")
 
       if(form.validate(params) && form.save)
         logger.debug("SUCCESS - Updated #{@journey_plan} via Form [#{form.inspect}]")
@@ -184,7 +191,7 @@ module DatashiftState
     private
 
     def form_object(journey_plan)
-      DatashiftState::States::FormObjectFactory.form_object_for(journey_plan)
+      DatashiftState::FormObjectFactory.form_object_for(journey_plan)
     end
 
   end

@@ -13,25 +13,17 @@ module DatashiftState
       end
     end
 
-    # Automatically add our migrations into the main apps migrations
-    # As the services provided by core grows we may want to stop this
-    # and add generators that copy specific migrations over
+    # Our migration should be added by generators that copy specific migrations over
 
-    initializer :append_migrations, before: :load_config_initializers do |app|
-      unless app.root.to_s.match root.to_s
-        config.paths['db/migrate'].expanded.each do |expanded_path|
+   # initializer :append_migrations, before: :load_config_initializers do |app|
+      #unless app.root.to_s.match root.to_s
+        #config.paths['db/migrate'].expanded.each do |expanded_path|
           # puts "Copy Migrations from DSC [#{expanded_path.inspect}]"
           # puts "To #{app.config.paths["db/migrate"].expanded.inspect}"
-          Rails.application.config.paths['db/migrate'] << expanded_path
-        end
-
-        Rails.application.config.paths.add('db/migrate_user_db')
-
-        Dir.glob(File.join(Engine.root, 'db/migrate_user_db')).each do |expanded_path|
-          Rails.application.config.paths['db/migrate_user_db'] << expanded_path
-        end
-      end
-    end
+          #Rails.application.config.paths['db/migrate'] << expanded_path
+        #end
+      #end
+    #end
 
     # May be needed if we have some static assets
     # Initializer to combine this engines static assets with the static assets
@@ -84,7 +76,6 @@ begin
   require_relative 'exceptions'
   require_relative 'configuration'
   require_relative 'datashift_state'
-  require_relative 'states/form_object_factory.rb'
   require_relative 'state_machines/state_machine_core_ext'
 rescue => x
   # TODO: - remove this block once gem stable

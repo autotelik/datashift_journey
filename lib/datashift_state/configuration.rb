@@ -2,8 +2,24 @@ module DatashiftState
 
   class Configuration
 
-    # Forms and views generated in a sub modules of Parent module above
-    # This usually equates to state/step/page
+    # The module under which to find Forms
+    # Form factory will look for a Form class related to a state called
+    #
+    #   "#{mod}::#{journey_plan.state}Form"
+    #
+    # @param [String<#call>] module name under which Forms reside
+    # @return [String<#call>]
+    #
+    attr_accessor :forms_module_name
+
+    # When no Form is required for a specific HTML page, you an specify that a NullForm is to be used
+    # by adding that state to this list
+    #
+    # @param [Array<#call>] List of states that require only a NullForm
+    # @return [Array<#call>]
+    #
+    attr_accessor :null_form_list
+
     attr_accessor :state_module_name
 
     # The location of the partials for the Reform forms
@@ -12,6 +28,8 @@ module DatashiftState
     attr_accessor :layout
 
     def initialize
+      @forms_module_name = "Datashift::State"
+      @null_form_list = []
       @state_module_name = 'States'
       @partial_location  = 'journey_plans/states'
       self.layout = 'application'

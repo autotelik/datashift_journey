@@ -22,3 +22,4 @@ module DatashiftState
   class FormObjectError < CoreException; end
 
 end
+
