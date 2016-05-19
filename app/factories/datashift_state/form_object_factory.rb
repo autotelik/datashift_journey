@@ -35,10 +35,10 @@ module DatashiftState
 
         begin
           f.constantize
-        rescue NameError => x
+        rescue => x
           Rails.logger.debug(x.backtrace.first)
           Rails.logger.debug(x.inspect)
-          Rails.logger.debug("Error loading Form class #{f} ")
+          Rails.logger.debug("Error loading Form class #{f} - #{x.message}")
           nil
         end
       end

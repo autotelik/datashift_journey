@@ -1,16 +1,34 @@
 StateMachines::Machine.class_eval do
 
-  # BACK - Create a 'back' event for each step (apart from first) in journey
+  def create_back( from, to, &block )
+
+    if(block_given?)
+      transition( from => to, on: :back, if: Proc.new(block))
+    else
+      transition( from => to, on: :back)
+    end
+
+=begin
+    transition from: :a, to: :b, on: :back,
+               if: ->(e) do
+                 e.organisation.sti_class == WasteExemptionsShared::OrganisationType::Individual
+               end
+=end
+  end
+
+  def create_next( from, to )
+    transition( {from => to}.merge(on: :next))
+  end
+
+  # BACK - Create a 'back' event for each step in list
+  # Automatically removes first state, as nothing to go back to from that state
   # You can exclude any other steps with the except list
   #
   def create_back_transitions(journey, except = [])
-
-    # we drop first state as no back from that initial state
     journey.drop(1).each_with_index do |t, i|
-      # n.b previous index is actually i due to the drop
       next if except.include?(t)
       puts "Creating Back transition from #{t} to #{journey[i]}"
-      transition({ t => journey[i - i] }.merge(on: :back))
+      create_back( t, journey[i] )    # n.b previous index is actually i not (i-1) due to the drop
     end
   end
 
@@ -23,5 +41,6 @@ StateMachines::Machine.class_eval do
       puts "Creating Next transition from #{t} to #{journey[i + 1]}"
       transition({ t => journey[i + 1] }.merge(on: :next))
     end
+
   end
 end
