@@ -1,8 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Registration, type: :model do
-  # in dummy init we set
-  #  DatashiftState.journey_plan_class = 'Registration'
+RSpec.describe Checkout, type: :model do
 
   describe '#status' do
     it { is_expected.to respond_to(:state) }

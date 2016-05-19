@@ -3,6 +3,15 @@ ruby "2.3.1"
 
 gemspec
 
+group :development, :test do
+  # These can be used in DEV for creating an enrollment at any stage in life cycle
+  # N.B not in gemspec and require is false so factories aren't loaded during e.g db:migrate
+  gem 'factory_girl', require: false
+  gem 'factory_girl_rails', require: false
+  gem 'ffaker'
+  gem 'byebug'
+end
+
 # Use the test group rather than putting gems for testing in the gemspec with
 # add_development_dependency
 group :test do
@@ -11,7 +20,6 @@ group :test do
   gem "webmock", "~> 1.24"
   gem "shoulda-matchers", "~> 3.1", require: false
   gem "test_after_commit", "~> 1.0" # Make after_commit callbacks fire in tests
-  gem "ffaker", "~> 2.2"
   gem "database_cleaner", "~> 1.5"
   gem "fuubar", "~> 2.0"            # Enhanced rspec progress formatter
   gem "capybara", "~> 2.6"

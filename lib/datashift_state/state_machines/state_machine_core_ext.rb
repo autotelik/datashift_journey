@@ -1,4 +1,9 @@
+require_relative 'planner'
+
 StateMachines::Machine.class_eval do
+
+  include DatashiftState::StateMachines::Planner
+  extend DatashiftState::StateMachines::Planner
 
   def create_back( from, to, &block )
 
@@ -8,12 +13,6 @@ StateMachines::Machine.class_eval do
       transition( from => to, on: :back)
     end
 
-=begin
-    transition from: :a, to: :b, on: :back,
-               if: ->(e) do
-                 e.organisation.sti_class == WasteExemptionsShared::OrganisationType::Individual
-               end
-=end
   end
 
   def create_next( from, to )
@@ -41,6 +40,6 @@ StateMachines::Machine.class_eval do
       puts "Creating Next transition from #{t} to #{journey[i + 1]}"
       transition({ t => journey[i + 1] }.merge(on: :next))
     end
-
   end
+
 end

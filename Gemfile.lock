@@ -267,8 +267,9 @@ DEPENDENCIES
   capybara-email (~> 2.5)
   database_cleaner (~> 1.5)
   datashift_state!
-  factory_girl_rails (~> 4.6)
-  ffaker (~> 2.2)
+  factory_girl
+  factory_girl_rails
+  ffaker
   fuubar (~> 2.0)
   i18n-tasks (~> 0.9)
   mailcatcher (~> 0.6)

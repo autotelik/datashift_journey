@@ -2,63 +2,45 @@ require 'rails_helper'
 
 module DatashiftState
 
-  RSpec.describe Journey::Planner do
+  RSpec.describe Journey::Plan do
 
     describe 'DSL' do
 
-      it 'enables a complete journey to be planned via simple DSL' do
+      let(:klass) { Checkout }
 
-        planner = Journey::Planner.new
+      it 'extends the decorated class with extension to StateMachine' do
+        expect(klass).to respond_to :state_names
+      end
 
-        plan = planner.create(:rspec_test_journey) do
+      it "can creta e new plan" do
+        plan = Journey::Plan.new
+        expect(plan).to be_a Journey::Plan
+      end
 
-          sequence do
-            [
-              :page_1,
-              :page_2
-            ]
-          end
+      it 'enables a simple sequential journey to be planned via simple DSL', duff: true do
 
-          sequence :page_3, :page_4
+        DatashiftState.journey_plan_class = klass.name
 
-          split_on :page_split
-
-          split :split_A do
-            [
-              :page_1_A,
-              :page_2_A
-            ]
-          end
-
-          split :split_B do
-            [
-              :page_1_B
-            ]
-          end
-
-          combine_on :page_come_together
-
-          sequence  [:review, :complete ]
+        machine = Journey::Plan.build(:checkout_state_machine_name, :page1) do
+          sequence :page1, :page2, :page3, :page4
         end
 
-        expect(plan).to be_a Journey::Plan
+        expect(machine).to be_a ::StateMachines::Machine
 
-        expect(planner.plans.size).to eq 1
+        checkout = DatashiftState.journey_plan_class.new
 
-        expect(plan).to eq planner.plans[:rspec_test_journey]
+        expect(klass.state_names.size).to eq 4
+        expect(klass.state_names.sort).to eq [:page1, :page2, :page3, :page4]
 
-        expect(plan.journey_proc).to be_a Proc
+        expect(checkout.state_name).to eq :page1
+        expect(checkout.state).to eq "page1"
+        expect(checkout.page4?).to eq false
 
-        states = plan.states(:rspec_test_journey)
-
-        expect(states.size).to eq 11
-
-        expect(states).to eq [:page_1, :page_2, :page_split, :page_1_A, :page_2_A, :page_1_B, :review, :complete]
-
-        expect(plan.branches(:rspec_test_journey).size).to eq 2
+        expect(checkout.can_back?).to eq false
+        expect(checkout.can_next?).to eq true
 
       end
     end
-  end
 
+  end
 end

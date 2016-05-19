@@ -1,6 +1,7 @@
 class CreateDummyCheckout < ActiveRecord::Migration
   def change
     create_table :checkouts do |t|
+      t.string :state
       t.timestamps null: false
     end
 
