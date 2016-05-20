@@ -4,15 +4,25 @@ module DatashiftState
 
     module Planner
 
-      def sequence(*list)
-        sequence_states = block_given? ? yield : list
+      attr_accessor :last_processed_state, :next_split_state
 
-        puts "IN SEQ #{self} : #{sequence_states.inspect}"
-        create_back_transitions(sequence_states)
-        create_next_transitions(sequence_states)
+      def sequence(*list)
+        puts "IN sequence #{list}"
+        flattened = list.flatten
+        create_back_transitions flattened
+        create_next_transitions flattened
+        @last_processed_state = flattened.last
       end
 
-      def split_on( state, target_states, journey_plan_attr_reader, split_values)
+      def split_on( state )
+        puts "IN split_on #{state}"
+        @next_split_state = state
+        create_back(state, @last_processed_state)
+      end
+
+      def split( state, target_states, journey_plan_attr_reader, split_values)
+
+        @last_processed_state
 
         raise "BadDefinition" unless(target_states.size == split_values.size)
 
@@ -27,29 +37,10 @@ module DatashiftState
 
       end
 
-      def split( id )
-        yield
-      end
-
-      def combine_on(id)
-        yield
-      end
-
-      def split_on( state )
-        puts "IN SPLIT_ON", state.inspect
-        add_states(id)
-      end
-
-      def split( id , *list)
-        puts "IN SEQUENCE", list.inspect
-        block_given? ? add_states(yield) : add_states(list)
-      end
-
       def combine_on(id)
         puts "IN COMBINE_ON", id.inspect
         add_states(id)
       end
-
 
       private
 

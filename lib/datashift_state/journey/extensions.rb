@@ -8,7 +8,7 @@ module DatashiftState
   module Journey
 
     module Extensions
-
+=begin
       # Array of StateMachines::Event
       def valid_for
         DatashiftState.journey_plan_class.state_machine.events.valid_for(self)
@@ -20,7 +20,7 @@ module DatashiftState
       end
 
       def transitions_for
-        state_machine.events.transitions_for(self)
+        events.transitions_for(self)
       end
 
       def next_state_name
@@ -52,7 +52,7 @@ module DatashiftState
       #     journey_plan.state_name
       #
       def state_names
-        DatashiftState.journey_plan_class.state_machine.states.map(&:name)
+        state_machine.states.map(&:name)
       end
 
       # Returns strings
@@ -62,7 +62,7 @@ module DatashiftState
       def states
         DatashiftState.journey_plan_class.state_names.map(&:to_s)
       end
-
+=end
     end
   end
 end

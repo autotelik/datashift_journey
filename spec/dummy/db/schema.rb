@@ -24,6 +24,48 @@ ActiveRecord::Schema.define(version: 20160421220000) do
     t.datetime "updated_at",                 null: false
   end
 
+  create_table "checkout_as", force: :cascade do |t|
+    t.string   "checkout_a"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "checkout_bs", force: :cascade do |t|
+    t.string   "checkout_b"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "checkout_cs", force: :cascade do |t|
+    t.string   "checkout_c"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "checkout_ds", force: :cascade do |t|
+    t.string   "checkout_d"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "checkout_empties", force: :cascade do |t|
+    t.string   "checkout_empty"
+    t.datetime "created_at",     null: false
+    t.datetime "updated_at",     null: false
+  end
+
+  create_table "checkout_es", force: :cascade do |t|
+    t.string   "checkout_e"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "checkout_fs", force: :cascade do |t|
+    t.string   "checkout_f"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "checkouts", force: :cascade do |t|
     t.string   "state"
     t.datetime "created_at",      null: false
