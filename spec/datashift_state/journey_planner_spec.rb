@@ -101,7 +101,7 @@ module DatashiftState
           expect(checkout.can_next?).to eq true
           checkout.next!
 
-#          puts checkout.methods.sort.grep( /trans/ ).inspect
+          #          puts checkout.methods.sort.grep( /trans/ ).inspect
 
           # now we should be able to go back and fwd
           expect( checkout.checkout_a_events.size).to eq 2
@@ -128,6 +128,16 @@ module DatashiftState
             CheckoutB.state_machines[:checkout_b].events[:back].known_states.sort
           ).to eq  [:array1, :array2, :array3]
 
+          # If I add in This line :
+          #     puts CheckoutB.state_machine.states.map(&:name).inspect
+          #
+          # It causes the next line to then fail - it passes ok once its commented out !
+          # NoMethodError:
+          #   undefined method `state=' for #<CheckoutB:0x00000005489018>
+          #Did you mean?  state?
+          # /home/rubyuser/rubystack-2.2.3-3/rvm/gems/ruby-2.3.1/gems/activemodel-4.2.6/lib/active_model/attribute_methods.rb:433:in `method_missing'
+          # /home/rubyuser/rubystack-2.2.3-3/rvm/gems/ruby-2.3.1/gems/state_machines-0.4.0/lib/state_machines/machine.rb:1074:in `write'
+
           checkout = klass.new
 
           expect(checkout.checkout_b_name).to eq :array1
@@ -146,20 +156,30 @@ module DatashiftState
         end
       end
 
-      context "Complex" do
+      context "Complete API" do
 
-        let(:klass) {
-          DatashiftState.journey_plan_class = "CheckoutC"
-          CheckoutC
-        }
+        before(:all) do
+          DatashiftState.journey_plan_class = "Checkout"
 
-        it 'enables a complete journey to be planned via simple DSL' do
+           [:visa, :mastercard, :paypal].each { |p| Payment.create( name: p) }
+        end
 
-          machine = Journey::MachineBuilder.build(machine_name: :checkout_c, initial: :bill_address) do
+        let(:payment_types) { [:visa, :mastercard, :paypal] }
+
+        it 'enables a complete journey to be planned via simple DSL', duff: true do
+
+          # TOFIX - as it stands  payment_types is not available from within the block
+          # how can we easily pass variables/state into the block since that bloack's
+          # evaluated in the context of the machine
+
+          machine = Journey::MachineBuilder.build(initial: :bill_address) do
 
             sequence [:bill_address, :ship_address]
 
             split_on :payment
+
+
+            split_on_equality( [:visa_page, :mastercard_page, :paypal_page], "payment.name", [:visa_page, :mastercard_page, :paypal_page])
 =begin
             # split( state, target_states, journey_plan_attr_reader, split_values)
             split :page_split, :split_A do
@@ -185,12 +205,9 @@ module DatashiftState
 
           checkout = DatashiftState.journey_plan_class.new
 
-          puts checkout.state_names.inspect
+          #puts checkout.state_names.inspect
 
-          expect(checkout.state_name(:checkout_complex)).to eq :bill_address
-
-          expect(klass.state_names.size).to eq 5
-          expect(klass.state_names.sort).to eq [:page1, :page2, :page3, :page4]
+          puts Checkout.state_machine.states.map(&:name).inspect
         end
 
       end

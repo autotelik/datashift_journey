@@ -7,18 +7,26 @@ StateMachines::Machine.class_eval do
 
   def create_back( from, to, &block )
 
-    puts "Creating BACK transition from #{from} to #{to}"
     if(block_given?)
+      puts "Creating BACK transition from #{from} to #{to} with Block"
       transition( from => to, on: :back, if: Proc.new(block))
     else
+
+      puts "Creating BACK transition from #{from} to #{to}"
       transition( from => to, on: :back)
     end
 
   end
 
-  def create_next( from, to )
-    puts "Creating NEXT transition from #{from} to #{to}"
-    transition( from => to, on: :next)
+  def create_next( from, to, &block )
+    if(block_given?)
+      puts "Creating NEXT transition from #{from} to #{to} with Block"
+     # puts Proc.new(block).inspect
+      transition( from => to, on: :next, if: block)
+    else
+      puts "Creating NEXT transition from #{from} to #{to}"
+      transition( from => to, on: :next)
+    end
   end
 
   # BACK - Create a 'back' event for each step in list
