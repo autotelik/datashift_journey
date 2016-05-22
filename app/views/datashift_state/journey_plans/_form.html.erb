@@ -10,7 +10,9 @@
              url: url,
              method: method, class: 'form' do |f| %>
 
-    <%= render  journey_plan_partial_location(state), form: form, f: f %>
+    <% if(journey_plan_partial?(state)) %>
+        <%= render  journey_plan_partial_location(state), form: form, f: f %>
+    <% end %>
 
     <div class="form-group">
       <%= f.submit submit_button_text(form), class: "button"  %>

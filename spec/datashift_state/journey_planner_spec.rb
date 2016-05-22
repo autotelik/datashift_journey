@@ -131,7 +131,7 @@ module DatashiftState
           # If I add in This line :
           #     puts CheckoutB.state_machine.states.map(&:name).inspect
           #
-          # It causes the next line to then fail - it passes ok once its commented out !
+          # It causes the next line to then fail - but it passes ok once outs is commented out !
           # NoMethodError:
           #   undefined method `state=' for #<CheckoutB:0x00000005489018>
           #Did you mean?  state?
@@ -161,53 +161,87 @@ module DatashiftState
         before(:all) do
           DatashiftState.journey_plan_class = "Checkout"
 
-           [:visa, :mastercard, :paypal].each { |p| Payment.create( name: p) }
+          [:visa, :mastercard, :paypal].each { |p| Payment.create( name: p) }
         end
 
         let(:payment_types) { [:visa, :mastercard, :paypal] }
 
+        def check_state( checkout, expected_state )
+          expect(checkout.state_name).to eq expected_state
+          expect(checkout.state).to eq expected_state.to_s
+          expect(checkout.state? expected_state).to eq true
+        end
+
+        def check_state_and_next( checkout, expected_state )
+          check_state( checkout, expected_state )
+
+          expect(checkout.can_back?).to eq true
+          expect(checkout.can_next?).to eq true
+
+          checkout.next!
+        end
+
         it 'enables a complete journey to be planned via simple DSL', duff: true do
 
-          # TOFIX - as it stands  payment_types is not available from within the block
-          # how can we easily pass variables/state into the block since that bloack's
-          # evaluated in the context of the machine
+          DatashiftState::Journey::MachineBuilder.build(initial: :ship_address) do
 
-          machine = Journey::MachineBuilder.build(initial: :bill_address) do
+            sequence [:ship_address, :bill_address]
 
-            sequence [:bill_address, :ship_address]
+            split_on_equality( :payment,
+                               "payment_card",    # Create helper method on Checkout to return card type from Payment
+                               [:visa_page, :mastercard_page, :paypal_page],
+                               ['visa', 'mastercard', 'paypal'])
 
-            split_on :payment
+            split_sequence :visa_page, [:page_1_A, :page_2_A]
 
+            split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
 
-            split_on_equality( [:visa_page, :mastercard_page, :paypal_page], "payment.name", [:visa_page, :mastercard_page, :paypal_page])
-=begin
-            # split( state, target_states, journey_plan_attr_reader, split_values)
-            split :page_split, :split_A do
-              [
-                :page_1_A,
-                :page_2_A
-              ]
-            end
+            split_sequence :paypal, []
 
-            split :split_B do
-              [
-                :page_1_B
-              ]
-            end
-
-            combine_on :page_come_together
-=end
             sequence  [:review, :complete ]
-
           end
-
-          expect(machine).to be_a ::StateMachines::Machine
 
           checkout = DatashiftState.journey_plan_class.new
 
           #puts checkout.state_names.inspect
+          #puts Checkout.state_machine.states.map(&:name).inspect
 
-          puts Checkout.state_machine.states.map(&:name).inspect
+          expect(checkout.state? :ship_address).to eq true
+          expect(checkout.can_back?).to eq false    # this is the initial state
+          expect(checkout.can_next?).to eq true
+          checkout.next!
+
+          check_state_and_next( checkout, :bill_address )
+
+          check_state( checkout, :payment )
+          # But non of the conditions to move on from payment have been met yet so cannot next
+          expect(checkout.can_next?).to eq false
+          expect(checkout.can_back?).to eq true
+
+          # TODO - should we also create an Event per state ?
+          # Implications to how to manage acceptable transitions to that event
+          #expect(checkout.payment?).to eq true
+
+          checkout.create_payment!( card: :mastercard)
+          puts checkout.inspect
+
+          # now the conditions should have been met - one block should match the value
+          expect(checkout.can_next?).to eq true
+          checkout.next!
+
+          check_state_and_next( checkout, :mastercard_page )
+
+          checkout.next!
+          checkout.next!
+
+          check_state_and_next( checkout, :page_3_B )
+
+          check_state_and_next( checkout, :review )
+
+          check_state( checkout, :complete )
+          # End point so no next
+          expect(checkout.can_next?).to eq false
+          expect(checkout.can_back?).to eq true
         end
 
       end

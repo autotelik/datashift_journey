@@ -70,14 +70,16 @@ ActiveRecord::Schema.define(version: 20160421220000) do
     t.string   "state"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
+    t.string   "token"
     t.integer  "bill_address_id"
     t.integer  "ship_address_id"
-    t.integer  "payments_id"
+    t.integer  "payment_id"
   end
 
   add_index "checkouts", ["bill_address_id"], name: "index_checkouts_on_bill_address_id"
-  add_index "checkouts", ["payments_id"], name: "index_checkouts_on_payments_id"
+  add_index "checkouts", ["payment_id"], name: "index_checkouts_on_payment_id"
   add_index "checkouts", ["ship_address_id"], name: "index_checkouts_on_ship_address_id"
+  add_index "checkouts", ["token"], name: "index_checkouts_on_token", unique: true
 
   create_table "payments", force: :cascade do |t|
     t.string   "name"

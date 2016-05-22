@@ -20,9 +20,9 @@ StateMachines::Machine.class_eval do
 
   def create_next( from, to, &block )
     if(block_given?)
-      puts "Creating NEXT transition from #{from} to #{to} with Block"
+      puts "Creating NEXT transition from #{from} to #{to} with Block #{block.inspect}"
      # puts Proc.new(block).inspect
-      transition( from => to, on: :next, if: block)
+      transition( from => to, on: :next, if: block.call)
     else
       puts "Creating NEXT transition from #{from} to #{to}"
       transition( from => to, on: :next)

@@ -7,6 +7,7 @@ module DatashiftState
 
         klass = null_form_for_step(journey_plan) unless klass
 
+        klass = null_form_for_step(journey_plan) unless klass
         raise(FormObjectError, "No form class found for state #{form_name(journey_plan.state)}") unless klass
 
         klass.factory(journey_plan)
@@ -21,6 +22,9 @@ module DatashiftState
       private
 
       def null_form_for_step(journey_plan)
+
+        return DatashiftState::NullForm if(Configuration.call.use_null_form_when_no_form)
+
         @null_form_list ||= Configuration.call.null_form_list.map! &:to_sym
 
         if(@null_form_list.include?(journey_plan.state.to_sym))

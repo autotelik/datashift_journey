@@ -20,6 +20,12 @@ module DatashiftState
     #
     attr_accessor :null_form_list
 
+    # Always use a NullForm when no designated Form for a page
+    # @param [Boolean<#call>]
+    # @return [Boolean<#call>]
+    #
+    attr_accessor :use_null_form_when_no_form
+
     attr_accessor :state_module_name
 
     # The location of the partials for the Reform forms
@@ -28,10 +34,11 @@ module DatashiftState
     attr_accessor :layout
 
     def initialize
-      @forms_module_name = "Datashift::State"
+      @forms_module_name = "DatashiftState::State"
       @null_form_list = []
       @state_module_name = 'States'
       @partial_location  = 'journey_plans/states'
+      @use_null_form_when_no_form = false
       self.layout = 'application'
     end
 

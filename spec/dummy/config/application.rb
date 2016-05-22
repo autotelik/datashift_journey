@@ -10,10 +10,8 @@ require "sprockets/railtie"
 
 Bundler.require(*Rails.groups)
 
-# dummy app is not exactly like a real Rails app, these requires should not be
-# needed in the real app
-
 require "datashift_state"
+require "has_secure_token"
 
 module Dummy
   class Application < Rails::Application

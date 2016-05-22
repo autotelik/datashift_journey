@@ -1,8 +1,10 @@
+require_dependency "reform"
+
 # A specialized Form class for use with states that do not require Form functionality,
 # just render the Partial
 
 module DatashiftState
-  class NullForm < Reform::Form
+  class NullForm < ::Reform::Form
     def self.factory(journey_plan)
       new(journey_plan)
     end

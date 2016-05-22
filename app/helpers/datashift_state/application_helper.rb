@@ -2,6 +2,11 @@ module DatashiftState
   module ApplicationHelper
 
     # helper to return the location of a partial for a particular state
+    def journey_plan_partial?(state)
+      lookup_context.find_all("#{DatashiftState::Configuration.call.partial_location}/_#{state}").any?
+    end
+
+    # helper to return the location of a partial for a particular state
     def journey_plan_partial_location(state)
       "#{DatashiftState::Configuration.call.partial_location}/#{state}"
     end

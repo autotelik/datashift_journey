@@ -6,7 +6,10 @@ class CreateDummyCheckout < ActiveRecord::Migration
     create_table :checkouts do |t|
       t.string :state
       t.timestamps null: false
+      t.string :token
     end
+
+    add_index  :checkouts , :token, unique: true
 
     # For Rspec - Lots of different state machine classes required
     # - because the state machine Name must be reflected in the Column
@@ -35,7 +38,7 @@ class CreateDummyCheckout < ActiveRecord::Migration
 
     add_reference :checkouts, :bill_address,index: true
     add_reference :checkouts, :ship_address, index: true
-    add_reference :checkouts, :payments, index: true
+    add_reference :checkouts, :payment, index: true
 
   end
 end
