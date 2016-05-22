@@ -242,6 +242,19 @@ module DatashiftState
           # End point so no next
           expect(checkout.can_next?).to eq false
           expect(checkout.can_back?).to eq true
+
+          # Now go all way back to split point and try another path
+          object.back until(object.payment?)
+
+          check_state_and_next( checkout, :payment )
+
+          checkout.payment.update(card: :paypal)
+          puts checkout.inspect
+
+          checkout.next!
+
+          check_state_and_next( checkout, :paypal )
+
         end
 
       end
