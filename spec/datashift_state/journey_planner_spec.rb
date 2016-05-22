@@ -196,9 +196,9 @@ module DatashiftState
 
             split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
 
-            split_sequence :paypal, []
+            split_sequence :paypal_page, []
 
-            sequence  [:review, :complete ]
+            sequence [:review, :complete ]
           end
 
           checkout = DatashiftState.journey_plan_class.new
@@ -244,16 +244,17 @@ module DatashiftState
           expect(checkout.can_back?).to eq true
 
           # Now go all way back to split point and try another path
-          object.back until(object.payment?)
+          checkout.back until(checkout.payment?)
 
-          check_state_and_next( checkout, :payment )
+          check_state( checkout, :payment )
 
           checkout.payment.update(card: :paypal)
-          puts checkout.inspect
+          puts checkout.inspect,  checkout.payment.inspect
 
           checkout.next!
 
-          check_state_and_next( checkout, :paypal )
+          check_state_and_next( checkout, :paypal_page )
+          check_state_and_next( checkout, :review )
 
         end
 

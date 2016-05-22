@@ -21,10 +21,17 @@ module DatashiftState
         @split_state = nil
 
         # Sequence can also be used to end a split i.e start a new common sequence
+
+        sequence_start = flattened.first
+
+        puts "Processing previous split PATH [#{processed_by_split_state.inspect}]"
         processed_by_split_state.each do |state, previous|
-          next unless(previous.last)
-          create_next( previous.last, flattened.first)
-          create_back(flattened.first, previous.last)
+
+          if(previous.empty?)
+            create_pair(sequence_start, state.to_sym)
+          else
+            create_pair(sequence_start, previous.last)
+          end
         end if(processed_by_split_state)
 
         @processed_by_split_state = Planner::hash_klass.new
@@ -34,8 +41,7 @@ module DatashiftState
         #puts "IN split_on #{state}"
         @split_state = state
 
-        create_back(state, @last_processed_state)
-        create_next(@last_processed_state, state)
+        create_pair(state, @last_processed_state)
 
         @last_processed_state = state
       end
@@ -72,7 +78,8 @@ module DatashiftState
         split_values.each_with_index do |v, i|
           at = -> (o) {
             raise "Bad Defintion", "No such method #{attr_reader} on #{o.inspect}" unless o.respond_to?(attr_reader)
-            Rails.logger.debug "BLOCK [#{ o.send(attr_reader).class}] == [#{v.class}] (#{o.send(attr_reader) == v})";
+            Rails.logger.debug "BLOCK [#{ o.send(attr_reader)}] == [#{v.class}] (#{o.send(attr_reader) == v})";
+            puts "BLOCK [#{o.send(attr_reader)}] == [#{v}] (#{o.send(attr_reader) == v})";
             o.send(attr_reader) == v
           }
           create_next( split_state, target_states[i] ) do at end
@@ -82,8 +89,6 @@ module DatashiftState
         @last_processed_state = nil
 
         @processed_by_split_state ||= Planner::hash_klass.new
-
-        @processed_by_split_state[state] = []
       end
 
 
@@ -92,13 +97,13 @@ module DatashiftState
 
         flattened = list.flatten
 
-        create_next(state, flattened.first)
-        create_back(flattened.first, state)
+        unless(flattened.empty?)
+          create_next(state, flattened.first)
+          create_back(flattened.first, state)
 
-        create_back_transitions flattened
-        create_next_transitions flattened
-
-        puts flattened.class
+          create_back_transitions flattened
+          create_next_transitions flattened
+        end
         @processed_by_split_state[state] ||= flattened
       end
 
