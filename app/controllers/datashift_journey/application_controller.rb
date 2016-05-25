@@ -7,12 +7,12 @@ module DatashiftJourney
     layout ->(_) { Configuration.call.layout }
 
     # This form does NOT seem to work - helpers cause missing method in views
-    # helper DatashiftState::Engine.helpers
+    # helper DatashiftJourney::Engine.helpers
     # helper "datashift_journey/user"
 
     # This form seems to work - helpers now available in views
-    # include DatashiftState::ApplicationHelper
-    # include DatashiftState::BackLinkHelper
+    # include DatashiftJourney::ApplicationHelper
+    # include DatashiftJourney::BackLinkHelper
 
     before_action :set_i18n_locale_from_params
 
@@ -43,7 +43,7 @@ module DatashiftJourney
 
     def handle_invalid_authenticity_token(exception)
       Airbrake.notify(exception) if defined? Airbrake
-      Rails.logger.error 'DatashiftState::ApplicationController authenticity failed ' \
+      Rails.logger.error 'DatashiftJourney::ApplicationController authenticity failed ' \
                          "(browser cookies may have been disabled): #{exception}"
 
       render 'datashift_journey/errors/invalid_authenticity_token'

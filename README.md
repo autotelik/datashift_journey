@@ -35,7 +35,7 @@ This will be the parent model off which all the data to be collected should hang
 For example, in `config/initializers/datashift_journey.rb`
 
 ```
-DatashiftState.journey_plan_class = "Enrollment"
+DatashiftJourney.journey_plan_class = "Enrollment"
 ```
 
 

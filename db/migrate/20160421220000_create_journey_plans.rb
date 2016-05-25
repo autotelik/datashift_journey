@@ -2,7 +2,7 @@ class CreateJourneyPlans < ActiveRecord::Migration
   def change
 =begin  To become Part of an Installer
 
-    decorate_class = DatashiftState.journey_plan_class.name.tableize.gsub('/', '_')
+    decorate_class = DatashiftJourney.journey_plan_class.name.tableize.gsub('/', '_')
 
     add_column decorate_class, :state, :string
     add_column decorate_class, :under_review, :boolean, default: false

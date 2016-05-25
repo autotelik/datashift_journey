@@ -8,11 +8,11 @@
       "file": "app/views/datashift_journey/addresses/edit.html.erb",
       "line": 4,
       "link": "http://brakemanscanner.org/docs/warning_types/link_to_href",
-      "code": "link_to(\"Show\", datashift_journey.address_path(DatashiftState::Address.find(params[:id])))",
-      "render_path": ["DatashiftState::AddressesController#edit"],
+      "code": "link_to(\"Show\", datashift_journey.address_path(DatashiftJourney::Address.find(params[:id])))",
+      "render_path": ["DatashiftJourney::AddressesController#edit"],
       "location": {
         "type": "template",
-        "template": "datashift_journey/addresses/edit (DatashiftState::AddressesController#edit)"
+        "template": "datashift_journey/addresses/edit (DatashiftJourney::AddressesController#edit)"
       },
       "user_input": "params",
       "confidence": "Medium",
@@ -26,11 +26,11 @@
       "file": "app/views/datashift_journey/addresses/show.html.erb",
       "line": 2,
       "link": "http://brakemanscanner.org/docs/warning_types/link_to_href",
-      "code": "link_to(\"Edit\", datashift_journey.edit_address_path(DatashiftState::Address.find(params[:id])))",
-      "render_path": ["DatashiftState::AddressesController#show"],
+      "code": "link_to(\"Edit\", datashift_journey.edit_address_path(DatashiftJourney::Address.find(params[:id])))",
+      "render_path": ["DatashiftJourney::AddressesController#show"],
       "location": {
         "type": "template",
-        "template": "datashift_journey/addresses/show (DatashiftState::AddressesController#show)"
+        "template": "datashift_journey/addresses/show (DatashiftJourney::AddressesController#show)"
       },
       "user_input": "params",
       "confidence": "Medium",

@@ -11,7 +11,7 @@ module DatashiftJourney
 =begin
       # Array of StateMachines::Event
       def valid_for
-        DatashiftState.journey_plan_class.state_machine.events.valid_for(self)
+        DatashiftJourney.journey_plan_class.state_machine.events.valid_for(self)
       end
 
       # This seems to successfully compare StateMachines::Event with strings
@@ -38,11 +38,11 @@ module DatashiftJourney
       # Expects a symbol
       # Returns nil when no such state
       def state_index(state)
-        state.nil? ? nil : DatashiftState.journey_plan_class.state_names.index(state.to_sym)
+        state.nil? ? nil : DatashiftJourney.journey_plan_class.state_names.index(state.to_sym)
       end
 
       def current_state_index
-        DatashiftState.journey_plan_class.state_names.index(state_name).to_i
+        DatashiftJourney.journey_plan_class.state_names.index(state_name).to_i
       end
 
       extend self
@@ -60,7 +60,7 @@ module DatashiftJourney
       #     journey_plan.state
       #
       def states
-        DatashiftState.journey_plan_class.state_names.map(&:to_s)
+        DatashiftJourney.journey_plan_class.state_names.map(&:to_s)
       end
 =end
     end

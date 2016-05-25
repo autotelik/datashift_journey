@@ -9,7 +9,7 @@ class CheckoutA < ActiveRecord::Base;  end
 class CheckoutB < ActiveRecord::Base;  end
 class CheckoutB < ActiveRecord::Base; end
 
-module DatashiftState
+module DatashiftJourney
 
   RSpec.describe Journey::MachineBuilder do
 

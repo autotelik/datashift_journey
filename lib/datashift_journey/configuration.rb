@@ -34,7 +34,7 @@ module DatashiftJourney
     attr_accessor :layout
 
     def initialize
-      @forms_module_name = "DatashiftState::State"
+      @forms_module_name = "DatashiftJourney::State"
       @null_form_list = []
       @state_module_name = 'States'
       @partial_location  = 'journey_plans/states'
@@ -51,14 +51,14 @@ module DatashiftJourney
       @configuration = DatashiftJourney::Configuration.new
     end
 
-    # @param config [DatashiftState::Configuration]
+    # @param config [DatashiftJourney::Configuration]
     class << self
       attr_writer :configuration
     end
 
-    # Modify current DatashiftState configuration
+    # Modify current DatashiftJourney configuration
     # ```
-    #   DatashiftState::Configuration.configure do |config|
+    #   DatashiftJourney::Configuration.configure do |config|
     #     config.html_only = false
     #   end
     # ```
