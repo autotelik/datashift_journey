@@ -33,8 +33,6 @@ Gem::Specification.new do |s|
 
   s.add_development_dependency "rspec-rails", "~> 3.4"
   s.add_development_dependency "factory_girl_rails", "~> 4.6"
-  s.add_development_dependency "mailcatcher", "~> 0.6"  # A toy SMTP server run on port 1025 catching emails, displaying them on HTTP port 1080.
   s.add_development_dependency "pry-rails", "~> 0.3"
-  s.add_development_dependency "i18n-tasks", "~> 0.9" # We use i18n-tasks to better manage our translations and ensure we don"t miss any
-  s.add_development_dependency "byebug"
+
 end

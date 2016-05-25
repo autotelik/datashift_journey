@@ -25,14 +25,6 @@ module DatashiftState
       #end
     #end
 
-    # May be needed if we have some static assets
-    # Initializer to combine this engines static assets with the static assets
-    # of the hosting site.
-    # initializer "static assets" do |app|
-    #  app.middleware.insert_before(::ActionDispatch::Static,
-    #                               ::ActionDispatch::Static, "#{root}/public")
-    # end
-
     # we use rspec for testing
     config.generators do |g|
       g.test_framework :rspec, fixture: false
@@ -41,18 +33,8 @@ module DatashiftState
       g.helper false
     end
 
-    # Make Engine Factories available to Apps and other Engines  - Can be useful in DEV for state jumping
-    unless Rails.env.production?
-      initializer 'datashift_state.factories', after: 'factory_girl.set_factory_paths' do
-        require 'factory_girl'
-
-        path = File.expand_path('../../../spec/factories', __FILE__)
-        FactoryGirl.definition_file_paths << path
-      end
-    end
 
     # Make Shared examples and Support files available to Apps and other Engines
-
     # TODO: - make this optional - i.e configurable so Apps/Engines can easily pull this in themselves if they wish
     if Rails.env.test? && defined?(RSpec)
       initializer 'datashift_state.shared_examples' do
@@ -66,9 +48,6 @@ module DatashiftState
     end
 
   end
-
-  # To avoid a ton of warnings when the state machine is re-defined
-  # StateMachines::Machine.ignore_method_conflicts = true
 
 end
 
