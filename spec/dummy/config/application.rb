@@ -10,7 +10,7 @@ require "sprockets/railtie"
 
 Bundler.require(*Rails.groups)
 
-require "datashift_state"
+require "datashift_journey"
 require "has_secure_token"
 
 module Dummy

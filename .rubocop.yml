@@ -16,7 +16,7 @@ AllCops:
     # left as is
     - 'Rakefile'
     # Tools area - some one-off/pragmatic stuff in here
-    - 'lib/datashift_state/tools/*'
+    - 'lib/datashift_journey/tools/*'
     # spec_helper is generated when rspec is initialised and therefore should be
     # left as is
     - 'spec/spec_helper.rb'

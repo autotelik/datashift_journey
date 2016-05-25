@@ -1,6 +1,6 @@
 ## DataShift State
 
-[![Build Status](https://travis-ci.org/autotelik/datashift_state.svg?branch=master)](https://travis-ci.org/autotelik/datashift_state)
+[![Build Status](https://travis-ci.org/autotelik/datashift_journey.svg?branch=master)](https://travis-ci.org/autotelik/datashift_journey)
 
 Define journeys via simple state based DSL
 
@@ -26,13 +26,13 @@ A straightforward description of a Decorator is relatively easy to write in plai
 
 ### Journey Model
 
-The app must inform datashift_state of the model to host the journey plan and to store data collected on the journey.
+The app must inform datashift_journey of the model to host the journey plan and to store data collected on the journey.
 
 
 This will be the parent model off which all the data to be collected should hang, the concept is 
  like a Registration or Enrollment
 
-For example, in `config/initializers/datashift_state.rb`
+For example, in `config/initializers/datashift_journey.rb`
 
 ```
 DatashiftState.journey_plan_class = "Enrollment"

@@ -2,15 +2,15 @@
 $:.push File.expand_path("../lib", __FILE__)
 
 # Maintain your gem"s version:
-require "datashift_state/version"
+require "datashift_journey/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "datashift_state"
-  s.version     = DatashiftState::VERSION
+  s.name        = "datashift_journey"
+  s.version     = DatashiftJourney::VERSION
   s.authors     = ["tom statter"]
   s.email       = ["github@autotelik.co.uk"]
-  s.homepage    = "http://github.com/autotelik/datashift_state"
+  s.homepage    = "http://github.com/autotelik/datashift_journey"
   s.summary     = "Package containing state engine and jounrey planning"
   s.description = "Package containing state engine and jounrey planning"
   s.license     = "MIT"

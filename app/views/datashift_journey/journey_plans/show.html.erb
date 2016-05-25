@@ -1,0 +1,12 @@
+<p id="notice"><%= notice %></p>
+
+<div class="field">
+  Registration ID : <%= @journey_plan.id %>
+</div>
+
+<div class="field">
+  Current State :
+  <%= @journey_plan.human_state_name %>
+</div>
+
+<%= link_to 'Carry On', datashift_journey.journey_plan_state_path(@journey_plan.state, @journey_plan) %>

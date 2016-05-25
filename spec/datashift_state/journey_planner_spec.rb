@@ -21,12 +21,12 @@ module DatashiftState
         ::StateMachines::Machine.ignore_method_conflicts = true
       end
 
-      let(:klass) { DatashiftState.journey_plan_class }
+      let(:klass) { DatashiftJourney.journey_plan_class }
 
       context "Simple MachineBuilder" do
 
         before(:all) do
-          DatashiftState.journey_plan_class = "CheckoutEmpty"
+          DatashiftJourney.journey_plan_class = "CheckoutEmpty"
         end
 
         it 'extends the decorated class with extension to StateMachine' do
@@ -51,7 +51,7 @@ module DatashiftState
       context "Simple Sequence" do
 
         before(:all) do
-          DatashiftState.journey_plan_class = "CheckoutA"
+          DatashiftJourney.journey_plan_class = "CheckoutA"
 
           @machine = Journey::MachineBuilder.build(machine_name: :checkout_a, initial: :page1) do
             sequence :page1, :page2, :page3, :page4
@@ -115,7 +115,7 @@ module DatashiftState
       context "Simple Sequence as Array" do
 
         before(:all) do
-          DatashiftState.journey_plan_class = "CheckoutB"
+          DatashiftJourney.journey_plan_class = "CheckoutB"
 
           @machine = Journey::MachineBuilder.build(machine_name: :checkout_b, initial: :array1) do
             sequence [:array1, :array2, :array3]
@@ -159,7 +159,7 @@ module DatashiftState
       context "Complete API" do
 
         before(:all) do
-          DatashiftState.journey_plan_class = "Checkout"
+          DatashiftJourney.journey_plan_class = "Checkout"
 
           [:visa, :mastercard, :paypal].each { |p| Payment.create( name: p) }
         end
@@ -183,7 +183,7 @@ module DatashiftState
 
         it 'enables a complete journey to be planned via simple DSL', duff: true do
 
-          DatashiftState::Journey::MachineBuilder.build(initial: :ship_address) do
+          DatashiftJourney::Journey::MachineBuilder.build(initial: :ship_address) do
 
             sequence [:ship_address, :bill_address]
 
@@ -201,7 +201,7 @@ module DatashiftState
             sequence [:review, :complete ]
           end
 
-          checkout = DatashiftState.journey_plan_class.new
+          checkout = DatashiftJourney.journey_plan_class.new
 
           #puts checkout.state_names.inspect
           #puts Checkout.state_machine.states.map(&:name).inspect

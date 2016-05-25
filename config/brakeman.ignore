@@ -5,14 +5,14 @@
       "warning_code": 4,
       "fingerprint": "f1fc7068ce25236b1c6f9b137081e044d819fbbc32cb0a5100e86720cd10ba96",
       "message": "Unsafe parameter value in link_to href",
-      "file": "app/views/datashift_state/addresses/edit.html.erb",
+      "file": "app/views/datashift_journey/addresses/edit.html.erb",
       "line": 4,
       "link": "http://brakemanscanner.org/docs/warning_types/link_to_href",
-      "code": "link_to(\"Show\", datashift_state.address_path(DatashiftState::Address.find(params[:id])))",
+      "code": "link_to(\"Show\", datashift_journey.address_path(DatashiftState::Address.find(params[:id])))",
       "render_path": ["DatashiftState::AddressesController#edit"],
       "location": {
         "type": "template",
-        "template": "datashift_state/addresses/edit (DatashiftState::AddressesController#edit)"
+        "template": "datashift_journey/addresses/edit (DatashiftState::AddressesController#edit)"
       },
       "user_input": "params",
       "confidence": "Medium",
@@ -23,14 +23,14 @@
       "warning_code": 4,
       "fingerprint": "49f08e33accfe24201463ed567cc259387b05b215fdab284d03697d01e013ca1",
       "message": "Unsafe parameter value in link_to href",
-      "file": "app/views/datashift_state/addresses/show.html.erb",
+      "file": "app/views/datashift_journey/addresses/show.html.erb",
       "line": 2,
       "link": "http://brakemanscanner.org/docs/warning_types/link_to_href",
-      "code": "link_to(\"Edit\", datashift_state.edit_address_path(DatashiftState::Address.find(params[:id])))",
+      "code": "link_to(\"Edit\", datashift_journey.edit_address_path(DatashiftState::Address.find(params[:id])))",
       "render_path": ["DatashiftState::AddressesController#show"],
       "location": {
         "type": "template",
-        "template": "datashift_state/addresses/show (DatashiftState::AddressesController#show)"
+        "template": "datashift_journey/addresses/show (DatashiftState::AddressesController#show)"
       },
       "user_input": "params",
       "confidence": "Medium",

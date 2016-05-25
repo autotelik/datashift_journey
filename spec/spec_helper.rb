@@ -12,7 +12,7 @@ require "shoulda/matchers"
 Rails.backtrace_cleaner.remove_silencers!
 
 # Load our Engine
-require File.expand_path("../../lib/datashift_state",  __FILE__)
+require File.expand_path("../../lib/datashift_journey",  __FILE__)
 
 RSpec.configure do |config|
 
