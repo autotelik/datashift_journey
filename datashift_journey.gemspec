@@ -11,13 +11,13 @@ Gem::Specification.new do |s|
   s.authors     = ["tom statter"]
   s.email       = ["github@autotelik.co.uk"]
   s.homepage    = "http://github.com/autotelik/datashift_journey"
-  s.summary     = "Package containing state engine and jounrey planning"
-  s.description = "Package containing state engine and jounrey planning"
+  s.summary     = "Package containing state engine and journey planning"
+  s.description = "Package containing state engine, form based journey planning and execution"
   s.license     = "MIT"
 
   s.required_ruby_version = ">= 2.2.0"
 
-  s.files = Dir["{app,config,db,lib}/**/*", "spec/factories/**/*", "LICENSE", "Rakefile", "README.md"]
+  s.files = Dir["{app,config,db,lib}/**/*", "LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["spec/**/*"]
 
   s.add_dependency "rails", "~> 4.2"
