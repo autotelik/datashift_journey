@@ -9,6 +9,10 @@ such as a questionnaire, checkout, survey, registration process etc
 
 Provides high level syntactic sugar to program the journey steps, and manage the views and underlying forms.
 
+The paths can split, based on values collected or provided by user, and can reconnect later.
+
+Forward and back navigation through the different paths is automatically generated.
+
 Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
 ```ruby
