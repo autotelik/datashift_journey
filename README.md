@@ -16,7 +16,7 @@ Forward and back navigation through the different paths is automatically generat
 Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
 ```ruby
- DatashiftState::JourneyPlanner.create(:checkout) do
+DatashiftJourney::Journey::MachineBuilder.build(initial: :ship_address) do
 
             sequence [:ship_address, :bill_address]
 

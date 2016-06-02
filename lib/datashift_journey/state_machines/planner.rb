@@ -49,7 +49,7 @@ module DatashiftJourney
       def split_on_equality(state, attr_reader, target_states, split_values)
         #puts "IN split_on_equality [#{state}] => #{target_states}"
 
-        raise "BadDefinition" unless(target_states.size == split_values.size)
+        raise "BadDefinition - Direction values != Target States" unless(target_states.size == split_values.size)
 
         @split_state = state
 
