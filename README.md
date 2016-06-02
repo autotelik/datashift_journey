@@ -2,20 +2,43 @@
 
 [![Build Status](https://travis-ci.org/autotelik/datashift_journey.svg?branch=master)](https://travis-ci.org/autotelik/datashift_journey)
 
-Define journeys via simple state based DSL
+Define a Forms (Reform) based journey through your site, via a simple state based DSL
 
 Take any ActiveRecord model and add a state machine that manages a multi-page forms based journey
-such as a questionnaire, survey or registration process.
+such as a questionnaire, checkout, survey, registration process etc
 
-Collect data as you go via Reform Forms.
+Provides high level syntactic sugar to program the journey steps, and manage the views and underlying forms.
 
-Provide high level syntactic sugar to program the journey steps, and manage the views and underlyiong forms (Reform)
+Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
-The gems we are using :
+```ruby
+ DatashiftState::JourneyPlanner.create(:checkout) do
 
-https://github.com/state-machines/state_machines
-https://github.com/state-machines/state_machines-activerecord
-https://github.com/apotonick/reform
+            sequence [:ship_address, :bill_address]
+
+            split_on_equality( :payment,
+                               "payment_card",                                # The helper method on Checkout, returns card type from Payment
+                               [:visa_page, :mastercard_page, :paypal_page],  # Target pages
+                               ['visa', 'mastercard', 'paypal'])              # Value to trigger target
+
+            split_sequence :visa_page, [:page_1_A, :page_2_A]
+
+            split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
+
+            split_sequence :paypal_page, []
+
+            # The end points of each split will re-attach to the start of this sequence
+            sequence [:review, :complete ]
+ ```
+    
+
+Collect data as you go, usually against the single model and its associations.
+
+The underlying gems we are using :
+
+* https://github.com/state-machines/state_machines
+* https://github.com/state-machines/state_machines-activerecord
+* https://github.com/apotonick/reform
 
 The app model is decorated with an association to the state machine.
 
@@ -23,21 +46,18 @@ A straightforward description of a Decorator is relatively easy to write in plai
 
 “a class that surrounds a given class, adds new capabilities to it, and passes all the unchanged methods to the underlying class”
 
+## Steps
 
 ### Journey Model
 
-The app must inform datashift_journey of the model to host the journey plan and to store data collected on the journey.
-
-
-This will be the parent model off which all the data to be collected should hang, the concept is 
- like a Registration or Enrollment
+Use an initializer to inform datashift_journey of the model, that will host the journey plan and to store data 
+collected on the journey.
 
 For example, in `config/initializers/datashift_journey.rb`
 
+```ruby
+  DatashiftJourney.journey_plan_class = "Checkout"
 ```
-DatashiftJourney.journey_plan_class = "Enrollment"
-```
-
 
 ### Rendering Views
 

@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-# These tests split out testign diff elements into seperate tests so for each
+# These tests split out testing diff elements into separate tests so for each
 # we need a clean empty class as the State Machines are held at the class level
 # and this is easier than trying to manage in one class
 
