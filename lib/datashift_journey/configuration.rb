@@ -26,7 +26,7 @@ module DatashiftJourney
     #
     attr_accessor :use_null_form_when_no_form
 
-    attr_accessor :state_module_name
+    #attr_accessor :state_module_name
 
     # The location of the partials for the Reform forms
     attr_accessor :partial_location
@@ -36,7 +36,7 @@ module DatashiftJourney
     def initialize
       @forms_module_name = "DatashiftJourney::State"
       @null_form_list = []
-      @state_module_name = 'States'
+     # @state_module_name = 'States'
       @partial_location  = 'journey_plans/states'
       @use_null_form_when_no_form = false
       self.layout = 'application'

@@ -4,16 +4,9 @@ require_dependency "reform"
 # just render the Partial
 
 module DatashiftJourney
-  class NullForm < ::Reform::Form
+  class NullForm < BaseForm
     def self.factory(journey_plan)
       new(journey_plan)
-    end
-
-    attr_reader :journey_plan
-
-    def initialize(model, journey_plan = nil)
-      @journey_plan = journey_plan || model
-      super(model)
     end
 
     def save
