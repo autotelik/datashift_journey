@@ -2,7 +2,8 @@
 
 [![Build Status](https://travis-ci.org/autotelik/datashift_journey.svg?branch=master)](https://travis-ci.org/autotelik/datashift_journey)
 
-Define a Forms (Reform) based journey through your site, via a simple state based DSL
+Define a journey through your site, via a simple state based DSL, provides a generic Controller that
+manages navigation for you, collect data via a forms based approach. 
 
 Take any ActiveRecord model and add a state machine that manages a multi-page forms based journey
 such as a questionnaire, checkout, survey, registration process etc
@@ -12,6 +13,57 @@ Provides high level syntactic sugar to program the journey steps, and manage the
 The paths can split, based on values collected or provided by user, and can reconnect later.
 
 Forward and back navigation through the different paths is automatically generated.
+
+The underlying gems we are using :
+
+* https://github.com/state-machines/state_machines
+* https://github.com/state-machines/state_machines-activerecord
+* https://github.com/apotonick/reform
+
+## Getting started
+
+This is a Rails engine so simply add this line to your application's Gemfile:
+
+```ruby
+gem 'datashift_journey', git: 'https://github.com/autotelik/datashift_journey'
+```
+
+And then execute:
+
+    $ bundle install
+    
+## Setup and Configuration
+
+The app must inform datashift_journey of the model, that hosts the journey plan and stores data collected on the journey.
+
+This will be the parent model off which all the data to be collected should hang, the concept is like a 
+Checkout, Registration or Enrollment.
+
+So create a normal Rails model and associated migration.
+
+N.B Your journey class must have a string column called state i.e
+
+class CreateCheckouts < ActiveRecord::Migration
+  def change
+    create_table :checkouts do |t|
+      t.string :state
+      t.timestamps null: false
+    end
+
+  end
+end
+
+Now inform datashift of the name of this class via an initializer
+
+For example, in `config/initializers/datashift_journey.rb`
+    
+```ruby
+  DatashiftJourney.journey_plan_class = "Checkout"
+```
+
+The app model will be decorated with an association to the state machine.
+
+### Define the journey
 
 Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
@@ -33,35 +85,11 @@ DatashiftJourney::Journey::MachineBuilder.build(initial: :ship_address) do
 
             # The end points of each split will re-attach to the start of this sequence
             sequence [:review, :complete ]
- ```
-    
-
-Collect data as you go, usually against the single model and its associations.
-
-The underlying gems we are using :
-
-* https://github.com/state-machines/state_machines
-* https://github.com/state-machines/state_machines-activerecord
-* https://github.com/apotonick/reform
-
-The app model is decorated with an association to the state machine.
-
-A straightforward description of a Decorator is relatively easy to write in plain old ruby:
-
-“a class that surrounds a given class, adds new capabilities to it, and passes all the unchanged methods to the underlying class”
-
-## Steps
-
-### Journey Model
-
-Use an initializer to inform datashift_journey of the model, that will host the journey plan and to store data 
-collected on the journey.
-
-For example, in `config/initializers/datashift_journey.rb`
-
-```ruby
-  DatashiftJourney.journey_plan_class = "Checkout"
 ```
+    
+This will generate  a series of states (steps) and the navigation between them.
+
+A view partial and associated form, will be expected for each state.
 
 ### Rendering Views
 

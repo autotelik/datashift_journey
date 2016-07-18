@@ -42,7 +42,6 @@ module DatashiftJourney
 
 
     def handle_invalid_authenticity_token(exception)
-      Airbrake.notify(exception) if defined? Airbrake
       Rails.logger.error 'DatashiftJourney::ApplicationController authenticity failed ' \
                          "(browser cookies may have been disabled): #{exception}"
 
