@@ -1,4 +1,4 @@
-## DataShift State
+## DataShift Journey
 
 [![Build Status](https://travis-ci.org/autotelik/datashift_journey.svg?branch=master)](https://travis-ci.org/autotelik/datashift_journey)
 
@@ -67,6 +67,9 @@ end
 
 ### Define the journey
 
+The journey definition should be added within the model class itself, either directly in the file or to keep it
+uncluttered, in a concern or decorator for that model class.
+
 Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
 ```ruby
@@ -126,10 +129,20 @@ MyCheckoutEngine::States::AddressForm
 ```
 
 When no form is required for a specific HTML page, you an specify that a NullForm is to be used,
-by adding state to the  list of null_form states
+either globally for ALL missign forms
 
 ```ruby
-Configuration.call.null_form_list
+DatashiftJourney::Configuration.configure do |config|
+  config.use_null_form_when_no_form = true
+end
+```
+
+Or individually by adding the state to the  list of null_form states
+
+```ruby
+DatashiftJourney::Configuration.configure do |config|
+  config.use_null_form_when_no_form = [:blah, :brexit]
+end
 ```
            
 ### The Views
