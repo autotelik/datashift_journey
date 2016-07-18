@@ -95,32 +95,46 @@ A view partial and associated form, will be expected for each state.
 
 ### The Forms
 
-The Contoller will search for a related Form for each state using the Factory class/method
+The Controller will search for a related Form for each state using the Factory class/method
 
-      ```DatashiftState::FormObjectFactory.form_object_for(journey_plan)```
+```ruby
+DatashiftState::FormObjectFactory.form_object_for(journey_plan)
+```
 
 The class name for each Form is given by  :
 
-     `"#{mod}::#{journey_plan.state.classify}Form"`
+```ruby
+"#{mod}::#{journey_plan.state.classify}Form"
+```
 
 Where the module can be set in Configuration :
 
-          ` Configuration.call.state_module_name`
+```ruby
+Configuration.call.state_module_name
+````
 
 So given a module name configuration setting of
 
-    `MyCheckoutEngine::States`
+```ruby
+MyCheckoutEngine::States
+```
 
 And a current state of :address - then the Controller will attempt to use Form class
 
-    `MyCheckoutEngine::States::AddressForm`
+```ruby
+MyCheckoutEngine::States::AddressForm
+```
 
 When no form is required for a specific HTML page, you an specify that a NullForm is to be used,
 by adding state to the  list of null_form states
 
-           `Configuration.call.null_form_list`
+```ruby
+Configuration.call.null_form_list
+```
            
 ### The Views
+
+The Controller will expect a view partial, for each related Form.
 
 If you need to set the location of the partials for rendering states, over ride the path via helper
 `journey_plan_partial_location` in `app/helpers/application_helper.rb`
