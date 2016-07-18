@@ -52,7 +52,7 @@ This journey model will be decorated with an association to the state machine.
 This can be an existing model, or created from scratch, but it's vital that your journey class
  has a string column called state i.e
  
- For example to create this model from scratchm the associated migration should contain `t.string :state` e.g 
+ For example to create this model from scratch the associated migration should contain `t.string :state` e.g 
 
 ```ruby
 class CreateCheckouts < ActiveRecord::Migration
@@ -61,12 +61,9 @@ class CreateCheckouts < ActiveRecord::Migration
       t.string :state
       t.timestamps null: false
     end
-
   end
 end
 ```
-
-
 
 ### Define the journey
 
@@ -96,7 +93,34 @@ This will generate  a series of states (steps) and the navigation between them.
 
 A view partial and associated form, will be expected for each state.
 
-### Rendering Views
+### The Forms
+
+The Contoller will search for a related Form for each state using the Factory class/method
+
+      ```DatashiftState::FormObjectFactory.form_object_for(journey_plan)```
+
+The class name for each Form is given by  :
+
+     `"#{mod}::#{journey_plan.state.classify}Form"`
+
+Where the module can be set in Configuration :
+
+          ` Configuration.call.state_module_name`
+
+So given a module name configuration setting of
+
+    `MyCheckoutEngine::States`
+
+And a current state of :address - then the Controller will attempt to use Form class
+
+    `MyCheckoutEngine::States::AddressForm`
+
+When no form is required for a specific HTML page, you an specify that a NullForm is to be used,
+by adding state to the  list of null_form states
+
+           `Configuration.call.null_form_list`
+           
+### The Views
 
 If you need to set the location of the partials for rendering states, over ride the path via helper
 `journey_plan_partial_location` in `app/helpers/application_helper.rb`
