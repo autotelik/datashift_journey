@@ -73,23 +73,26 @@ uncluttered, in a concern or decorator for that model class.
 Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
 ```ruby
-DatashiftJourney::Journey::MachineBuilder.build(initial: :ship_address) do
+class Checkout < ActiveRecord::Base
 
-            sequence [:ship_address, :bill_address]
+    DatashiftJourney::Journey::MachineBuilder.build(initial: :ship_address) do
 
-            split_on_equality( :payment,
-                               "payment_card",                                # The helper method on Checkout, returns card type from Payment
-                               [:visa_page, :mastercard_page, :paypal_page],  # Target pages
-                               ['visa', 'mastercard', 'paypal'])              # Value to trigger target
+        sequence [:ship_address, :bill_address]
 
-            split_sequence :visa_page, [:page_1_A, :page_2_A]
+        split_on_equality( :payment,
+                           "payment_card",                                # The helper method on Checkout, returns card type from Payment
+                           [:visa_page, :mastercard_page, :paypal_page],  # Target pages
+                           ['visa', 'mastercard', 'paypal'])              # Value to trigger target
 
-            split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
+        split_sequence :visa_page, [:page_1_A, :page_2_A]
 
-            split_sequence :paypal_page, []
+        split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
 
-            # The end points of each split will re-attach to the start of this sequence
-            sequence [:review, :complete ]
+        split_sequence :paypal_page, []
+
+        # The end points of each split will re-attach to the start of this sequence
+        sequence [:review, :complete ]
+    end
 ```
     
 This will generate  a series of states (steps) and the navigation between them.
