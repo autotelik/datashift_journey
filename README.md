@@ -5,14 +5,14 @@
 Define a journey through your site, via a simple state based DSL, provides a generic Controller that
 manages navigation for you, collect data via a forms based approach. 
 
-Take any ActiveRecord model and add a state machine that manages a multi-page forms based journey
+Take any ActiveRecord model and add a state machine that manages a multi-page journey
 such as a questionnaire, checkout, survey, registration process etc
 
 Provides high level syntactic sugar to program the journey steps, and manage the views and underlying forms.
 
-The paths can split, based on values collected or provided by user, and can reconnect later.
-
 Forward and back navigation through the different paths is automatically generated.
+
+The paths can split, based on values collected or provided by user, and can reconnect later.
 
 The underlying gems we are using :
 
@@ -36,13 +36,25 @@ And then execute:
 
 The app must inform datashift_journey of the model, that hosts the journey plan and stores data collected on the journey.
 
-This will be the parent model off which all the data to be collected should hang, the concept is like a 
+So this is the parent model off which all the data to be collected should hang, the concept is like a 
 Checkout, Registration or Enrollment.
 
-So create a normal Rails model and associated migration.
+Inform datashift of the name of this class via an initializer
 
-N.B Your journey class must have a string column called state i.e
+For example, in `config/initializers/datashift_journey.rb`
+    
+```ruby
+  DatashiftJourney.journey_plan_class = "Checkout"
+```
 
+This journey model will be decorated with an association to the state machine.
+
+This can be an existing model, or created from scratch, but it's vital that your journey class
+ has a string column called state i.e
+ 
+ For example to create this model from scratchm the associated migration should contain `t.string :state` e.g 
+
+```ruby
 class CreateCheckouts < ActiveRecord::Migration
   def change
     create_table :checkouts do |t|
@@ -52,16 +64,9 @@ class CreateCheckouts < ActiveRecord::Migration
 
   end
 end
-
-Now inform datashift of the name of this class via an initializer
-
-For example, in `config/initializers/datashift_journey.rb`
-    
-```ruby
-  DatashiftJourney.journey_plan_class = "Checkout"
 ```
 
-The app model will be decorated with an association to the state machine.
+
 
 ### Define the journey
 
