@@ -1,3 +1,5 @@
+require 'reform/form'
+
 module DatashiftJourney
   class FormObjectFactory
 
@@ -7,7 +9,8 @@ module DatashiftJourney
 
         klass = null_form_for_step(journey_plan) unless klass
 
-        raise(FormObjectError, "No form class found for state #{form_name(journey_plan.state)}") unless klass
+        raise(FormObjectError,
+              "Failed to load form class #{form_name(journey_plan.state)} for state #{journey_plan.state}") unless klass
 
         klass.factory(journey_plan)
       end
@@ -21,8 +24,6 @@ module DatashiftJourney
       private
 
       def null_form_for_step(journey_plan)
-
-        puts "journey_plan", journey_plan.inspect
 
         return DatashiftJourney::NullForm if(Configuration.call.use_null_form_when_no_form)
 
@@ -44,7 +45,7 @@ module DatashiftJourney
           Rails.logger.debug(x.backtrace.first)
           Rails.logger.debug(x.inspect)
           Rails.logger.debug("Error loading Form class #{f} - #{x.message}")
-          nil
+          raise x
         end
       end
     end

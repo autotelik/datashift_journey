@@ -2,7 +2,7 @@ module DatashiftJourney
 
   class Configuration
 
-    # The module under which to find Forms
+    # The module(s) under which to find Forms
     # Form factory will look for a Form class related to a state called
     #
     #   "#{mod}::#{journey_plan.state}Form"
@@ -34,10 +34,9 @@ module DatashiftJourney
     attr_accessor :layout
 
     def initialize
-      @forms_module_name = "DatashiftJourney::State"
+      @forms_module_name = ""
       @null_form_list = []
-     # @state_module_name = 'States'
-      @partial_location  = 'journey_plans/states'
+      @partial_location  = 'journey_plans'
       @use_null_form_when_no_form = false
       self.layout = 'application'
     end

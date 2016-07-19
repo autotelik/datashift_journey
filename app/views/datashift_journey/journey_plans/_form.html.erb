@@ -1,6 +1,6 @@
 <%= render 'datashift_journey/shared/errors', form: form %>
 
-<% state = form.journey_plan.state %>
+<% state = form.model.state %>
 
 <% url = local_assigns[:form_url] ? form_url : datashift_journey.edit_journey_plan_path %>
 <% method = local_assigns[:form_method] ? form_method : :post %>
@@ -11,7 +11,7 @@
              method: method, class: 'form' do |f| %>
 
     <% if(journey_plan_partial?(state)) %>
-        <%= render  journey_plan_partial_location(state), form: form, f: f %>
+        <%= render journey_plan_partial_location(state), form: form, f: f %>
     <% end %>
 
     <div class="form-group">

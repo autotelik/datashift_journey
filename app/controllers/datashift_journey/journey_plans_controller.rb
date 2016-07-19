@@ -3,7 +3,10 @@ module DatashiftJourney
   class JourneyPlansController < ApplicationController
 
     include DatashiftJourney::ReviewRenderer
-    include TokenBasedAccess
+
+    # TODO - how to decorate model and auto ionsert migration
+    # for has_secure_token so users don't need to know about this at all
+    #include TokenBasedAccess
 
     # We want this to run BEFORE other filters to ensure the current
     # journey_plan object has been selected from the DB
@@ -25,8 +28,8 @@ module DatashiftJourney
       form = form_object(jp_instance)
 
       if form.validate(params) && form.save
-        journey_plan = form.journey_plan
-        logger.info "Saved JourneyPlan : [#{journey_plan}]"
+        journey_plan = form.model
+        logger.info "Saved JourneyPlan : [#{journey_plan.inspect}]"
         journey_plan.next!
         redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
       else

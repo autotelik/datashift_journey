@@ -67,7 +67,7 @@ end
 
 ### Routes
 
-Add the engine routes into your main apps config/reoutes.rb file. 
+Add the engine routes into your main apps config/routes.rb file. 
 
 You can set the home page to point to the initial state by setting a root path as per this example
 
@@ -164,18 +164,39 @@ DatashiftJourney::Configuration.configure do |config|
   config.use_null_form_when_no_form = [:blah, :brexit]
 end
 ```
+  
+      
+The Form must have a factory method, and a constructor that expects a JourneyPlan model instance.
+
+For example
+
+```ruby
+    def self.factory(model)
+        super(model)
+    end
+```  
+  
+Once the Form class has been identified the Controller will attempt to create the new form object
+passing in the current journey plan object
+
            
+                   
 ### The Views
 
 The Controller will expect a view partial, for each related Form.
 
-If you need to set the location of the partials for rendering states, over ride the path via helper
-`journey_plan_partial_location` in `app/helpers/application_helper.rb`
+The partials are rendered passing in the Form as a local variable.
+
+The location of the partial to use for a certain state is given by helper
+
+          def journey_plan_partial_location( state )
+
+The default is `views/journey_plans` but path can be changed using Configuration option `partial_location`
 
 ```ruby
-    def journey_plan_partial_location(state)
-      "my_path/states/#{state}"
-    end
+   DatashiftJourney::Configuration.configure do |config|
+     config.partial_location = "some_more_journey_plans/states"
+   end
 ```
 
 ## License

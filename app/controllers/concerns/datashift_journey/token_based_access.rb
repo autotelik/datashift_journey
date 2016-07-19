@@ -10,7 +10,11 @@ module DatashiftJourney
         token = params[:id] || params[:journey_plan_id]
 
         # https://github.com/robertomiranda/has_secure_token
-        @journey_plan = DatashiftJourney.journey_plan_class.find_by_token!(token)
+        # TODO: how to auto insert has_secure_token into the underlying journey plan model
+        # and add in migration thats adds the token column
+        # @journey_plan = DatashiftJourney.journey_plan_class.find_by_token!(token)
+
+        @journey_plan = DatashiftJourney.journey_plan_class.find(token)
 
         logger.debug("Processing Journey: #{@journey_plan.inspect}")
       end

@@ -1,15 +1,15 @@
 module DatashiftJourney
   module ApplicationHelper
 
-    # helper to return the location of a partial for a particular state
+    # Helper to return whether a partial exists in expected place a particular state
     def journey_plan_partial?(state)
-      puts "** SEARCH ** : journey_plan_partial?  #{DatashiftJourney::Configuration.call.partial_location}/#{state}"
+      Rails.logger.debug("DatashiftJourney View search path #{DatashiftJourney::Configuration.call.partial_location}")
       lookup_context.find_all("#{DatashiftJourney::Configuration.call.partial_location}/_#{state}").any?
     end
 
     # helper to return the location of a partial for a particular state
     def journey_plan_partial_location(state)
-      puts "** RENDER ** : journey_plan_partial_location #{DatashiftJourney::Configuration.call.partial_location}/#{state}"
+      Rails.logger.debug("DatashiftJourney RENDER #{DatashiftJourney::Configuration.call.partial_location}/#{state}}")
       "#{DatashiftJourney::Configuration.call.partial_location}/#{state}"
     end
 
