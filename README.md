@@ -34,20 +34,21 @@ And then execute:
     
 ## Setup and Configuration
 
-The app must inform datashift_journey of the model, that hosts the journey plan and stores data collected on the journey.
-
-So this is the parent model off which all the data to be collected should hang, the concept is like a 
-Checkout, Registration or Enrollment.
-
-Inform datashift of the name of this class via an initializer
+The app must inform `datashift_journey` of the model class, that hosts the journey plan, via an initializer
 
 For example, in `config/initializers/datashift_journey.rb`
-    
+
 ```ruby
   DatashiftJourney.journey_plan_class = "Checkout"
 ```
 
-This journey model will be decorated with an association to the state machine.
+This is the parent model against which which all the data to be collected will hang, the concept is like a 
+Checkout, Registration or Enrollment. 
+
+For example, as you progress through the checkout one step might be to collect an address,
+so we would expect the Checkout model to have an association to an address
+
+This journey model will be auto-decorated with an association to the state machine.
 
 This can be an existing model, or created from scratch, but it's vital that your journey class
  has a string column called state i.e
@@ -101,9 +102,9 @@ class Checkout < ActiveRecord::Base
                            [:visa_page, :mastercard_page, :paypal_page],  # Target pages
                            ['visa', 'mastercard', 'paypal'])              # Value to trigger target
 
-        split_sequence :visa_page, [:page_1_A, :page_2_A]
+        split_sequence :visa_page, [:visa_page_1, :visa_page_2]
 
-        split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
+        split_sequence :mastercard_page, [:mastercard_page_1, :mastercard_page_2, :mastercard_page_3]
 
         split_sequence :paypal_page, []
 
@@ -112,7 +113,8 @@ class Checkout < ActiveRecord::Base
     end
 ```
     
-This will generate  a series of states (steps) and the navigation between them.
+The state machine will generate a series of states (steps) starting at :ship_address and finishing at :complete,
+and also forward and backwards navigation between them.
 
 A view partial and associated form, will be expected for each state.
 
