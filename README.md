@@ -65,6 +65,23 @@ class CreateCheckouts < ActiveRecord::Migration
 end
 ```
 
+### Routes
+
+Add the engine routes into your main apps config/reoutes.rb file. 
+
+You can set the home page to point to the initial state by setting a root path as per this example
+
+```ruby
+Rails.application.routes.draw do
+  mount DatashiftJourney::Engine => "/dj"
+
+  root to: "datashift_journey/journey_plans#new"
+end
+```
+
+Otherwise you can create a link from any page to the start of the journey via url helper `new_journey_plan`
+
+
 ### Define the journey
 
 The journey definition should be added within the model class itself, either directly in the file or to keep it
