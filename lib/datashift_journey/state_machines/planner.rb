@@ -46,8 +46,10 @@ module DatashiftJourney
         @last_processed_state = state
       end
 
+
+      # TODO : target_states, split_values should be a HASH  ...DOH !!
+
       def split_on_equality(state, attr_reader, target_states, split_values)
-        #puts "IN split_on_equality [#{state}] => #{target_states}"
 
         raise "BadDefinition - Direction values != Target States" unless(target_states.size == split_values.size)
 
