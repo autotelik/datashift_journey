@@ -103,7 +103,10 @@ module DatashiftJourney
 
       logger.debug("CALLING VALIDATE ON Form #{form.class}")
 
-      if(form.validate(params) && form.save)
+      result = form.validate(params)
+      logger.debug("VALIATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
+
+      if(result && form.save)
         logger.debug("SUCCESS - Updated #{@journey_plan} via Form [#{form.inspect}]")
         @journey_plan.next!
         redirect_to(datashift_journey.journey_plan_state_path(@journey_plan.state, @journey_plan)) && return
