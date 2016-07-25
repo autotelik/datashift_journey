@@ -132,10 +132,14 @@ The class name for each Form is given by  :
 "#{mod}::#{journey_plan.state.classify}Form"
 ```
 
-Where the module can be set in Configuration :
+Configuration can be set in an initializer using a standard block format.
+
+So to set the *module* structure, use 
 
 ```ruby
-Configuration.call.state_module_name
+DatashiftJourney::Configuration.configure do |config|
+  config.forms_module_name = 'MyCheckoutEngine'
+end
 ````
 
 So given a module name configuration setting of
@@ -181,7 +185,7 @@ For example
 Once the Form class has been identified the Controller will attempt to create the new form object
 passing in the current journey plan object
 
-           
+          
                    
 ### The Views
 
@@ -195,9 +199,11 @@ The location of the partial to use for a certain state is given by helper
 
 The default is `views/journey_plans` but path can be changed using Configuration option `partial_location`
 
+This will be required in the path format, if you are using namespaces
+
 ```ruby
    DatashiftJourney::Configuration.configure do |config|
-     config.partial_location = "some_more_journey_plans/states"
+     config.partial_location = "my_checkout_engine"
    end
 ```
 
