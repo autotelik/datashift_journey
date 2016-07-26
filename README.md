@@ -32,45 +32,46 @@ And then execute:
 
     $ bundle install
     
-## Setup and Configuration
+## Setup and Configuration - Initializer
 
-The app must inform `datashift_journey` of the model class, that hosts the journey plan, via an initializer
+Use the install generators to set up Datashift Journey:
 
-For example, in `config/initializers/datashift_journey.rb`
-
-```ruby
-  DatashiftJourney.journey_plan_class = "Checkout"
-```
-
-This is the parent model against which which all the data to be collected will hang, the concept is like a 
-Checkout, Registration or Enrollment. 
+We need a parent model against which which all the data to be collected hangs, 
+the concept is like a  Checkout, Registration or Enrollment. 
 
 For example, as you progress through the checkout one step might be to collect an address,
-so we would expect the Checkout model to have an association to an address
+so we would expect the Checkout model to have an association to an address.
 
-This journey model will be auto-decorated with an association to the state machine.
+We can inform `datashift_journey` of this model class, via an initializer
 
-This can be an existing model, or created from scratch, but it's vital that your journey class
- has a string column called state i.e
- 
- For example to create this model from scratch the associated migration should contain `t.string :state` e.g 
+For example, to use a model called `Checkout`
 
 ```ruby
-class CreateCheckouts < ActiveRecord::Migration
-  def change
-    create_table :checkouts do |t|
-      t.string :state
-      t.timestamps null: false
-    end
-  end
-end
+rails generate datashift_journey:initializer --model Checkout
+```
+
+Creates the file `config/initializers/datashift_journey.rb`
+
+This model will be auto-decorated with an association to a state machine.
+
+This model be an existing model, or created from scratch, but it's **vital** that your journey class
+ has a string column called `state`
+ 
+If the model does not yet exist the initializer will create a bsic migration for you containing this
+ 
+If you need to add an associated migration yourself it should contain `t.string :state` e.g 
+
+```ruby
+rails generate "migration", "AddStateToMyModel", "state:string"
 ```
 
 ### Routes
 
-Add the engine routes into your main apps config/routes.rb file. 
+The initializer will add the following routes to your app's `config/routes.rb` file. 
 
-You can set the home page to point to the initial state by setting a root path as per this example
+You will want to edit/remove the root if you intend the home page to be different from the initial state.
+
+Then you can link from any page to the start of the journey via url helper `new_journey_plan`
 
 ```ruby
 Rails.application.routes.draw do
@@ -80,13 +81,12 @@ Rails.application.routes.draw do
 end
 ```
 
-Otherwise you can create a link from any page to the start of the journey via url helper `new_journey_plan`
-
-
 ### Define the journey
 
-The journey definition should be added within the model class itself, either directly in the file or to keep it
-uncluttered, in a concern or decorator for that model class.
+The basics of a journey definition is added by the initializer within the model class itself.
+You can move it to a concern or decorator for that model class if you prefer to keep it uncluttered.
+
+You will need to edit the initial: step.
 
 Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
