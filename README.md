@@ -42,7 +42,7 @@ the concept is like a  Checkout, Registration or Enrollment.
 For example, as you progress through the checkout one step might be to collect an address,
 so we would expect the Checkout model to have an association to an address.
 
-We can inform `datashift_journey` of this model class, via an initializer
+We can inform `datashift_journey` of this model class, via this initializer.
 
 For example, to use a model called `Checkout`
 
@@ -57,7 +57,7 @@ This model will be auto-decorated with an association to a state machine.
 This model be an existing model, or created from scratch, but it's **vital** that your journey class
  has a string column called `state`
  
-If the model does not yet exist the initializer will create a bsic migration for you containing this
+If the model does not yet exist the initializer will create a basic migration for you containing this
  
 If you need to add an associated migration yourself it should contain `t.string :state` e.g 
 
