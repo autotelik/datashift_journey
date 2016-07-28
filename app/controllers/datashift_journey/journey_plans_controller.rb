@@ -30,6 +30,7 @@ module DatashiftJourney
       if form.validate(params) && form.save
         journey_plan = form.model
         logger.info "Saved JourneyPlan : [#{journey_plan.inspect}]"
+
         journey_plan.next!
         redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
       else

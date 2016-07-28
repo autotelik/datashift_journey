@@ -1,15 +1,13 @@
 module DatashiftJourney
   mattr_accessor :journey_plan_class
 
-  # Call DatashiftJourney.journey_plan_class = "Enrollment"
-
   def self.journey_plan_class=(x)
     @@journey_plan_class = x
 
-    puts "Auto Extend #{journey_plan_class} with DatashiftJourney::JourneyPlanStateMachine Modules"
-
-    journey_plan_class.send :include, DatashiftJourney::Journey::Extensions
-    journey_plan_class.send :extend, DatashiftJourney::Journey::Extensions
+    Rails.logger.info "Auto Extend #{x} with DatashiftJourney StateMachine"
+    # Left for reference
+    # journey_plan_class.send :include, DatashiftJourney::Journey::Extensions
+    #journey_plan_class.send :extend, DatashiftJourney::Journey::Extensions
   end
 
   def self.journey_plan_class

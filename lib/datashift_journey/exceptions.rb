@@ -20,6 +20,7 @@ module DatashiftJourney
   end
 
   class FormObjectError < CoreException; end
+  class PlannerApiError < CoreException; end
 
 end
 

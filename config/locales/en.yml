@@ -1,6 +1,7 @@
 ---
 en:
   global:
+    continue: Next
     404_notfound:
       heading: Page not found
       message1: Sorry, the page you’re looking for cannot be found.

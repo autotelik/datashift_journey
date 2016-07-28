@@ -28,7 +28,10 @@ module DatashiftJourney
 
     #attr_accessor :state_module_name
 
-    # The location of the partials for the Reform forms
+    # The location of the View partials, for rendering
+    #
+    # default is empty, for views stored directly in app/views
+    #
     attr_accessor :partial_location
 
     attr_accessor :layout
@@ -36,7 +39,7 @@ module DatashiftJourney
     def initialize
       @forms_module_name = ""
       @null_form_list = []
-      @partial_location  = 'journey_plans'
+      @partial_location  = ''
       @use_null_form_when_no_form = false
       self.layout = 'application'
     end

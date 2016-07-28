@@ -197,13 +197,13 @@ The location of the partial to use for a certain state is given by helper
 
           def journey_plan_partial_location( state )
 
-The default is `views/journey_plans` but path can be changed using Configuration option `partial_location`
+The default is `app/views` but path can be changed using Configuration option `partial_location`
 
-This will be required in the path format, if you are using namespaces
+This will be required in the path format, if you are using multiple namespaces/folders
 
 ```ruby
    DatashiftJourney::Configuration.configure do |config|
-     config.partial_location = "my_checkout_engine"
+     config.partial_location = "checkout_engine"
    end
 ```
 

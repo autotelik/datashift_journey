@@ -15,18 +15,32 @@ module DatashiftJourney
     desc "This generator creates an initializer to setup the Model datashift uses to manage a site journey"
 
     def create_initializer_file
-
       create_file "config/initializers/datashift_journey.rb" do
-        "DatashiftJourney.journey_plan_class = '#{options[:model]}'"
+        "\nDatashiftJourney.journey_plan_class = '#{options[:model]}'\n"\
+        "DatashiftJourney::Configuration.configure do |config|\n"\
+        "  config.partial_location = 'my_checkout_engine'\n"\
+        "end\n"
       end
+    end
 
-      create_file model_file_name do
+    def model_code
+      model_definition=<<-APP
+class Enrollment < ActiveRecord::Base
+    DatashiftJourney::Journey::MachineBuilder.build(initial: :set_your_initial_state_here) do
+
+      # The available API is defined in : datashift_journey/lib/datashift_journey/state_machines/planner.rb
+    end
+end
+      APP
+      model_definition
+    end
+
+    def model_and_migration
+      create_file "app/models/#{options[:model].underscore}.rb" do
         model_code
-
-        generate "migration", "Create#{options[:model].classify}", "state:string timestamps"
-
       end
 
+      generate "migration", "Create#{options[:model].classify}", "state:string timestamps"
     end
 
     def notify_about_routes
@@ -49,21 +63,7 @@ module DatashiftJourney
       end
     end
 
-    def model_code
-      model_definition=<<-APP
-class Enrollment < ActiveRecord::Base
-    DatashiftJourney::Journey::MachineBuilder.build(initial: :set_your_initial_state_here) do
 
-      # The available API is defined in : datashift_journey/lib/datashift_journey/state_machines/planner.rb
-    end
-end
-      APP
-      model_definition
-    end
-
-    def model_file_name
-      "app/models/#{options[:model].underscore}.rb"
-    end
 
   end
 

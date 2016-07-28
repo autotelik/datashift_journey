@@ -9,7 +9,10 @@ module DatashiftJourney
       attr_accessor :split_state
 
       def sequence(*list)
-        puts "IN sequence #{list}"
+        raise PlannerApiError, "Empty list passed to sequence - check your MachineBuilder syntax" if(list.empty?)
+
+        Rails.logger.info "Building plan from sequence #{list}"
+
         flattened = list.flatten
         create_back_transitions flattened
         create_next_transitions flattened
@@ -38,7 +41,7 @@ module DatashiftJourney
       end
 
       def split_on( state )
-        #puts "IN split_on #{state}"
+        raise PlannerApiError, "No state provided for split - check your MachineBuilder syntax" if(state.blank?)
         @split_state = state
 
         create_pair(state, @last_processed_state)
