@@ -10,27 +10,24 @@ StateMachines::Machine.class_eval do
     create_next( rhs, lhs)
   end
 
-
-  # TODO: if: Proc.new(block)) or if: block.call ????
-
   def create_back( from, to, &block )
 
     if(block_given?)
-      Rails.logger.debug "Creating BACK transition from #{from} to #{to} with Block"
-      transition( from => to, on: :back, if: Proc.new(block))
+      #puts "DEBUG: Creating BACK transition from #{from} to #{to} with Block"
+      transition( from => to, on: :back, if: block.call)
     else
-      Rails.logger.debug "Creating BACK transition from #{from} to #{to}"
+      #puts "DEBUG: Creating BACK transition from #{from} to #{to}"
       transition( from => to, on: :back)
     end
 
   end
 
-  def create_next( from, to, &block )
+  def create_next(from, to, &block )
     if(block_given?)
-      Rails.logger.debug "Creating NEXT transition from #{from} to #{to} with Block "
+      #puts "DEBUG: Creating NEXT transition from #{from} to #{to} with Block "
       transition( from => to, on: :next, if: block.call)
     else
-      Rails.logger.debug "Creating NEXT transition from #{from} to #{to}"
+      #puts "DEBUG: Creating NEXT transition from #{from} to #{to}"
       transition( from => to, on: :next)
     end
   end

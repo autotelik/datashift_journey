@@ -1,20 +1,19 @@
 #
-# Helper class for constructing back links for navigating backward through the enrolment journey
+# Helper class for constructing back links for navigating backward through the journey
 #
 module DatashiftJourney
   class BackLink
     include ActionView::Helpers::UrlHelper
     attr_reader :current_request, :journey_plan, :engine_routes
 
-    def initialize(request, engine_routes, journey_plan = nil)
+    def initialize(request, engine_routes:, journey_plan: nil)
       @current_request = request
       @engine_routes = engine_routes
       @journey_plan = journey_plan
     end
 
     def tag(text = nil, html_opts = {})
-      if journey_plan && (current_request.path == journey_plan_reviewing_path ||
-                        journey_plan_is_already_complete?)
+      if journey_plan && (current_request.path == journey_plan_reviewing_path)
         content_tag(:br)
       else
         title, url = link_arguments(text)
@@ -29,41 +28,29 @@ module DatashiftJourney
     end
 
     def link_text
-      I18n.t(journey_plan_is_mid_registration? ? 'back' : 'backto_start_link')
+      I18n.t(journey_plan ? 'global.back' : 'global.backto_start_link')
     end
 
     def link_url
-      if journey_plan.try! :under_review?
-        journey_plan_reviewing_path
-      elsif journey_plan_is_mid_registration?
-        journey_plan_back_url
-      else
-        start_url
-      end
+      # TODO Implement automatic reviewable
+      # return  journey_plan_reviewing_path if journey_plan.try! :under_review?
+
+      return start_url unless journey_plan
+
+      journey_plan_back_url
     end
 
     def start_url
-      if Rails.env.production?
-        DatashiftJourney.backto_start_url
-      else
-        Rails.application.routes.url_helpers.root_path
-      end
+        DatashiftJourney::Configuration.call.backto_start_url
     end
 
     def journey_plan_back_url
-      engine_routes.back_a_step_url(journey_plan)
+      engine_routes.back_a_state_url(journey_plan)
     end
 
     def journey_plan_reviewing_path
       engine_routes.journey_plan_state_path('reviewing', journey_plan)
     end
 
-    def journey_plan_is_already_complete?
-      journey_plan.present? && journey_plan.complete?
-    end
-
-    def journey_plan_is_mid_registration?
-      journey_plan.present? && !journey_plan.unregistered?
-    end
   end
 end

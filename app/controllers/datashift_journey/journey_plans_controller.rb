@@ -51,13 +51,9 @@ module DatashiftJourney
 
     def back_a_state
       respond_to do |format|
-        logger.debug("BACK !!! - Request to go back a step - current state [#{@journey_plan.state}]")
+        logger.debug("BACK Requested - current [#{@journey_plan.state}] - previous [#{@journey_plan.previous_state_name}]")
 
-        logger.debug("Back to previous state [#{DatashiftJourney.journey_plan_class.previous_state_name}]")
-
-        @journey_plan.back # Move state engine back
-
-        logger.debug("Gone back a step - current state [#{@journey_plan.state}]")
+        @journey_plan.back
 
         if @journey_plan.save
 
@@ -108,8 +104,10 @@ module DatashiftJourney
       logger.debug("VALIATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
 
       if(result && form.save)
-        logger.debug("SUCCESS - Updated #{@journey_plan} via Form [#{form.inspect}]")
+        logger.debug("SUCCESS\n\tProcessed Form [#{form.inspect}]\tUpdated #{@journey_plan.reload.inspect}")
+
         @journey_plan.next!
+
         redirect_to(datashift_journey.journey_plan_state_path(@journey_plan.state, @journey_plan)) && return
       else
         logger.debug("FAILED - Form Errors [#{form.errors.inspect}]")
@@ -119,16 +117,7 @@ module DatashiftJourney
         }
       end
 =begin
-      # proceed as normal - update model and then move sate engine fwd
 
-      respond_to do |format|
-        prepared_params = journey_plan_params.dup
-
-        # Because the state engine transitions can depend on the UPDATED state of the Enrollment we need
-        # to update mode data first without the state event
-        state_event = prepared_params.delete(:state_event)
-
-        logger.debug("Filters passed - Calling UPDATE with #{prepared_params.inspect}")
 
         if @journey_plan.update(prepared_params)
 

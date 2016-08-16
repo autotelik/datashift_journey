@@ -19,17 +19,6 @@ module DatashiftJourney
         valid_for.include?(event)
       end
 
-      def transitions_for
-        events.transitions_for(self)
-      end
-
-      def next_state_name
-        transitions_for.find { |t| t.event == :next }.try(:to_name)
-      end
-
-      def previous_state_name
-        transitions_for.find { |t| t.event == :back }.try(:to_name)
-      end
 
       def valid_state?(state_name)
         state_index(state_name.to_sym) != nil

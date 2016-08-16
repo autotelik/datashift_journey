@@ -4,7 +4,7 @@ module DatashiftJourney
     # Containing apps are expected to provide their home page in a DSC config initializer
     # for DatashiftJourney.backto_start_url
     def backto_start_link(journey_plan = nil)
-      DatashiftJourney::BackLink.new(request, datashift_journey, journey_plan).tag
+      DatashiftJourney::BackLink.new(request, engine_routes: datashift_journey, journey_plan: journey_plan).tag
     end
   end
 end

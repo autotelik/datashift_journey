@@ -83,34 +83,32 @@ end
 
 ### Define the journey
 
-The basics of a journey definition is added by the initializer within the model class itself.
-You can move it to a concern or decorator for that model class if you prefer to keep it uncluttered.
+A stubbed out journey definition is added by the initializer to a concern of the supplied model.
 
-You will need to edit the initial: step.
+You will need to edit the jounrey and set the initial: step.
 
 Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
 ```ruby
-class Checkout < ActiveRecord::Base
+  MachineBuilder.extend_journey_plan_class(initial: :ship_address) do
 
-    DatashiftJourney::Journey::MachineBuilder.build(initial: :ship_address) do
+    sequence [:ship_address, :bill_address]
 
-        sequence [:ship_address, :bill_address]
+    split_on_equality( :payment,
+                       "payment_card",    # Helper method on Checkout that returns card type from Payment
+                       visa_page: 'visa',
+                       mastercard_page: 'mastercard',
+                       paypal_page: 'paypal'
+    )
 
-        split_on_equality( :payment,
-                           "payment_card",                                # The helper method on Checkout, returns card type from Payment
-                           [:visa_page, :mastercard_page, :paypal_page],  # Target pages
-                           ['visa', 'mastercard', 'paypal'])              # Value to trigger target
+    split_sequence :visa_page, [:page_1_A, :page_2_A]
 
-        split_sequence :visa_page, [:visa_page_1, :visa_page_2]
+    split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
 
-        split_sequence :mastercard_page, [:mastercard_page_1, :mastercard_page_2, :mastercard_page_3]
+    split_sequence :paypal_page, []
 
-        split_sequence :paypal_page, []
-
-        # The end points of each split will re-attach to the start of this sequence
-        sequence [:review, :complete ]
-    end
+    sequence [:review, :complete ]
+  end
 ```
     
 The state machine will generate a series of states (steps) starting at :ship_address and finishing at :complete,

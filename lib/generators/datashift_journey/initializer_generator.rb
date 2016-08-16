@@ -25,18 +25,35 @@ module DatashiftJourney
 
     def model_code
       model_definition=<<-APP
-class Enrollment < ActiveRecord::Base
-    DatashiftJourney::Journey::MachineBuilder.build(initial: :set_your_initial_state_here) do
+DatashiftJourney::Journey::MachineBuilder.extend_journey_plan_class(initial: :##set_your_initial_state_here) do
 
       # The available API is defined in : datashift_journey/lib/datashift_journey/state_machines/planner.rb
-    end
+
+      # A basic example with one set of branches, reconnecting to another common section starting at :review
+      #
+      # sequence [:ship_address, :bill_address]
+      #
+      # split_on_equality( :payment,
+      #                    "payment_card",                  # Helper method on Checkout - returns card type from Payment
+      #                     visa_page: 'visa',              # Map sequence start points to values returned
+      #                     mastercard_page: 'mastercard',  # by "payment_card" helper method
+      #                     paypal_page: 'paypal'
+      #  )
+      #
+      # split_sequence :visa_page, [:page_1_A, :page_2_A]
+      #
+      # split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
+      #
+      # split_sequence :paypal_page, []
+      #
+      # sequence [:review, :complete ]
 end
       APP
       model_definition
     end
 
     def model_and_migration
-      create_file "app/models/#{options[:model].underscore}.rb" do
+      create_file "app/models/concerns/#{options[:model].underscore}_journey_plan.rb" do
         model_code
       end
 

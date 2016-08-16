@@ -6,7 +6,10 @@ RSpec.describe Checkout, type: :model do
     it { is_expected.to respond_to(:state) }
   end
 
-  describe '#token' do
+  context '#token' do
+
+    before { skip("Awaiting optional inclusion of token based find") }
+
     it { is_expected.to validate_presence_of(:token).on(:save) }
 
     it 'creates a token on creation' do

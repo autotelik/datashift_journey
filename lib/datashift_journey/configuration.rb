@@ -2,6 +2,13 @@ module DatashiftJourney
 
   class Configuration
 
+    # The start page link for journey page Back links
+    #
+    # @param [String<#call>]
+    # @return [String<#call>]
+    #
+    attr_writer :backto_start_url
+
     # The module(s) under which to find Forms
     # Form factory will look for a Form class related to a state called
     #
@@ -42,6 +49,11 @@ module DatashiftJourney
       @partial_location  = ''
       @use_null_form_when_no_form = false
       self.layout = 'application'
+    end
+
+
+    def backto_start_url
+      @backto_start_url ||= Rails.application.routes.url_helpers.root_path
     end
 
     # @return [DatashiftJourney::Configuration] current configuration
