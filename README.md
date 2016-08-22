@@ -47,7 +47,7 @@ We can inform `datashift_journey` of this model class, via this initializer.
 For example, to use a model called `Checkout`
 
 ```ruby
-rails generate datashift_journey:initializer --model Checkout
+rails generate datashift_journey:initializer --journey_class Checkout
 ```
 
 Creates the file `config/initializers/datashift_journey.rb`

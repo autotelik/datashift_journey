@@ -6,7 +6,7 @@ module DatashiftJourney
 
     Rails.logger.info "Auto Extend #{x} with DatashiftJourney StateMachine"
 
-    # Helpers for dealing with bak and next
+    # Helpers for dealing with back and next
     journey_plan_class.send :include, DatashiftJourney::Journey::Extensions
     journey_plan_class.send :extend, DatashiftJourney::Journey::Extensions
   end
