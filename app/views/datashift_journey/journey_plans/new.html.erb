@@ -1,2 +1,6 @@
-<%= render 'form', form: form, form_url: url_for(:controller => 'journey_plans', :action => 'create') %>
+<%= render 'form',
+           form: form,
+           journey_plan: journey_plan,
+           form_url: url_for(:controller => 'journey_plans', :action => 'create')
+%>
 

@@ -45,7 +45,7 @@ module DatashiftJourney
       create_file "config/initializers/datashift_journey.rb" do
         "\nDatashiftJourney.journey_plan_class = '#{options[:journey_class]}'\n\n"\
         "DatashiftJourney::Configuration.configure do |config|\n"\
-        "  config.partial_location = '#{options[:journey_class].underscore}'\n"\
+        "  config.partial_location = '#{options[:journey_class].pluralize.underscore}'\n"\
         "end\n"
       end
 

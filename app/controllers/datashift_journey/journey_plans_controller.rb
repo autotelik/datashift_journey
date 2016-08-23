@@ -2,12 +2,6 @@ module DatashiftJourney
 
   class JourneyPlansController < ApplicationController
 
-    include DatashiftJourney::ReviewRenderer
-
-    # TODO - how to decorate model and auto ionsert migration
-    # for has_secure_token so users don't need to know about this at all
-    #include TokenBasedAccess
-
     # We want this to run BEFORE other filters to ensure the current
     # journey_plan object has been selected from the DB
     prepend_before_filter :set_journey_plan, only: [:show, :edit, :update, :destroy, :back_a_state]
@@ -22,19 +16,39 @@ module DatashiftJourney
       }
     end
 
+
     def create
       jp_instance = DatashiftJourney.journey_plan_class.new
 
       form = form_object(jp_instance)
 
-      if form.validate(params) && form.save
-        journey_plan = form.model
-        logger.info "Saved JourneyPlan : [#{journey_plan.inspect}]"
+      result = form.validate(params)
 
-        journey_plan.next!
-        redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
+      logger.debug("VALIATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
+
+      if(result && form.save)
+
+        journey_plan = form.model
+
+        logger.debug("SUCCESS\n\tProcessed Form [#{form.inspect}]\tUpdated #{journey_plan.reload.inspect}")
+
+        # if there is no next event, state_machine dynamic helper can_next? not available
+
+        if(journey_plan.respond_to?('can_next?') && journey_plan.can_next?)
+          journey_plan.next!
+
+          redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
+        else
+          logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
+
+          render :journey_end
+        end
+
       else
-        render :new
+        render :new, locals: {
+          journey_plan: form.model,
+          form: form
+        }
       end
     end
 

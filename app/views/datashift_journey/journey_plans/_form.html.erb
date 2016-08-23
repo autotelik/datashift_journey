@@ -1,6 +1,6 @@
 <%= render 'datashift_journey/shared/errors', form: form %>
 
-<% state = form.model.state %>
+<% state = journey_plan.state %>
 
 <% url = local_assigns[:form_url] ? form_url : datashift_journey.edit_journey_plan_path %>
 <% method = local_assigns[:form_method] ? form_method : :post %>
