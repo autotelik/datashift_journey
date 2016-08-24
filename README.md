@@ -65,6 +65,18 @@ If you need to add an associated migration yourself it should contain `t.string 
 rails generate "migration", "AddStateToMyModel", "state:string"
 ```
 
+To ensure all helpers etc are available throughout, either inherit from our controller
+
+```ruby
+class ApplicationController < DatashiftJourney::ApplicationController
+```
+
+Or in your ApplicationController pull in our engines helpers
+
+```ruby
+  helper DatashiftJourney::Engine.helpers
+```
+  
 ### Routes
 
 The initializer will add the following routes to your app's `config/routes.rb` file. 

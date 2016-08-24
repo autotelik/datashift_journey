@@ -31,7 +31,7 @@ Gem::Specification.new do |s|
 
   s.add_dependency "sass-rails", "~> 5.0"
   s.add_dependency "coffee-rails", "~> 4.1"
-  s.add_dependency "high_voltage", "~> 3" # Rails engine for static pages. https://github.com/thoughtbot/high_voltage
+
   s.add_dependency "thor", "~> 0.19"
   s.add_dependency "rest-client", "~> 2.0.0.rc2"
   s.add_dependency "has_secure_token", "~> 1.0"

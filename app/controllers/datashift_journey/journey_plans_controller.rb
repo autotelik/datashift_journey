@@ -24,29 +24,43 @@ module DatashiftJourney
 
       result = form.validate(params)
 
+      if form.redirect?
+        redirect_to(form.redirection_url) && return
+      end
+
       logger.debug("VALIATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
 
       if(result && form.save)
 
-        journey_plan = form.model
+        journey_plan = form.journey_plan
 
-        logger.debug("SUCCESS\n\tProcessed Form [#{form.inspect}]\tUpdated #{journey_plan.reload.inspect}")
+        if(journey_plan.class != DatashiftJourney.journey_plan_class)
+          raise "ClassError - Your Form's model is not a #{DatashiftJourney.journey_plan_class} - #{journey_plan.inspect}"
+        end
+
+        journey_plan.reload
+
+        logger.debug("SUCCESS - Updated #{journey_plan.inspect}")
 
         # if there is no next event, state_machine dynamic helper can_next? not available
+        if(!journey_plan.respond_to?('can_next?') )
 
-        if(journey_plan.respond_to?('can_next?') && journey_plan.can_next?)
+          logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
+
+          render :journey_end
+        elsif(journey_plan.can_next?)
           journey_plan.next!
 
           redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
         else
-          logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
+          logger.error("JOURNEY Cannot proceed - not able to transition to next event'")
 
-          render :journey_end
+          redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
         end
 
       else
         render :new, locals: {
-          journey_plan: form.model,
+          journey_plan: form.journey_plan,
           form: form
         }
       end
@@ -202,6 +216,19 @@ module DatashiftJourney
 
     def form_object(journey_plan)
       DatashiftJourney::FormObjectFactory.form_object_for(journey_plan)
+    end
+
+    def set_journey_plan
+      token = params[:id] || params[:journey_plan_id]
+
+      # https://github.com/robertomiranda/has_secure_token
+      # TODO: how to auto insert has_secure_token into the underlying journey plan model
+      # and add in migration thats adds the token column
+      # @journey_plan = DatashiftJourney.journey_plan_class.find_by_token!(token)
+
+      @journey_plan = DatashiftJourney.journey_plan_class.find(token)
+
+      logger.debug("Processing Journey: #{@journey_plan.inspect}")
     end
 
   end
