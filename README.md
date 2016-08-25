@@ -222,7 +222,7 @@ There is a development toolbar available for creating and jumping straight to an
 
 This is not available in production and must be activated by setting 
 
-'config.add_state_jumper_toolbar = true'
+```ruby config.add_state_jumper_toolbar = true```
 
 You also need to add your list of required 'jump to' states, by setting `state_jumper_states`, for example
 
@@ -236,7 +236,7 @@ The factory should return an instance of your DatashiftJourney.journey_plan_clas
 The view is added to a content_for block called :datashift_journey_state_jumper 
 so you can add this somewhere in your layout.
 
-To pull in some default styling add following to your 'application.css.scss'
+To pull in some default styling add following to your `application.css.scss`
 
 `@import 'datashift_journey/partials/state_jumper_toolbar';`
 
