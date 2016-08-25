@@ -222,17 +222,22 @@ There is a development toolbar available for creating and jumping straight to an
 
 This is not available in production and must be activated by setting 
 
-```ruby config.add_state_jumper_toolbar = true```
-
-You also need to add your list of required 'jump to' states, by setting `state_jumper_states`, for example
-
-    `config.state_jumper_states = [:contact, :ship_address, :bill_address]`
+```ruby 
+config.add_state_jumper_toolbar = true
+```
   
 So that any data required for previous states can be created, it supports passing in a Factory
 that creates that data for you.
 
 The factory should return an instance of your DatashiftJourney.journey_plan_class
 
+Configure your list of required 'jump to' states and factories -  where no factory required simply pass nil -
+by setting `state_jumper_states`, for example
+
+```ruby 
+config.state_jumper_states = {:contact: my_contact_factory, ship_address: nil, :bill_address: nil}
+```
+    
 The view is added to a content_for block called :datashift_journey_state_jumper 
 so you can add this somewhere in your layout.
 
