@@ -1,11 +1,12 @@
 DatashiftJourney::Engine.routes.draw do
 
-  resources :journey_plans, only: [:create, :new, :show, :update]
+  resources :journey_plans, only: [:create, :new, :edit, :update]
 
-  # TO INVESTIGATE - On an error processing first state user is redirected to new but this goes to
-  #   => http://localhost:3000/journey_plans  via a get- which is the index
+  # TO INVESTIGATE - On an error processing a state user is redirected but this goes to
+  #   => http://localhost:3000/journey_plans/(:id)  via a get- which is index or show
   # This currently fixes the issue so a refresh leaves user on right page
   get '/journey_plans(.:format)', :to => 'journey_plans#create'
+  get '/journey_plans/:id', :to => 'journey_plans#edit'
 
   # Note on using get rather than patch  :
   # We use these to provide nicer links - to jump between states & fwd/backwards,

@@ -5,6 +5,8 @@ StateMachines::Machine.class_eval do
   include DatashiftJourney::StateMachines::Planner
   extend DatashiftJourney::StateMachines::Planner
 
+  # Create both a next link from lhs to rhs, and a back link from rhs to lhs
+
   def create_pair(lhs, rhs)
     create_back(lhs, rhs)
     create_next( rhs, lhs)

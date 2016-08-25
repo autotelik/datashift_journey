@@ -18,13 +18,21 @@ module DatashiftJourney
     end
 
     def validate(params)
-      Rails.logger.debug "VALIDATING #{form_params(params)}"
+      Rails.logger.debug "VALIDATING #{self} - Params - [#{form_params(params)}]"
       super form_params(params)
     end
 
     def redirect?
       Rails.logger.debug "Checking for REDIRECTION - [#{redirection_url}]"
       !redirection_url.nil?
+    end
+
+    # Default is to display a submit button - which essentially calls our Controller and
+    # moves the state forwards, if validate/save etc all pass
+    # Individual forms/views may want to over ride, e.g at journey's end or to use their own buttons
+    #
+    def show_submit_button?
+      true
     end
 
     protected
