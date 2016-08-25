@@ -195,8 +195,7 @@ For example
 Once the Form class has been identified the Controller will attempt to create the new form object
 passing in the current journey plan object
 
-          
-                   
+                      
 ### The Views
 
 The Controller will expect a view partial, for each related Form.
@@ -216,6 +215,30 @@ This will be required in the path format, if you are using multiple namespaces/f
      config.partial_location = "checkout_engine"
    end
 ```
+
+### State Jumper Toolbar
+
+There is a development toolbar available for creating and jumping straight to any State
+
+This is not available in production and must be activated by setting 
+
+'config.add_state_jumper_toolbar = true'
+
+You also need to add your list of required 'jump to' states, by setting `state_jumper_states`, for example
+
+    `config.state_jumper_states = [:contact, :ship_address, :bill_address]`
+  
+So that any data required for previous states can be created, it supports passing in a Factory
+that creates that data for you.
+
+The factory should return an instance of your DatashiftJourney.journey_plan_class
+
+The view is added to a content_for block called :datashift_journey_state_jumper 
+so you can add this somewhere in your layout.
+
+To pull in some default styling add following to your 'application.css.scss'
+
+`@import 'datashift_journey/partials/state_jumper_toolbar';`
 
 ## License
 
