@@ -36,7 +36,7 @@ And then execute:
 
 Use the install generators to set up Datashift Journey:
 
-We need a parent model against which which all the data to be collected hangs, 
+We need an existing parent model against which which all the data to be collected hangs,
 the concept is like a  Checkout, Registration or Enrollment. 
 
 For example, as you progress through the checkout one step might be to collect an address,
