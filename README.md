@@ -235,7 +235,7 @@ Configure your list of required 'jump to' states and factories -  where no facto
 by setting `state_jumper_states`, for example
 
 ```ruby 
-config.state_jumper_states = {:contact: my_contact_factory, ship_address: nil, :bill_address: nil}
+config.state_jumper_states = {contact: my_contact_factory, ship_address: nil, :bill_address: nil}
 ```
     
 The view is added to a content_for block called :datashift_journey_state_jumper 
