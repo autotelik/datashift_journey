@@ -9,8 +9,6 @@ module DatashiftJourney
       def sequence(*list)
         raise PlannerApiError, "Empty list passed to sequence - check your MachineBuilder syntax" if(list.empty?)
 
-        puts "Building plan from sequence #{list}"
-
         flattened = list.flatten
         # Sequence can be used after a split i.e start a new common sequence,
         # so build links from start of this new sequence, to and from the end points of previous split

@@ -1,20 +1,22 @@
 <%= render 'datashift_journey/shared/errors', form: form %>
+<%= render 'datashift_journey/state_jumper/toolbar' %>
 
-<% state = form.model.state %>
+<% state = journey_plan.state %>
 
 <% url = local_assigns[:form_url] ? form_url : datashift_journey.edit_journey_plan_path %>
 <% method = local_assigns[:form_method] ? form_method : :post %>
 
-<%= form_for form,
-             as: state,
-             url: url,
-             method: method, class: 'form' do |f| %>
+<%= form_for form, as: state, url: url, method: method, class: 'form' do |f| %>
 
-    <% if(journey_plan_partial?(state)) %>
-        <%= render journey_plan_partial_location(state), form: form, f: f %>
-    <% end %>
+  <%= hidden_field_tag "rendered_state", local_assigns[:rendered_state] || state  %>
 
+  <% if(journey_plan_partial?(state)) %>
+    <%= render journey_plan_partial_location(state), form: form, f: f %>
+  <% end %>
+
+  <% if form.show_submit_button? %>
     <div class="form-group">
       <%= f.submit submit_button_text(form), class: "button"  %>
     </div>
+  <% end %>
 <% end %>

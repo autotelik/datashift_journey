@@ -22,11 +22,16 @@ Gem::Specification.new do |s|
 
   s.add_dependency "rails", "~> 4.2"
   s.add_dependency "state_machines-activerecord", "~> 0.2"
-  s.add_dependency "reform", "~> 2.1"
-  s.add_dependency "reform-rails", "~> 0.1"
+
+  s.add_dependency "reform"#, "~> 2.1"
+  s.add_dependency "reform-rails"#, "~> 0.1"
+
+  # alternative for reform ... not had time to really evaluate
+  #s.add_dependency "dry-validation"
+
   s.add_dependency "sass-rails", "~> 5.0"
   s.add_dependency "coffee-rails", "~> 4.1"
-  s.add_dependency "high_voltage", "~> 3" # Rails engine for static pages. https://github.com/thoughtbot/high_voltage
+
   s.add_dependency "thor", "~> 0.19"
   s.add_dependency "rest-client", "~> 2.0.0.rc2"
   s.add_dependency "has_secure_token", "~> 1.0"

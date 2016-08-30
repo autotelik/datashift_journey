@@ -11,26 +11,11 @@ module DatashiftJourney
       Dir.glob(File.join(Engine.root, 'app/decorators', '**/*_decorator*.rb')).each do |c|
         require_dependency(c)
       end
-    end
 
-    # Our migration should be added by generators that copy specific migrations over
+      # Helpers for dealing with back and next
+      DatashiftJourney.journey_plan_class.send :include, DatashiftJourney::StateMachines::Extensions
+      DatashiftJourney.journey_plan_class.send :extend, DatashiftJourney::StateMachines::Extensions
 
-   # initializer :append_migrations, before: :load_config_initializers do |app|
-      #unless app.root.to_s.match root.to_s
-        #config.paths['db/migrate'].expanded.each do |expanded_path|
-          # puts "Copy Migrations from DSC [#{expanded_path.inspect}]"
-          # puts "To #{app.config.paths["db/migrate"].expanded.inspect}"
-          #Rails.application.config.paths['db/migrate'] << expanded_path
-        #end
-      #end
-    #end
-
-    # we use rspec for testing
-    config.generators do |g|
-      g.test_framework :rspec, fixture: false
-      g.fixture_replacement :factory_girl, dir: 'spec/factories'
-      g.assets false
-      g.helper false
     end
 
 
@@ -60,3 +45,4 @@ rescue => x
   # TODO: - remove this block once gem stable
   puts x.inspect
 end
+

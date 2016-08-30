@@ -2,15 +2,11 @@ module DatashiftJourney
 
   class JourneyPlansController < ApplicationController
 
-    include DatashiftJourney::ReviewRenderer
+    # Run BEFORE other filters to ensure the current journey_plan has been selected from the DB
+    prepend_before_filter :set_journey_plan, only: [:edit, :update, :destroy, :back_a_state]
 
-    # TODO - how to decorate model and auto ionsert migration
-    # for has_secure_token so users don't need to know about this at all
-    #include TokenBasedAccess
-
-    # We want this to run BEFORE other filters to ensure the current
-    # journey_plan object has been selected from the DB
-    prepend_before_filter :set_journey_plan, only: [:show, :edit, :update, :destroy, :back_a_state]
+    # Validate state and state related params - covers certain edge cases such as browser refresh
+    before_action :validate_state, only: [:edit, :update]
 
     def new
       journey_plan = DatashiftJourney.journey_plan_class.new
@@ -27,14 +23,47 @@ module DatashiftJourney
 
       form = form_object(jp_instance)
 
-      if form.validate(params) && form.save
-        journey_plan = form.model
-        logger.info "Saved JourneyPlan : [#{journey_plan.inspect}]"
+      result = form.validate(params)
 
-        journey_plan.next!
-        redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
+      if form.redirect?
+        redirect_to(form.redirection_url) && return
+      end
+
+      logger.debug("VALIATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
+
+      if(result && form.save)
+
+        journey_plan = form.journey_plan
+
+        if(journey_plan.class != DatashiftJourney.journey_plan_class)
+          raise "ClassError - Your Form's model is not a #{DatashiftJourney.journey_plan_class} - #{journey_plan.inspect}"
+        end
+
+        journey_plan.reload
+
+        logger.debug("SUCCESS - Updated #{journey_plan.inspect}")
+
+        # if there is no next event, state_machine dynamic helper can_next? not available
+        if(!journey_plan.respond_to?('can_next?') )
+
+          logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
+
+          render :journey_end
+        elsif(journey_plan.can_next?)
+          journey_plan.next!
+
+          redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
+        else
+          logger.error("JOURNEY Cannot proceed - not able to transition to next event'")
+
+          redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
+        end
+
       else
-        render :new
+        render :new, locals: {
+          journey_plan: form.journey_plan,
+          form: form
+        }
       end
     end
 
@@ -188,6 +217,70 @@ module DatashiftJourney
 
     def form_object(journey_plan)
       DatashiftJourney::FormObjectFactory.form_object_for(journey_plan)
+    end
+
+    # Needs further investigation into which situations require this
+
+    # http://jacopretorius.net/2014/01/force-page-to-reload-on-browser-back-in-rails.html
+    def back_button_cache_buster
+      response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+      response.headers["Pragma"] = "no-cache"
+      response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
+    end
+
+    def set_journey_plan
+      token = params[:id] || params[:journey_plan_id]
+
+      # https://github.com/robertomiranda/has_secure_token
+      # TODO: how to auto insert has_secure_token into the underlying journey plan model
+      # and add in migration thats adds the token column
+      # @journey_plan = DatashiftJourney.journey_plan_class.find_by_token!(token)
+
+      @journey_plan = DatashiftJourney.journey_plan_class.find(token)
+
+      logger.debug("Processing Journey: #{@journey_plan.inspect}")
+    end
+
+    # Currently the following Situations need special processing, carried out here.
+    #
+    #   * REFRESH - users hits refresh & resubmits a form - check state associated with view
+    #
+    # It is not expected to redirect or halt processing chain - it is simply to ensure state is manged correctly,
+    # for situations outside standard state flow/processing
+    #
+    def validate_state
+      current_index = @journey_plan.current_state_index
+
+      view_state = params[:rendered_state]
+
+      view_state_idx = @journey_plan.state_index(view_state) # nil for bad states
+
+      logger.debug "STATE and Param INFO:"
+      logger.debug "  Enrollment State\t\t[#{@journey_plan.state.inspect}] IDX [#{current_index}]"
+      logger.debug "  Rendered State  \t\t[#{view_state}] IDX [#{view_state_idx}]"
+      logger.debug "  Redirect to     \t\t[#{params[:redirect_to]}]"
+
+      if(view_state && view_state_idx && (view_state_idx < current_index))
+        logger.info("Probable User refresh, resetting state #{view_state} [IDX (#{view_state_idx})]")
+        @journey_plan.state = view_state
+      end
+
+      if(view_state.nil? && params[:state] && back_button_param_list.all? {|p| params.key?(p) })
+
+        transitions = @journey_plan.transitions_for
+
+        back_event = transitions.find { |t| t.event == :back }
+
+        if(back_event && back_event.from == @journey_plan.state && back_event.to == params[:state])
+          logger.debug("User CLICKED back Button - resetting state to [#{params[:state]}] from #{@journey_plan.state}")
+          @journey_plan.update!(state: params[:state])
+        end
+
+      end
+    end
+
+    def back_button_param_list
+      @back_button_param_list ||= [:state, :id, :action, :controller]
     end
 
   end

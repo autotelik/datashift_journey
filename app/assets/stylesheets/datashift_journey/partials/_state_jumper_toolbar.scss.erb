@@ -1,0 +1,27 @@
+/* A simple toolbar for navigating states in DEV only - NOT FOR PRODUCTION */
+
+<% unless(Rails.env.production?) %>
+
+#datashift_journey_state_jumper  {
+}
+
+#datashift_journey_state_jumper ul
+{
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  text-align: center;
+}
+
+#datashift_journey_state_jumper ul li { display: inline; }
+
+#datashift_journey_state_jumper ul li a
+{
+  font-size: 10px;
+  text-decoration: none;
+  padding: .2em 1em;
+  color: #fff;
+  background-color: #036;
+}
+
+<% end %>

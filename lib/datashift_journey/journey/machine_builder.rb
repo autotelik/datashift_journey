@@ -45,8 +45,6 @@ module DatashiftJourney
 
         machine_name = args.has_key?(:machine_name) ? args.delete(:machine_name) : :state
 
-        puts "Building Machine for [#{klass}]"
-
         machine = if(block_given?)
                     klass.class_eval do
                       state_machine machine_name, args do

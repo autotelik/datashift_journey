@@ -1,5 +1,9 @@
 ---
 en:
+  datashift_journey:
+    shared:
+      errors:
+        you_have: You have
   global:
     back: Back
     continue: Next

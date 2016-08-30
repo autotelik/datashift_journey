@@ -3,8 +3,15 @@ module DatashiftJourney
 
     # Helper to return whether a partial exists in expected place a particular state
     def journey_plan_partial?(state)
-      Rails.logger.debug("DatashiftJourney search path is [views/#{DatashiftJourney::Configuration.call.partial_location}]")
-      lookup_context.find_all("#{DatashiftJourney::Configuration.call.partial_location}/_#{state}").any?
+
+      result = lookup_context.find_all("#{DatashiftJourney::Configuration.call.partial_location}/_#{state}").any?
+
+      unless result
+        Rails.logger.warn("DatashiftJourney - no partial found for state #{state}")
+        Rails.logger.warn("DatashiftJourney searched path(s) [views/#{DatashiftJourney::Configuration.call.partial_location}]")
+      end
+
+      result
     end
 
     # helper to return the location of a partial for a particular state
@@ -14,22 +21,7 @@ module DatashiftJourney
     end
 
     def submit_button_text(form)
-      t("global.continue")
-    end
-
-
-    def page_title(title)
-      return unless title.present?
-
-      stripped_title = title.gsub(/’/, %('))
-
-      if content_for? :page_title
-        content_for :page_title, " | #{stripped_title}"
-      else
-        content_for :page_title, "GOV.UK | #{stripped_title}"
-      end
-
-      title
+      t("global.journey_plan.continue")
     end
 
     # This helper  adds a form-group DIV around form elements,

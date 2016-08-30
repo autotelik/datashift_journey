@@ -47,7 +47,7 @@ We can inform `datashift_journey` of this model class, via this initializer.
 For example, to use a model called `Checkout`
 
 ```ruby
-rails generate datashift_journey:initializer --model Checkout
+rails generate datashift_journey:initializer --journey_class Checkout
 ```
 
 Creates the file `config/initializers/datashift_journey.rb`
@@ -65,6 +65,18 @@ If you need to add an associated migration yourself it should contain `t.string 
 rails generate "migration", "AddStateToMyModel", "state:string"
 ```
 
+To ensure all helpers etc are available throughout, either inherit from our controller
+
+```ruby
+class ApplicationController < DatashiftJourney::ApplicationController
+```
+
+Or in your ApplicationController pull in our engines helpers
+
+```ruby
+  helper DatashiftJourney::Engine.helpers
+```
+  
 ### Routes
 
 The initializer will add the following routes to your app's `config/routes.rb` file. 
@@ -183,8 +195,7 @@ For example
 Once the Form class has been identified the Controller will attempt to create the new form object
 passing in the current journey plan object
 
-          
-                   
+                      
 ### The Views
 
 The Controller will expect a view partial, for each related Form.
@@ -204,6 +215,35 @@ This will be required in the path format, if you are using multiple namespaces/f
      config.partial_location = "checkout_engine"
    end
 ```
+
+### State Jumper Toolbar
+
+There is a development toolbar available for creating and jumping straight to any State
+
+This is not available in production and must be activated by setting 
+
+```ruby 
+config.add_state_jumper_toolbar = true
+```
+  
+So that any data required for previous states can be created, it supports passing in a Factory
+that creates that data for you.
+
+The factory should return an instance of your DatashiftJourney.journey_plan_class
+
+Configure your list of required 'jump to' states and factories -  where no factory required simply pass nil -
+by setting `state_jumper_states`, for example
+
+```ruby 
+config.state_jumper_states = {contact: my_contact_factory, ship_address: nil, :bill_address: nil}
+```
+    
+The view is added to a content_for block called :datashift_journey_state_jumper 
+so you can add this somewhere in your layout.
+
+To pull in some default styling add following to your `application.css.scss`
+
+`@import 'datashift_journey/partials/state_jumper_toolbar';`
 
 ## License
 

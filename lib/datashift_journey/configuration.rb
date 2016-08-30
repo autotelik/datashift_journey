@@ -33,7 +33,6 @@ module DatashiftJourney
     #
     attr_accessor :use_null_form_when_no_form
 
-    #attr_accessor :state_module_name
 
     # The location of the View partials, for rendering
     #
@@ -43,12 +42,30 @@ module DatashiftJourney
 
     attr_accessor :layout
 
+    # In development, you can add a state jumper toolbar, for jumping straight to any state
+    #
+    attr_accessor :add_state_jumper_toolbar
+
+    # Add required jump to states to this HASH
+    #
+    # So that any data required for previous states can be created, it supports passing in a Factory
+    # that creates that data for you by value. Use nil if no data required
+    #
+    # The factory should return an instance of your DatashiftJourney.journey_plan_class
+    #
+    # @param [Hash<:state, factory>]
+    # @return [Hash<#call>]
+    #
+    attr_accessor :state_jumper_states
+
     def initialize
       @forms_module_name = ""
       @null_form_list = []
       @partial_location  = ''
       @use_null_form_when_no_form = false
-      self.layout = 'application'
+      @layout = 'application'
+      @add_state_jumper_toolbar = false
+      @state_jumper_states = {}
     end
 
 

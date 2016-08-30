@@ -5,10 +5,6 @@ module DatashiftJourney
     @@journey_plan_class = x
 
     Rails.logger.info "Auto Extend #{x} with DatashiftJourney StateMachine"
-
-    # Helpers for dealing with bak and next
-    journey_plan_class.send :include, DatashiftJourney::Journey::Extensions
-    journey_plan_class.send :extend, DatashiftJourney::Journey::Extensions
   end
 
   def self.journey_plan_class
