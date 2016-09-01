@@ -39,13 +39,13 @@ module DatashiftJourney
 
       # Path splits down different branches, based on values from input e,g radio, text or checkbox
 
-      # target_on_value_map is a hash mapping between the value collected from website and associated branch state
-      # that causes the path to split down that branch
+      # target_on_value_map is a hash mapping between the value collected from website and the associated
+      # named branch. i.e a value collected on state, causes the path to split down that branch
       #
       #     branch_1: 'value from website to direct to branch_1 state',
       #     branch_2: 'a different value'
       #
-      def split_on_equality(state, attr_reader, target_on_value_map)
+      def split_on_equality(state, attr_reader, target_on_value_map, options = {})
 
         unless(target_on_value_map.is_a? Hash)
           raise "BadDefinition - target_on_value_map must be hash map value => associated branch state"
@@ -73,14 +73,14 @@ module DatashiftJourney
         # passing in the current model (e.g journey)
         #     if: ->(j) do j.organisation.type == :individual end
         #
-        target_on_value_map.each do |target_state, v|
+        target_on_value_map.each do |target_state, trigger_value|
 
           create_next( split_state, target_state ) do
             -> (o) {
               unless o && o.respond_to?(attr_reader)
                 raise PlannerBlockError, "Cannot split - No such reader method #{attr_reader} on Class #{o.class}"
               end
-              o.send(attr_reader) == v
+              o.send(attr_reader) == trigger_value
             }
           end
 
@@ -92,15 +92,16 @@ module DatashiftJourney
       end
 
 
-      def split_sequence(state, *list )
+      def split_sequence(sequence_id, *list )
         flattened = list.flatten
 
-        create_next(state, flattened.first)  unless(flattened.empty?)
+        # Each sequence should have a back from entry point back to the parent split_on state
+        create_back(flattened.first, split_state)
 
         create_back_transitions flattened
         create_next_transitions flattened
 
-        @processed_by_split_states[state] = flattened
+        @processed_by_split_states[sequence_id] = flattened
       end
 
       private
