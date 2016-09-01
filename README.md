@@ -195,7 +195,19 @@ For example
 Once the Form class has been identified the Controller will attempt to create the new form object
 passing in the current journey plan object
 
-                      
+
+The visibility of the default continue or submit button is driven by the 'show_submit_button?`
+method on your Form. If you are deriving from DatashiftJourney::BaseForm this is already implemented
+to return true by default.
+
+Over ride and return false if you wish to **hide** the button.
+
+```ruby
+ def show_submit_button?
+    false
+ end
+```
+
 ### The Views
 
 The Controller will expect a view partial, for each related Form.
@@ -215,6 +227,8 @@ This will be required in the path format, if you are using multiple namespaces/f
      config.partial_location = "checkout_engine"
    end
 ```
+
+See The Form to configure visibility of the default continue or submit button.
 
 ### State Jumper Toolbar
 
