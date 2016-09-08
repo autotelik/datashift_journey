@@ -29,7 +29,7 @@ module DatashiftJourney
         redirect_to(form.redirection_url) && return
       end
 
-      logger.debug("VALIATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
+      logger.debug("VALIDATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
 
       if(result && form.save)
 
@@ -98,28 +98,6 @@ module DatashiftJourney
       end
     end
 
-    # How to affect the next state and view :
-    #
-    # 1)  Pass nothing - Controller will call 'next' and render associated view
-    #
-    # 2)  Pass in params[:state_event] - Updates state directly, next not called
-    #
-    #     For example in your main form supply something like
-    #         <%= form.hidden_field :state_event, value: :register %>
-    #
-    #     N.B : This is ignored once we are 'reviewing'
-    #
-    # 3)  Set the variable @@render_state_partial directly
-    #     e.g Within AssignMemberDataForView method's such as setup_for_state
-    #
-    #     This will over ride rendering view associated with @journey_plan.state
-    #
-    # 4)  Skip next and view altogether - Pass in  params[:redirect_to])
-    #     Will pass params to journey_plan.update but then redirects & returns,
-    #     before any call to next or view rendering
-    #
-    # TODO: We may need to review this method and see if it can be broken up but for now turn off rubocop
-    #
     # rubocop:disable Metrics/AbcSize
     # rubocop:disable Metrics/PerceivedComplexity
     #
@@ -127,10 +105,13 @@ module DatashiftJourney
 
       form = form_object(@journey_plan)
 
-      logger.debug("CALLING VALIDATE ON Form #{form.class}")
+      logger.debug("UPDATE - CALLING VALIDATE ON Form #{form.class}")
 
       result = form.validate(params)
-      logger.debug("VALIATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
+
+      if form.redirect?
+        redirect_to(form.redirection_url) && return
+      end
 
       if(result && form.save)
         logger.debug("SUCCESS\n\tProcessed Form [#{form.inspect}]\tUpdated #{@journey_plan.reload.inspect}")
@@ -146,8 +127,6 @@ module DatashiftJourney
         }
       end
 =begin
-
-
         if @journey_plan.update(prepared_params)
 
           logger.debug("UPDATE SUCCESS !!! #{@journey_plan.inspect} - calling after_state_updated hooks")

@@ -12,13 +12,23 @@ module DatashiftJourney
     attr_reader :journey_plan
     attr_accessor :redirection_url
 
+    # Hmmmm reform does odd stuff
+    def build_errors
+     model.errors
+    end
+
+    # Default factory using our basic Collector model
+    def self.factory(collector)
+      new(collector)
+    end
+
     def initialize(model, journey_plan = nil)
       @journey_plan = journey_plan || model
       super(model)
     end
 
     def validate(params)
-      Rails.logger.debug "VALIDATING #{self} - Params - [#{form_params(params)}]"
+      Rails.logger.debug "VALIDATING #{self.class} - Params - [#{form_params(params)}]"
       super form_params(params)
     end
 
@@ -40,18 +50,6 @@ module DatashiftJourney
     def form_params(params)
       params.fetch(params_key, {})
     end
-
-=begin
-    def locale_key
-      Rails.logger.debug "SELF #{self}"
-      self.class.locale_key
-    end
-
-    def locale_errors
-      Rails.logger.debug "SELF #{self}"
-      self.class.locale_errors
-    end
-=end
 
     # Class methods as used heavily from class method validation methods
 

@@ -18,6 +18,12 @@ module DatashiftJourney
 
     end
 
+    # Automatically add our migrations into the main apps migrations
+    initializer :append_migrations, before: :load_config_initializers do |app|
+      config.paths["db/migrate"].expanded.each do |expanded_path|
+        app.config.paths["db/migrate"] << expanded_path
+      end
+    end
 
     # Make Shared examples and Support files available to Apps and other Engines
     # TODO: - make this optional - i.e configurable so Apps/Engines can easily pull this in themselves if they wish
