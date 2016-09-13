@@ -1,8 +1,10 @@
-class CollectorDataNode < ActiveRecord::Base
+module DatashiftJourney
+  class CollectorDataNode < ActiveRecord::Base
 
-  self.table_name = "collectors_data_nodes"
+    self.table_name = "dsj_collectors_data_nodes"
 
-  belongs_to :collector
-  belongs_to :data_node
+    belongs_to :collector
+    belongs_to :data_node
 
+  end
 end

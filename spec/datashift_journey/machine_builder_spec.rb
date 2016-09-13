@@ -1,13 +1,13 @@
 require 'rails_helper'
 
-# These tests split out testing diff elements into separate tests so for each
+# These tests split out testing diff elements, into separate tests, so for each
 # we need a clean empty class as the State Machines are held at the class level
-# and this is easier than trying to manage in one class
+# and this is easier than trying to manage diff state machines in one class
 
 class CheckoutEmpty < ActiveRecord::Base;  end
 class CheckoutA < ActiveRecord::Base;  end
 class CheckoutB < ActiveRecord::Base;  end
-class CheckoutB < ActiveRecord::Base; end
+class CheckoutC < ActiveRecord::Base; end
 
 module DatashiftJourney
 
@@ -23,7 +23,7 @@ module DatashiftJourney
           ::StateMachines::Machine.ignore_method_conflicts = true
         end
 
-        context "Simple MachineBuilder with no transitions" do
+        context "CheckoutEmpty - Simple MachineBuilder with no transitions" do
 
           let(:klass) { DatashiftJourney.journey_plan_class }
 
@@ -45,7 +45,7 @@ module DatashiftJourney
           end
         end
 
-        context "Simple Sequence" do
+        context "CheckoutA - Simple Sequence" do
 
           before(:all) do
             DatashiftJourney.journey_plan_class = "CheckoutA"
@@ -100,7 +100,7 @@ module DatashiftJourney
             expect(checkout.can_next?).to eq true
             checkout.next!
 
-            #          puts checkout.methods.sort.grep( /trans/ ).inspect
+            # puts checkout.methods.sort.grep( /trans/ ).inspect
 
             # now we should be able to go back and fwd
             expect( checkout.checkout_a_events.size).to eq 2
@@ -111,7 +111,7 @@ module DatashiftJourney
           end
         end
 
-        context "Simple Sequence as Array" do
+        context "CheckoutB - Simple Sequence as Array" do
 
           before(:all) do
             DatashiftJourney.journey_plan_class = "CheckoutB"
@@ -157,8 +157,9 @@ module DatashiftJourney
           end
         end
 
-        context "Complete API" do
+        context "Checkout - Complete API" do
 
+          # See
           before(:all) do
             DatashiftJourney.journey_plan_class = "Checkout"
 
@@ -182,24 +183,29 @@ module DatashiftJourney
             checkout.next!
           end
 
-          it 'enables a complete journey to be planned via simple DSL' do
+          # STATE ENGINE DEFINITION
+
+          it 'enables a complete journey to be planned via simple DSL', duff: true do
 
             MachineBuilder.extend_journey_plan_class(initial: :ship_address) do
 
               sequence [:ship_address, :bill_address]
 
+              # first define the sequences
+              split_sequence :visa_sequence, [:page_1_A, :page_2_A]
+
+              split_sequence :mastercard_sequence, [:page_mastercard_1, :page_mastercard_2, :page_mastercard_3]
+
+              split_sequence :paypal_sequence, []
+
+              # now define the parent state and the routing criteria to each sequence
+
               split_on_equality( :payment,
                                  "payment_card",    # Helper method on Checkout that returns card type from Payment
-                                 visa_page: 'visa',
-                                 mastercard_page: 'mastercard',
-                                 paypal_page: 'paypal'
+                                 visa_sequence: 'visa',
+                                 mastercard_sequence: 'mastercard',
+                                 paypal_sequence: 'paypal'
               )
-
-              split_sequence :visa_page, [:page_1_A, :page_2_A]
-
-              split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
-
-              split_sequence :paypal_page, []
 
               sequence [:review, :complete ]
             end
@@ -227,16 +233,13 @@ module DatashiftJourney
 
             checkout.create_payment!( card: :mastercard)
 
-            # now the conditions should have been met - one block should match the value
+            # now the conditions should have been met - one block (mastercard_page) should match payment_card value
             expect(checkout.can_next?).to eq true
             checkout.next!
 
-            check_state_and_next!(checkout, :mastercard_page )
-
-            checkout.next!
-            checkout.next!
-
-            check_state_and_next!(checkout, :page_3_B )
+            check_state_and_next!(checkout, :page_mastercard_1 )
+            check_state_and_next!(checkout, :page_mastercard_2 )
+            check_state_and_next!(checkout, :page_mastercard_3 )
 
             check_state(checkout, :review )
 

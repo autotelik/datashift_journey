@@ -4,7 +4,9 @@ module DatashiftJourney
 
     module Planner
 
-      attr_accessor :last_processed_state, :processed_by_split_states, :split_state
+      attr_reader :split_sequence_map, :split_on_state
+
+      attr_accessor :last_processed_state
 
       def sequence(*list)
         raise PlannerApiError, "Empty list passed to sequence - check your MachineBuilder syntax" if(list.empty?)
@@ -14,17 +16,17 @@ module DatashiftJourney
         # so build links from start of this new sequence, to and from the end points of previous split
         sequence_start = flattened.first
 
-        processed_by_split_states.each do |state, previous|
+        split_sequence_map.each do |state, sequence_states|
 
-          # previous is whole sequence of the branch for state - we want the end point only
-          end_point = previous.last.blank? ? state.to_sym :  previous.last
+          # sequence_states is whole sequence of the branch for state - we want the end point only
+          end_point = sequence_states.last.blank? ? state.to_sym :  sequence_states.last
 
           create_next(end_point, sequence_start)
 
           # TODO - Back will require a transition hook to determine which splt to return to
           # create_pair(sequence_start, end_point)
 
-        end if(processed_by_split_states)
+        end if(split_sequence_map)
 
         # create a next link from Last state to First of this sequence
         create_next(@last_processed_state,  flattened.last) if(@last_processed_state)
@@ -51,18 +53,23 @@ module DatashiftJourney
           raise "BadDefinition - target_on_value_map must be hash map value => associated branch state"
         end
 
-        @split_state = state.to_sym
+        @split_on_state = state.to_sym
 
-        if(last_processed_state && last_processed_state != split_state)
+        if(last_processed_state && last_processed_state != split_on_state)
           # Create a Back link from splitting state to last in journey
           create_back(state, last_processed_state)
 
-          # Create a Next link from ast in journey to  this splitting state
+          # Create a Next link from last in journey to this splitting state
           create_next(last_processed_state, state)
         end
 
-        # Each target state should have a back to this parent split_on state
-        target_on_value_map.keys.each { |t| create_back(t, state) }
+        # Each target state should have a transition BACK to this parent split_on state
+
+        target_on_value_map.keys.each do |seq_id|
+          target_state = first_target_state(seq_id)
+
+          create_back(target_state, state) if(target_state)
+        end
 
         # Now build the next transitions to occur when Model.attribute reader == value
         # For example the Form collects values from radio buttons, each radio selects for a different journey path
@@ -73,45 +80,50 @@ module DatashiftJourney
         # passing in the current model (e.g journey)
         #     if: ->(j) do j.organisation.type == :individual end
         #
-        target_on_value_map.each do |target_state, trigger_value|
+        target_on_value_map.each do |seq_id, trigger_value|
 
-          create_next( split_state, target_state ) do
+          target_state = first_target_state(seq_id)
+
+          #puts "DEBUG - Create NEXT EVENT from [#{split_on_state}] to [#{target_state}] WITH BLOCK"
+          create_next( split_on_state, target_state ) do
             -> (o) {
               unless o && o.respond_to?(attr_reader)
                 raise PlannerBlockError, "Cannot split - No such reader method #{attr_reader} on Class #{o.class}"
               end
               o.send(attr_reader) == trigger_value
             }
-          end
+          end if(target_state)
 
         end
 
         # The split sequences will define the end points for this split
         @last_processed_state = nil
-        @processed_by_split_states ||= Planner::hash_klass.new
+        @split_sequence_map ||= Planner::hash_klass.new
       end
 
 
       def split_sequence(sequence_id, *list )
         flattened = list.flatten
 
-        # Each sequence should have a back from entry point back to the parent split_on state
-        create_back(flattened.first, split_state)
-
         create_back_transitions flattened
         create_next_transitions flattened
 
-        @processed_by_split_states[sequence_id] = flattened
+        @split_sequence_map[sequence_id] = flattened
       end
 
       private
 
+      def first_target_state(seq_id)
+        #puts "DEBUG - Seq Id [#{seq_id}] has ASSOCIATED LIST #{split_sequence_map[seq_id]}"
+        split_sequence_map.fetch(seq_id, []).first
+      end
+
       def sequence_reset(list)
         @last_processed_state = list.last
 
-        @split_state = nil
+        @split_on_state = nil
 
-        @processed_by_split_states = Planner::hash_klass.new
+        @split_sequence_map = Planner::hash_klass.new
       end
 
       def self.hash_klass
