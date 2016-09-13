@@ -21,11 +21,16 @@ module DatashiftJourney
 
     # Automatically add our migrations into the main App's migrations
     initializer :append_migrations do |app|
-      app.config.paths["db/migrate"] += config.paths["db/migrate"].expanded  unless app.root.to_s.match root.to_s
+      unless app.root.to_s.match root.to_s
+        config.paths["db/migrate"].expanded.each do |expanded_path|
+          app.config.paths["db/migrate"] << expanded_path
+        end
+      end
     end
 
+
     # Make Shared examples and Support files available to Apps and other Engines
-    # TODO: - make this optional - i.e configurable so Apps/Engines can easily pull this in themselves if they wish
+    # TODO: - make this optional - i.e installable so Apps/Engines can easily pull this in themselves if they wish
     if Rails.env.test? && defined?(RSpec)
       initializer 'datashift_journey.shared_examples' do
         RSpec.configure do

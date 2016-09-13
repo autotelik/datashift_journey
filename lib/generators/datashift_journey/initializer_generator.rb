@@ -16,7 +16,7 @@ module DatashiftJourney
     def model_and_migration
 
       begin
-        klass = options[:journey_class].to_s.constantize
+        options[:journey_class].to_s.constantize
       rescue => e
         puts "No such class #{options[:journey_class]} found - creating basic model and migration"
 
