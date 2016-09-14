@@ -1,5 +1,8 @@
 module DatashiftJourney
 
+  # Helper struct for displaying available account types in view
+  Struct.new("StateJumperEntry", :state, :display, :factory)
+
   class Configuration
 
     # The start page link for journey page Back links
@@ -46,15 +49,14 @@ module DatashiftJourney
     #
     attr_accessor :add_state_jumper_toolbar
 
-    # Add required jump to states to this HASH
+    # Add required details of states to jump to (see StateJumperEntry) to this ARRAY
     #
     # So that any data required for previous states can be created, it supports passing in a Factory
     # that creates that data for you by value. Use nil if no data required
     #
     # The factory should return an instance of your DatashiftJourney.journey_plan_class
     #
-    # @param [Hash<:state, factory>]
-    # @return [Hash<#call>]
+    # @param [ StateJumperEntry.new(:state_name, "State Name", :state_factory), .... ]
     #
     attr_accessor :state_jumper_states
 
@@ -65,7 +67,7 @@ module DatashiftJourney
       @use_null_form_when_no_form = false
       @layout = 'application'
       @add_state_jumper_toolbar = false
-      @state_jumper_states = {}
+      @state_jumper_states = []
     end
 
 

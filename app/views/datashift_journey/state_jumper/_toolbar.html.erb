@@ -7,8 +7,8 @@
       <div id="datashift_journey_state_jumper">
         <ul>
           <li>DS Journey State Jumper: </li>
-          <% DatashiftJourney::Configuration.call.state_jumper_states.each do |state, factory| %>
-            <li> <%= link_to state.to_s.titleize, datashift_journey.build_and_display_path(state, factory) %></li>
+          <% DatashiftJourney::Configuration.call.state_jumper_states.each do |entry| %>
+            <li> <%= link_to entry.display, datashift_journey.build_and_display_path(entry.state, entry.factory) %></li>
           <% end %>
         </ul>
       </div>
