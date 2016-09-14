@@ -1,17 +1,30 @@
 require 'rails_helper'
 
-# These tests split out testing diff elements, into separate tests, so for each
-# we need a clean empty class as the State Machines are held at the class level
-# and this is easier than trying to manage diff state machines in one class
-
-class CheckoutEmpty < ActiveRecord::Base;  end
-class CheckoutA < ActiveRecord::Base;  end
-class CheckoutB < ActiveRecord::Base;  end
-class CheckoutC < ActiveRecord::Base; end
-
 module DatashiftJourney
 
   module Journey
+
+    # These tests split out testing diff elements, into separate tests, so for each
+    # we need a clean empty class as the State Machines are held at the class level
+    # and this is easier than trying to manage diff state machines in one class
+
+    class Checkout < ActiveRecord::Base
+      belongs_to :bill_address, class_name: "Address"
+      belongs_to :ship_address, class_name: "Address"
+      belongs_to :payment
+
+      def payment_card
+        (payment.present?) ? payment.card : ""
+      end
+    end
+
+    class CheckoutEmpty < ActiveRecord::Base;  end
+    class CheckoutA < ActiveRecord::Base;  end
+    class CheckoutB < ActiveRecord::Base;  end
+    class CheckoutC < ActiveRecord::Base; end
+
+    class Payment < ActiveRecord::Base
+    end
 
     RSpec.describe MachineBuilder do
 
@@ -28,7 +41,7 @@ module DatashiftJourney
           let(:klass) { DatashiftJourney.journey_plan_class }
 
           before(:all) do
-            DatashiftJourney.journey_plan_class = "CheckoutEmpty"
+            DatashiftJourney.journey_plan_class = "DatashiftJourney::Journey::CheckoutEmpty"
           end
 
           it 'does not break the extended Rails class' do
@@ -48,7 +61,7 @@ module DatashiftJourney
         context "CheckoutA - Simple Sequence" do
 
           before(:all) do
-            DatashiftJourney.journey_plan_class = "CheckoutA"
+            DatashiftJourney.journey_plan_class = "DatashiftJourney::Journey::CheckoutA"
 
             @machine = MachineBuilder.extend_journey_plan_class(machine_name: :checkout_a, initial: :page1) do
               sequence :page1, :page2, :page3, :page4
@@ -114,7 +127,7 @@ module DatashiftJourney
         context "CheckoutB - Simple Sequence as Array" do
 
           before(:all) do
-            DatashiftJourney.journey_plan_class = "CheckoutB"
+            DatashiftJourney.journey_plan_class = "DatashiftJourney::Journey::CheckoutB"
 
             @machine = MachineBuilder.extend_journey_plan_class(machine_name: :checkout_b, initial: :array1) do
               sequence [:array1, :array2, :array3]
@@ -161,7 +174,7 @@ module DatashiftJourney
 
           # See
           before(:all) do
-            DatashiftJourney.journey_plan_class = "Checkout"
+            DatashiftJourney.journey_plan_class = "DatashiftJourney::Journey::Checkout"
 
             [:visa, :mastercard, :paypal].each { |p| Payment.create( name: p) }
           end

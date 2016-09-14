@@ -24,49 +24,49 @@ ActiveRecord::Schema.define(version: 20160907091700) do
     t.datetime "updated_at",                 null: false
   end
 
-  create_table "checkout_as", force: :cascade do |t|
+  create_table "datashift_journey_checkout_as", force: :cascade do |t|
     t.string   "checkout_a"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "checkout_bs", force: :cascade do |t|
+  create_table "datashift_journey_checkout_bs", force: :cascade do |t|
     t.string   "checkout_b"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "checkout_cs", force: :cascade do |t|
+  create_table "datashift_journey_checkout_cs", force: :cascade do |t|
     t.string   "checkout_c"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "checkout_ds", force: :cascade do |t|
+  create_table "datashift_journey_checkout_ds", force: :cascade do |t|
     t.string   "checkout_d"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "checkout_empties", force: :cascade do |t|
+  create_table "datashift_journey_checkout_empties", force: :cascade do |t|
     t.string   "checkout_empty"
     t.datetime "created_at",     null: false
     t.datetime "updated_at",     null: false
   end
 
-  create_table "checkout_es", force: :cascade do |t|
+  create_table "datashift_journey_checkout_es", force: :cascade do |t|
     t.string   "checkout_e"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "checkout_fs", force: :cascade do |t|
+  create_table "datashift_journey_checkout_fs", force: :cascade do |t|
     t.string   "checkout_f"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
   end
 
-  create_table "checkouts", force: :cascade do |t|
+  create_table "datashift_journey_checkouts", force: :cascade do |t|
     t.string   "state"
     t.datetime "created_at",      null: false
     t.datetime "updated_at",      null: false
@@ -76,10 +76,16 @@ ActiveRecord::Schema.define(version: 20160907091700) do
     t.integer  "payment_id"
   end
 
-  add_index "checkouts", ["bill_address_id"], name: "index_checkouts_on_bill_address_id"
-  add_index "checkouts", ["payment_id"], name: "index_checkouts_on_payment_id"
-  add_index "checkouts", ["ship_address_id"], name: "index_checkouts_on_ship_address_id"
-  add_index "checkouts", ["token"], name: "index_checkouts_on_token", unique: true
+  add_index "datashift_journey_checkouts", ["bill_address_id"], name: "index_datashift_journey_checkouts_on_bill_address_id"
+  add_index "datashift_journey_checkouts", ["payment_id"], name: "index_datashift_journey_checkouts_on_payment_id"
+  add_index "datashift_journey_checkouts", ["ship_address_id"], name: "index_datashift_journey_checkouts_on_ship_address_id"
+
+  create_table "datashift_journey_payments", force: :cascade do |t|
+    t.string   "name"
+    t.string   "card"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "dsj_collectors", force: :cascade do |t|
     t.string   "state"
@@ -111,12 +117,5 @@ ActiveRecord::Schema.define(version: 20160907091700) do
 
   add_index "dsj_data_nodes", ["field"], name: "index_dsj_data_nodes_on_field"
   add_index "dsj_data_nodes", ["form_name"], name: "index_dsj_data_nodes_on_form_name"
-
-  create_table "payments", force: :cascade do |t|
-    t.string   "name"
-    t.string   "card"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
 end

@@ -25,11 +25,11 @@ module DatashiftJourney
 
       result = form.validate(params)
 
+      logger.debug("VALIDATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
+
       if form.redirect?
         redirect_to(form.redirection_url) && return
       end
-
-      logger.debug("VALIDATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
 
       if(result && form.save)
 

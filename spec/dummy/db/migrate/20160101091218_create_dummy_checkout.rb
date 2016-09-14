@@ -1,24 +1,7 @@
 class CreateDummyCheckout < ActiveRecord::Migration
   def change
 
-    # The standard format when workign with a Single state machine/class
-    #
-    create_table :checkouts do |t|
-      t.string :state
-      t.timestamps null: false
-      t.string :token
-    end
-
-    add_index  :checkouts , :token, unique: true
-
-    # For Rspec - Lots of different state machine classes required
-    # - because the state machine Name must be reflected in the Column
-    ["checkout_empties", "checkout_as","checkout_bs","checkout_cs","checkout_ds","checkout_es","checkout_fs", ].each do |c|
-      create_table c do |t|
-        t.string c.singularize
-        t.timestamps null: false
-      end
-    end
+    mod = "datashift_journey"
 
     create_table :addresses do |t|
       t.string :premises,           limit: 200
@@ -30,15 +13,31 @@ class CreateDummyCheckout < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    create_table :payments do |t|
+    create_table "#{mod}_payments" do |t|
       t.string :name
       t.string :card
       t.timestamps null: false
     end
 
-    add_reference :checkouts, :bill_address,index: true
-    add_reference :checkouts, :ship_address, index: true
-    add_reference :checkouts, :payment, index: true
+    create_table "#{mod}_checkouts" do |t|
+      t.string :state                 # The standard format when working with a Single state machine/class
+      t.timestamps null: false
+      t.string :token
+      t.references :bill_address,index: true
+      t.references :ship_address, index: true
+      t.references :payment, index: true
+    end
+
+
+    # For Rspec - Lots of different state machine classes required
+    # - because the state machine Name must be reflected in the Column
+
+    ["checkout_empties", "checkout_as","checkout_bs","checkout_cs","checkout_ds","checkout_es","checkout_fs", ].each do |c|
+      create_table "#{mod}_#{c}" do |t|
+        t.string c.singularize
+        t.timestamps null: false
+      end
+    end
 
   end
 end
