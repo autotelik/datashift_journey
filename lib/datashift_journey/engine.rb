@@ -15,19 +15,7 @@ module DatashiftJourney
       # Helpers for dealing with back and next
       DatashiftJourney.journey_plan_class.send :include, DatashiftJourney::StateMachines::Extensions
       DatashiftJourney.journey_plan_class.send :extend, DatashiftJourney::StateMachines::Extensions
-
     end
-
-
-    # Automatically add our migrations into the main App's migrations
-    initializer :append_migrations do |app|
-      unless app.root.to_s.match root.to_s
-        config.paths["db/migrate"].expanded.each do |expanded_path|
-          app.config.paths["db/migrate"] << expanded_path
-        end
-      end
-    end
-
 
     # Make Shared examples and Support files available to Apps and other Engines
     # TODO: - make this optional - i.e installable so Apps/Engines can easily pull this in themselves if they wish

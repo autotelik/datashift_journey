@@ -5,7 +5,6 @@ module DatashiftJourney
   class BaseForm < Reform::Form
 
     #include ActionView::Helpers::TranslationHelper
-
     include Reform::Form::ActiveModel::Validations
 
     # Hmmmm the reform ActiveModel::Validations include requires some odd stuff
@@ -20,11 +19,20 @@ module DatashiftJourney
     attr_reader :journey_plan
     attr_accessor :redirection_url
 
-    # Default factory using our basic Collector model
-    def self.factory(collector)
-      new(collector)
+    # Default factory when the form model == main journey plan model
+    def self.factory(journey_plan)
+      new(journey_plan)
     end
 
+    # The form can  manage the main journey plan model and/or an associated model
+    # for example Payment or Address models associated with your main Checkout model.
+    # To supply an associated model, your factory could look something like
+    #
+    #   def self.factory(checkout)
+    #      address = Address.new(address_type: :billing)
+    #      new(address, checkout)
+    #   end
+    #
     def initialize(model, journey_plan = nil)
       @journey_plan = journey_plan || model
       super(model)
@@ -61,9 +69,10 @@ module DatashiftJourney
       self.name.underscore
     end
 
+    # Scope for locales that initially matches view scope
     def self.locale_errors
       # When called from a derived class DerivedForm - self.class.name = Class but self.name = DerivedForm
-      "#{self.name.underscore}.errors"
+      "#{DatashiftJourney.journey_plan_class.name.tableize}.#{self.name.underscore}.errors"
     end
 
     def logger

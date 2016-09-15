@@ -62,9 +62,12 @@ module DatashiftJourney
 
     def initialize
       @forms_module_name = ""
-      @null_form_list = []
+
       @partial_location  = ''
+
       @use_null_form_when_no_form = false
+      @null_form_list = []
+
       @layout = 'application'
       @add_state_jumper_toolbar = false
       @state_jumper_states = []

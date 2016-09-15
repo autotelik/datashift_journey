@@ -4,9 +4,13 @@ module DatashiftJourney
 
     module Planner
 
-      attr_reader :split_sequence_map, :split_on_state
+      attr_reader :split_on_state
 
       attr_accessor :last_processed_state
+
+      def split_sequence_map
+        @split_sequence_map ||= Planner::hash_klass.new
+      end
 
       def sequence(*list)
         raise PlannerApiError, "Empty list passed to sequence - check your MachineBuilder syntax" if(list.empty?)
@@ -98,7 +102,6 @@ module DatashiftJourney
 
         # The split sequences will define the end points for this split
         @last_processed_state = nil
-        @split_sequence_map ||= Planner::hash_klass.new
       end
 
 
@@ -108,7 +111,8 @@ module DatashiftJourney
         create_back_transitions flattened
         create_next_transitions flattened
 
-        @split_sequence_map[sequence_id] = flattened
+        #puts "DEBUG: Add split sequence for Seq ID #{sequence_id}"
+        split_sequence_map[sequence_id] = flattened
       end
 
       private
