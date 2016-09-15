@@ -1,6 +1,9 @@
 module DatashiftJourney
   mattr_accessor :journey_plan_class
 
+  # Default
+  @@journey_plan_class = "DatashiftJourney::Collector"
+
   def self.journey_plan_class=(x)
     @@journey_plan_class = x
 

@@ -6,7 +6,9 @@ en:
         you_have: You have
   global:
     back: Back
-    continue: Next
+    continue: Continue
+    journey_plan:
+      continue: Continue
     404_notfound:
       heading: Page not found
       message1: Sorry, the page you’re looking for cannot be found.

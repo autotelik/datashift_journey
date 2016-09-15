@@ -17,7 +17,7 @@ module DatashiftJourney
     # helper to return the location of a partial for a particular state
     def journey_plan_partial_location(state)
       Rails.logger.debug("DatashiftJourney RENDER #{DatashiftJourney::Configuration.call.partial_location}/#{state}}")
-      "#{DatashiftJourney::Configuration.call.partial_location}/#{state}"
+      File.join(DatashiftJourney::Configuration.call.partial_location.to_s, state)
     end
 
     def submit_button_text(form)

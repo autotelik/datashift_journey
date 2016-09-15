@@ -15,12 +15,10 @@ module DatashiftJourney
       # Helpers for dealing with back and next
       DatashiftJourney.journey_plan_class.send :include, DatashiftJourney::StateMachines::Extensions
       DatashiftJourney.journey_plan_class.send :extend, DatashiftJourney::StateMachines::Extensions
-
     end
 
-
     # Make Shared examples and Support files available to Apps and other Engines
-    # TODO: - make this optional - i.e configurable so Apps/Engines can easily pull this in themselves if they wish
+    # TODO: - make this optional - i.e installable so Apps/Engines can easily pull this in themselves if they wish
     if Rails.env.test? && defined?(RSpec)
       initializer 'datashift_journey.shared_examples' do
         RSpec.configure do

@@ -11,7 +11,7 @@
   <%= hidden_field_tag "rendered_state", local_assigns[:rendered_state] || state  %>
 
   <% if(journey_plan_partial?(state)) %>
-    <%= render journey_plan_partial_location(state), form: form, f: f %>
+    <%= render journey_plan_partial_location(state), form: form, f: f, journey_plan: journey_plan %>
   <% end %>
 
   <% if form.show_submit_button? %>

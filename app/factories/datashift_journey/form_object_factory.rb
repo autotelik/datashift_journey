@@ -27,13 +27,17 @@ module DatashiftJourney
 
         return DatashiftJourney::NullForm if(Configuration.call.use_null_form_when_no_form)
 
-        @null_form_list ||= Configuration.call.null_form_list.map!(&:to_sym)
+        return DatashiftJourney:: NullForm if(null_form_for_state?(journey_plan.state))
 
-        if(@null_form_list.include?(journey_plan.state.to_sym))
-          DatashiftJourney:: NullForm
-        else
-          nil
-        end
+        nil
+      end
+
+      def null_form_for_state?(state)
+        null_form_list.include?(state.to_sym)
+      end
+
+      def null_form_list
+        @null_form_list ||= Configuration.call.null_form_list.map!(&:to_sym)
       end
 
       def form_class_for(journey_plan)

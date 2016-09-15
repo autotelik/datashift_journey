@@ -4,21 +4,42 @@ module DatashiftJourney
 
   class BaseForm < Reform::Form
 
-    include ActionView::Helpers::TranslationHelper
-    include ActiveModel::Validations
+    #include ActionView::Helpers::TranslationHelper
+    include Reform::Form::ActiveModel::Validations
 
-    feature Reform::Form::ActiveModel::Validations
+    # Hmmmm the reform ActiveModel::Validations include requires some odd stuff
+    delegate :model_name, to: :model
+
+    #def build_errors
+    #  model.errors
+    #end
+
+    # Ok our stuff now
 
     attr_reader :journey_plan
     attr_accessor :redirection_url
 
+    # Default factory when the form model == main journey plan model
+    def self.factory(journey_plan)
+      new(journey_plan)
+    end
+
+    # The form can  manage the main journey plan model and/or an associated model
+    # for example Payment or Address models associated with your main Checkout model.
+    # To supply an associated model, your factory could look something like
+    #
+    #   def self.factory(checkout)
+    #      address = Address.new(address_type: :billing)
+    #      new(address, checkout)
+    #   end
+    #
     def initialize(model, journey_plan = nil)
       @journey_plan = journey_plan || model
       super(model)
     end
 
     def validate(params)
-      Rails.logger.debug "VALIDATING #{self} - Params - [#{form_params(params)}]"
+      Rails.logger.debug "VALIDATING #{model.inspect} - Params - #{form_params(params)}"
       super form_params(params)
     end
 
@@ -26,6 +47,7 @@ module DatashiftJourney
       Rails.logger.debug "Checking for REDIRECTION - [#{redirection_url}]"
       !redirection_url.nil?
     end
+
 
     # Default is to display a submit button - which essentially calls our Controller and
     # moves the state forwards, if validate/save etc all pass
@@ -41,27 +63,16 @@ module DatashiftJourney
       params.fetch(params_key, {})
     end
 
-=begin
-    def locale_key
-      Rails.logger.debug "SELF #{self}"
-      self.class.locale_key
-    end
-
-    def locale_errors
-      Rails.logger.debug "SELF #{self}"
-      self.class.locale_errors
-    end
-=end
-
     # Class methods as used heavily from class method validation methods
 
     def self.locale_key
       self.name.underscore
     end
 
+    # Scope for locales that initially matches view scope
     def self.locale_errors
       # When called from a derived class DerivedForm - self.class.name = Class but self.name = DerivedForm
-      "#{self.name.underscore}.errors"
+      "#{DatashiftJourney.journey_plan_class.name.tableize}.#{self.name.underscore}.errors"
     end
 
     def logger
