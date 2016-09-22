@@ -8,6 +8,10 @@ module DatashiftJourney
 
     has_many :data_nodes, through: :collector_data_nodes, dependent: :destroy
 
+    def nodes_for_form_and_field(form_name,  field)
+      self.data_nodes.where("form_name = ? AND field = ?",  form_name,  field)
+    end
+
   end
 
 end

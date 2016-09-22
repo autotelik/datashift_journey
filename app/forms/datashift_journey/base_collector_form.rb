@@ -19,9 +19,19 @@ module DatashiftJourney
     end
 
     def save
-      super                 # saves the model
-      collector.data_nodes << model
-      collector.save
+
+      sync    # Update the model so we can neatly check/use the Form's data
+
+      if find_model = collector.nodes_for_form_and_field(model.form_name,  model.field).first
+        find_model.update(field_value: model.field_value )
+        find_model.save
+      else
+        super # saves the model
+
+        collector.data_nodes << model
+        collector.save
+      end
+
     end
 
   end

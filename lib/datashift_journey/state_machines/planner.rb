@@ -6,7 +6,7 @@ module DatashiftJourney
 
       attr_reader :split_on_state
 
-      attr_accessor :last_processed_state
+      attr_accessor :last_processed_state, :last_processed_states
 
       def split_sequence_map
         @split_sequence_map ||= Planner::hash_klass.new
@@ -36,7 +36,7 @@ module DatashiftJourney
         create_next(@last_processed_state,  flattened.last) if(@last_processed_state)
 
 
-        # Now the normalk flows within the sequence
+        # Now the normal flows within the sequence
         create_back_transitions flattened
         create_next_transitions flattened
 
@@ -59,6 +59,8 @@ module DatashiftJourney
 
         @split_on_state = state.to_sym
 
+        puts "\nDEBUG: Create split on equality @ [#{@split_on_state}]"
+
         if(last_processed_state && last_processed_state != split_on_state)
           # Create a Back link from splitting state to last in journey
           create_back(state, last_processed_state)
@@ -67,11 +69,21 @@ module DatashiftJourney
           create_next(last_processed_state, state)
         end
 
+        # When two splits occur consecutively
+        last_processed_states.each do |prev_seq_state|
+
+          puts "DEBUG - Previous split state - create_next(#{prev_seq_state}, #{state})"
+
+          # Create a Next link from last in previous  to this splitting state
+          create_next(prev_seq_state, state)
+        end if(last_processed_states)
+
         # Each target state should have a transition BACK to this parent split_on state
 
         target_on_value_map.keys.each do |seq_id|
           target_state = first_target_state(seq_id)
 
+          puts "DEBUG: Create back link from [#{target_state}] to [#{state}]"
           create_back(target_state, state) if(target_state)
         end
 
@@ -84,11 +96,15 @@ module DatashiftJourney
         # passing in the current model (e.g journey)
         #     if: ->(j) do j.organisation.type == :individual end
         #
+        @last_processed_states = []
+
         target_on_value_map.each do |seq_id, trigger_value|
+
+          puts "\nDEBUG: Building next transitions for each split sequence #{seq_id}"
 
           target_state = first_target_state(seq_id)
 
-          #puts "DEBUG - Create NEXT EVENT from [#{split_on_state}] to [#{target_state}] WITH BLOCK"
+          puts "DEBUG - Create NEXT EVENT from [#{split_on_state}] to [#{target_state}] WITH BLOCK"
           create_next( split_on_state, target_state ) do
             -> (o) {
               unless o && o.respond_to?(attr_reader)
@@ -98,7 +114,11 @@ module DatashiftJourney
             }
           end if(target_state)
 
+          @last_processed_states << last_target_state(seq_id)
         end
+
+        @last_processed_states.uniq!
+        @last_processed_states.compact!
 
         # The split sequences will define the end points for this split
         @last_processed_state = nil
@@ -111,20 +131,26 @@ module DatashiftJourney
         create_back_transitions flattened
         create_next_transitions flattened
 
-        #puts "DEBUG: Add split sequence for Seq ID #{sequence_id}"
+        puts "DEBUG: Add split sequence for Seq ID #{sequence_id}"
         split_sequence_map[sequence_id] = flattened
       end
 
       private
 
       def first_target_state(seq_id)
-        #puts "DEBUG - Seq Id [#{seq_id}] has ASSOCIATED LIST #{split_sequence_map[seq_id]}"
+       # puts "DEBUG - Get First Target for Seq Id [#{seq_id}]  - [#{split_sequence_map.fetch(seq_id, []).first}]"
         split_sequence_map.fetch(seq_id, []).first
+      end
+
+      def last_target_state(seq_id)
+       # puts "DEBUG - Get LAst Target for Seq Id [#{seq_id}]  - [#{split_sequence_map.fetch(seq_id, []).last}]"
+        split_sequence_map.fetch(seq_id, []).last
       end
 
       def sequence_reset(list)
         @last_processed_state = list.last
 
+        @last_processed_states = nil
         @split_on_state = nil
 
         @split_sequence_map = Planner::hash_klass.new

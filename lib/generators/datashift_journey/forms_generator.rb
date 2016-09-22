@@ -60,7 +60,8 @@ class  #{state.classify}Form < DatashiftJourney::BaseCollectorForm
   end
 
   property :field_value
-  validates :field_value, presence: true
+  # Example basic validation - has field been filled in :
+  # validates :field_value, presence: true
 end
       EOF
 

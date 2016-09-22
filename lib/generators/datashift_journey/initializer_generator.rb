@@ -36,28 +36,18 @@ module DatashiftJourney
 
     end
 
-    def create_initializer_file
+    extend DatashiftJourney::InitializerCommon
+    include DatashiftJourney::InitializerCommon
 
-      # The app must inform datashift_journey of the model class, that hosts the journey plan
-      # For example, in config/initializers/datashift_journey.rb
-      # DatashiftJourney.journey_plan_class = "Checkout"
-
-      create_file "config/initializers/datashift_journey.rb" do
-        "\nDatashiftJourney.journey_plan_class = '#{options[:journey_class]}'\n\n"\
-        "DatashiftJourney::Configuration.configure do |config|\n"\
-        "  config.partial_location = '#{options[:journey_class].pluralize.underscore}'\n"\
-        "end\n"
-      end
-
+    def initializer_file
+      create_initializer_file(options[:journey_class])
     end
 
     # The jounrey is stored in a seperate concern (module) so model itself uncluttered
     # This module is auto included in the model
 
-    def journey_concern
-      create_file "app/models/concerns/#{concern_file}" do
-        model_journey_code
-      end
+    def concern
+      journey_concern(options[:journey_class])
 
       klass = options[:journey_class].to_s.constantize
 

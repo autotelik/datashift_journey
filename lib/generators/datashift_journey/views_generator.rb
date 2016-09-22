@@ -14,8 +14,14 @@ module DatashiftJourney
               ->(s){ view_for_journey_plan_definition(s) }
             end
 
+      path = "app/views"
+
+      partial_location = DatashiftJourney::Configuration.call.partial_location
+
+      path = File.join(path,  partial_location) if partial_location.present?
+
       DatashiftJourney.journey_plan_class.state_machine.states.map(&:name).each do |state|
-        create_file "app/views/_#{state}.html.erb" do
+        create_file File.join(path, "_#{state}.html.erb") do
           foo.call(state.to_s )
         end
       end

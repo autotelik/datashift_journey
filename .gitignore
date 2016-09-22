@@ -26,6 +26,8 @@ spec/dummy/db/*.sqlite3-journal
 spec/dummy/log/*.log
 spec/dummy/tmp/
 spec/dummy/.sass-cache
+spec/dummy/app/forms
+spec/dummy/app/views
 
 .byebug_history
 

@@ -114,11 +114,31 @@ module DatashiftJourney
       end
 
       if(result && form.save)
-        logger.debug("SUCCESS\n\tProcessed Form [#{form.inspect}]\tUpdated #{@journey_plan.reload.inspect}")
+        journey_plan = form.journey_plan
 
-        @journey_plan.next!
+        if(journey_plan.class != DatashiftJourney.journey_plan_class)
+          raise "ClassError - Your Form's model is not a #{DatashiftJourney.journey_plan_class} - #{journey_plan.inspect}"
+        end
 
-        redirect_to(datashift_journey.journey_plan_state_path(@journey_plan.state, @journey_plan)) && return
+        journey_plan.reload
+
+        logger.debug("SUCCESS - Updated #{journey_plan.inspect}")
+
+        # if there is no next event, state_machine dynamic helper can_next? not available
+        if(!journey_plan.respond_to?('can_next?') )
+
+          logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
+
+          render :journey_end
+        elsif(journey_plan.can_next?)
+          journey_plan.next!
+
+          redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
+        else
+          logger.error("JOURNEY Cannot proceed - not able to transition to next event'")
+
+          redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
+        end
       else
         logger.debug("FAILED - Form Errors [#{form.errors.inspect}]")
         render :edit, locals: {
