@@ -20,7 +20,7 @@ module DatashiftJourney
       end
 
       def current_state_index
-        state_paths.to_states.index(self.state_name).to_i
+        state_paths.to_states.index(state_name).to_i
       end
 
       def next_state_name

@@ -1,7 +1,7 @@
 
-DatashiftJourney::Journey::MachineBuilder.extend_journey_plan_class(initial: :question1) do
+DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :question1) do
 
-  # FYI when using number watch out for Rails namign conventions....
+  # FYI when using number watch out for Rails naming conventions....
   # question_1 would generate a bad form file question_1.rb for a class Question1
   # hence no '_' between a number ... so we use question1, under25_question1 etc
 

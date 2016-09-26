@@ -16,42 +16,34 @@ module DatashiftJourney
 
     unless Rails.env.production?
 
-      require "factory_girl"
-      require "faker"
+      require 'factory_girl'
+      require 'faker'
 
       def build_and_display
+        state =   params['state']
+        factory = params['factory']
 
-        state =   params["state"]
-        factory = params["factory"]
+        plan = if factory
+                 # Get weird problems with factories with has_many associations, when they've already been used,
+                 # so while obviously not very efficient, this seems to prevent that issue
+                 FactoryGirl.reload
 
-        journey_plan = if(factory)
-                         # Get weird problems with factories with has_many associations, when they've already been used,
-                         # so while obviously not very efficient, this seems to prevent that issue
-                         FactoryGirl.reload
+                 Rails.logger.debug("Building StateJumper #{DatashiftJourney.journey_plan_class} from [#{factory}]")
 
-                         Rails.logger.debug(
-                           "State jumper BUILDING #{DatashiftJourney.journey_plan_class} from factory [#{factory}]"
-                         )
+                 FactoryGirl.create(factory)
+               else
+                 DatashiftJourney.journey_plan_class.create(state: state)
+               end
 
-                         FactoryGirl.create(factory)
-                       else
-                         DatashiftJourney.journey_plan_class.create( state: state)
-                       end
-
-        Rails.logger.debug("State Jumper Using #{journey_plan.inspect}")
-
-        Rails.logger.debug(journey_plan.state_paths.to_states)
-        Rails.logger.debug(journey_plan.state_paths.events)
-
-        if(journey_plan.state != state)
-          journey_plan.next(state.to_sym) until(!journey_plan.can_next? || journey_plan.state == state)
+        if plan.state != state
+          plan.next(state.to_sym) until !plan.can_next? || plan.state == state
         end
 
-        journey_plan.update_attribute(:state, state) if(journey_plan.state != state)
+        plan.update_attribute(:state, state) if plan.state != state
 
-        Rails.logger.debug("Jumping to STATE [#{journey_plan.state}]")
+        Rails.logger.debug("Jumping to STATE [#{plan.state}]")
 
-        redirect_to(datashift_journey.journey_plan_state_path(state, journey_plan)) && return
+        redirect_to(datashift_journey.journey_plan_state_path(state, plan)) && return
       end
 
     end

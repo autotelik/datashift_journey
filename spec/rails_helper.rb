@@ -62,7 +62,6 @@ RSpec.configure do |config|
   config.include AbstractController::Translation
 end
 
-
 Shoulda::Matchers.configure do |config|
   config.integrate do |with|
     with.test_framework :rspec

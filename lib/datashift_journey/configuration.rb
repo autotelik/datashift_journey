@@ -1,7 +1,7 @@
 module DatashiftJourney
 
   # Helper struct for displaying available account types in view
-  Struct.new("StateJumperEntry", :state, :display, :factory)
+  Struct.new('StateJumperEntry', :state, :display, :factory)
 
   class Configuration
 
@@ -36,7 +36,6 @@ module DatashiftJourney
     #
     attr_accessor :use_null_form_when_no_form
 
-
     # The location of the View partials, for rendering
     #
     # default is empty, for views stored directly in app/views
@@ -61,7 +60,7 @@ module DatashiftJourney
     attr_accessor :state_jumper_states
 
     def initialize
-      @forms_module_name = ""
+      @forms_module_name = ''
 
       @partial_location  = ''
 
@@ -72,7 +71,6 @@ module DatashiftJourney
       @add_state_jumper_toolbar = false
       @state_jumper_states = []
     end
-
 
     def backto_start_url
       @backto_start_url ||= Rails.application.routes.url_helpers.root_path

@@ -2,37 +2,34 @@ module DatashiftJourney
 
   class ViewsGenerator < Rails::Generators::Base
 
-    #class_option :journey_class, type: :string, required: true, banner: 'The ActiveRecord model to use to manage journey'
+    # class_option :journey_class, type: :string, required: true, banner: 'The ActiveRecord model to use to manage journey'
 
-    desc "This generator creates an initializer and concern to setup and manage the journey Model"
+    desc 'This generator creates an initializer and concern to setup and manage the journey Model'
 
     def create_form_per_state
-
-      foo = if(DatashiftJourney.journey_plan_class == DatashiftJourney::Collector)
-              ->(s){ view_for_collector_definition(s) }
+      foo = if DatashiftJourney.journey_plan_class == DatashiftJourney::Collector
+              ->(s) { view_for_collector_definition(s) }
             else
-              ->(s){ view_for_journey_plan_definition(s) }
+              ->(s) { view_for_journey_plan_definition(s) }
             end
 
-      path = "app/views"
+      path = 'app/views'
 
       partial_location = DatashiftJourney::Configuration.call.partial_location
 
-      path = File.join(path,  partial_location) if partial_location.present?
+      path = File.join(path, partial_location) if partial_location.present?
 
       DatashiftJourney.journey_plan_class.state_machine.states.map(&:name).each do |state|
         create_file File.join(path, "_#{state}.html.erb") do
-          foo.call(state.to_s )
+          foo.call(state.to_s)
         end
       end
-
     end
 
     private
 
-    def view_for_collector_definition( state )
-
-      collector_form_definition=<<-EOF
+    def view_for_collector_definition(_state)
+      collector_form_definition = <<-EOF
 <%#= You can access the Reform form object via local : form %>
 <%#= You can access the Reform form model object via  : form.model %>
 <%#= You have access to main DSJ jopurney object via local : journey_plan %>
@@ -49,12 +46,10 @@ module DatashiftJourney
       EOF
 
       collector_form_definition
-
     end
 
-    def view_for_journey_plan_definition( state )
-
-      collector_form_definition=<<-EOF
+    def view_for_journey_plan_definition(_state)
+      collector_form_definition = <<-EOF
 <%#= You can access the Reform form object via local : form %>
 <%#= You can access the Reform form model object via  : form.model %>
 <%#= You have access to main DSJ jopurney object via local : journey_plan %>
@@ -65,7 +60,6 @@ module DatashiftJourney
       EOF
 
       collector_form_definition
-
     end
 
   end

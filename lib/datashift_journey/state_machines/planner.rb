@@ -1,163 +1,159 @@
+require 'forwardable'
+require_relative 'sequence'
+
 module DatashiftJourney
 
   module StateMachines
 
     module Planner
 
-      attr_reader :split_on_state
-
-      attr_accessor :last_processed_state, :last_processed_states
-
-      def split_sequence_map
-        @split_sequence_map ||= Planner::hash_klass.new
-      end
-
       def sequence(*list)
-        raise PlannerApiError, "Empty list passed to sequence - check your MachineBuilder syntax" if(list.empty?)
-
-        flattened = list.flatten
-        # Sequence can be used after a split i.e start a new common sequence,
-        # so build links from start of this new sequence, to and from the end points of previous split
-        sequence_start = flattened.first
-
-        split_sequence_map.each do |state, sequence_states|
-
-          # sequence_states is whole sequence of the branch for state - we want the end point only
-          end_point = sequence_states.last.blank? ? state.to_sym :  sequence_states.last
-
-          create_next(end_point, sequence_start)
-
-          # TODO - Back will require a transition hook to determine which splt to return to
-          # create_pair(sequence_start, end_point)
-
-        end if(split_sequence_map)
-
-        # create a next link from Last state to First of this sequence
-        create_next(@last_processed_state,  flattened.last) if(@last_processed_state)
-
-
-        # Now the normal flows within the sequence
-        create_back_transitions flattened
-        create_next_transitions flattened
-
-        sequence_reset( flattened )
+        raise PlannerApiError, 'Empty list passed to sequence - check your MachineBuilder syntax' if list.empty?
+        sequence_list << Sequence.new(list.flatten)
       end
 
-      # Path splits down different branches, based on values from input e,g radio, text or checkbox
-
-      # target_on_value_map is a hash mapping between the value collected from website and the associated
-      # named branch. i.e a value collected on state, causes the path to split down that branch
+      # Path splits down different branches, based on values stored on the main Journey model
+      # usually collected from from input e.g. radio, text or checkbox
       #
-      #     branch_1: 'value from website to direct to branch_1 state',
-      #     branch_2: 'a different value'
+      # Requires the starting or parent state, and the routing criteria to each target sequence
       #
-      def split_on_equality(state, attr_reader, target_on_value_map, options = {})
-
-        unless(target_on_value_map.is_a? Hash)
-          raise "BadDefinition - target_on_value_map must be hash map value => associated branch state"
+      #   split_on_equality( :new_or_renew,
+      #                      "what_branch?",             # Helper method on the journey Class
+      #                      branch_1: 'branch_1',
+      #                      branch_2: 'branch_2'
+      #   )
+      #
+      # target_on_value_map is a hash mapping between the value collected from website and the associated named branch.
+      #
+      #   if value collected on parent state == stored target state, journey is routed down that branch
+      #
+      def split_on_equality(state, attr_reader, seq_to_target_value_map, _options = {})
+        unless seq_to_target_value_map.is_a? Hash
+          raise 'BadDefinition - target_on_value_map must be hash map value => associated branch state'
         end
 
-        @split_on_state = state.to_sym
+        sequence_list << Sequence.new(state, split: true)
 
-        puts "\nDEBUG: Create split on equality @ [#{@split_on_state}]"
-
-        if(last_processed_state && last_processed_state != split_on_state)
-          # Create a Back link from splitting state to last in journey
-          create_back(state, last_processed_state)
-
-          # Create a Next link from last in journey to this splitting state
-          create_next(last_processed_state, state)
+        seq_to_target_value_map.each do |seq_id, trigger_value|
+          if split_sequence_map[seq_id]
+            split_sequence_map[seq_id].entry_state = state
+            split_sequence_map[seq_id].trigger_method = attr_reader
+            split_sequence_map[seq_id].trigger_value = trigger_value
+          else
+            split_sequence_map[seq_id] = Sequence.new(nil,
+                                                      entry_state: state,
+                                                      trigger_method: attr_reader,
+                                                      trigger_value: trigger_value)
+          end
         end
+      end
 
-        # When two splits occur consecutively
-        last_processed_states.each do |prev_seq_state|
-
-          puts "DEBUG - Previous split state - create_next(#{prev_seq_state}, #{state})"
-
-          # Create a Next link from last in previous  to this splitting state
-          create_next(prev_seq_state, state)
-        end if(last_processed_states)
-
-        # Each target state should have a transition BACK to this parent split_on state
-
-        target_on_value_map.keys.each do |seq_id|
-          target_state = first_target_state(seq_id)
-
-          puts "DEBUG: Create back link from [#{target_state}] to [#{state}]"
-          create_back(target_state, state) if(target_state)
+      def split_sequence(sequence_id, *list)
+        if split_sequence_map[sequence_id]
+          split_sequence_map[sequence_id] += list.flatten
+        else
+          split_sequence_map[sequence_id] = Sequence.new(list.flatten)
         end
-
-        # Now build the next transitions to occur when Model.attribute reader == value
-        # For example the Form collects values from radio buttons, each radio selects for a different journey path
-        # The split_values would be the radio button values, and the class will need an attribute reader
-        # method, returns the value the user clicked.
-        #
-        # Example of usual form of if statement in the machine, so the state machine takes care of
-        # passing in the current model (e.g journey)
-        #     if: ->(j) do j.organisation.type == :individual end
-        #
-        @last_processed_states = []
-
-        target_on_value_map.each do |seq_id, trigger_value|
-
-          puts "\nDEBUG: Building next transitions for each split sequence #{seq_id}"
-
-          target_state = first_target_state(seq_id)
-
-          puts "DEBUG - Create NEXT EVENT from [#{split_on_state}] to [#{target_state}] WITH BLOCK"
-          create_next( split_on_state, target_state ) do
-            -> (o) {
-              unless o && o.respond_to?(attr_reader)
-                raise PlannerBlockError, "Cannot split - No such reader method #{attr_reader} on Class #{o.class}"
-              end
-              o.send(attr_reader) == trigger_value
-            }
-          end if(target_state)
-
-          @last_processed_states << last_target_state(seq_id)
-        end
-
-        @last_processed_states.uniq!
-        @last_processed_states.compact!
-
-        # The split sequences will define the end points for this split
-        @last_processed_state = nil
-      end
-
-
-      def split_sequence(sequence_id, *list )
-        flattened = list.flatten
-
-        create_back_transitions flattened
-        create_next_transitions flattened
-
-        puts "DEBUG: Add split sequence for Seq ID #{sequence_id}"
-        split_sequence_map[sequence_id] = flattened
-      end
-
-      private
-
-      def first_target_state(seq_id)
-       # puts "DEBUG - Get First Target for Seq Id [#{seq_id}]  - [#{split_sequence_map.fetch(seq_id, []).first}]"
-        split_sequence_map.fetch(seq_id, []).first
-      end
-
-      def last_target_state(seq_id)
-       # puts "DEBUG - Get LAst Target for Seq Id [#{seq_id}]  - [#{split_sequence_map.fetch(seq_id, []).last}]"
-        split_sequence_map.fetch(seq_id, []).last
-      end
-
-      def sequence_reset(list)
-        @last_processed_state = list.last
-
-        @last_processed_states = nil
-        @split_on_state = nil
-
-        @split_sequence_map = Planner::hash_klass.new
+        # puts "DEBUG: Added Split Seq for [#{sequence_id}] #{split_sequence_map[sequence_id].inspect}"
       end
 
       def self.hash_klass
         ActiveSupport::HashWithIndifferentAccess
+      end
+
+      protected
+
+      def build_split_sequence_events(sequence, prev_seq, next_seq)
+        # Create BACK from this entry state to the exit point of any PREVIOUS sequence
+        create_back(sequence.split_entry_state, prev_seq.last) if prev_seq.last
+
+        split_sequence_map.branches_for(sequence).each do |branch|
+          # puts "\n\nDEBUG: MATCH - Process Branch - #{branch.inspect}"
+
+          # Back and next for any states within the split sequence itself
+          create_pairs branch
+
+          # N.B A split sequence can actually be empty
+          #
+          # i.e Some branches may jump straight from the split point straight to next common sequence
+
+          # Now work out the start and end points for this split.
+          next_state = branch.empty? ? next_seq.first : branch.first
+
+          # back from first seq state (or if empty next sequence) to this decision state
+          split_entry_state = sequence.split_entry_state
+
+          # If branch has no states, a VALUE triggered BACK will be created later
+          create_back(branch.first, split_entry_state) unless branch.empty?
+
+          build_triggered_next(branch, split_entry_state, next_state)
+
+          # LAST item in branch connects to FIRST item of NEXT sequence (unless empty and already built with trigger)
+          create_next(branch.last, next_seq.first) if !branch.empty? && next_seq.first
+        end
+      end
+
+      def build_journey_plan_events
+        # Ordered collection of sequences
+
+        sequence_list.each_with_index do |sequence, i|
+          # put "\nDEBUG: *** START BUILDING NAV FOR #{sequence.inspect} (#{i})"
+
+          prev_seq = i.zero? ? EmptySequence.new : sequence_list[i - 1]
+
+          next_seq = sequence_list[i + 1] || EmptySequence.new
+
+          if sequence.split?
+            build_split_sequence_events(sequence, prev_seq, next_seq)
+          else
+
+            if prev_seq.split?
+              build_triggered_back(sequence, prev_seq)
+            elsif prev_seq.last
+              create_back(sequence.first, prev_seq.last)
+            end
+
+            # The simple navigation through states within the sequence
+            create_pairs sequence
+
+            create_next(sequence.last, next_seq.first) if next_seq.first
+          end
+        end
+      end
+
+      def build_triggered_back(sequence, prev_seq)
+        # Create back from FIRST item of THIS sequence to LAST entry of EACH previous BRANCH
+        split_sequence_map.branches_for(prev_seq).each do |branch|
+          create_back(sequence.first, branch.last) do
+            lambda do |o|
+              unless o && o.respond_to?(branch.trigger_method)
+                raise PlannerBlockError, "Cannot Go back - No such method #{branch.trigger_method} on Class #{o.class}"
+              end
+              o.send(branch.trigger_method) == branch.trigger_value
+            end
+          end
+        end
+      end
+
+      def build_triggered_next(branch, from, to)
+        create_next(from, to) do
+          lambda do |o|
+            unless o && o.respond_to?(branch.trigger_method)
+              raise PlannerBlockError, "Cannot split - No such method #{branch.trigger_method} on Class #{o.class}"
+            end
+            o.send(branch.trigger_method) == branch.trigger_value
+          end
+        end if from && from != to # N.B sequences can self terminate i.e no further sequences and end of the journey
+      end
+
+      # Ordered collection of sequences
+      def sequence_list
+        @sequence_list ||= StateList.new
+      end
+
+      # Key - sequence ID
+      def split_sequence_map
+        @split_sequence_map ||= SplitSequenceMap.new
       end
 
     end

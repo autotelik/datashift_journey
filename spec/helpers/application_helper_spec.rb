@@ -4,7 +4,7 @@ RSpec.describe DatashiftJourney::ApplicationHelper do
   describe '#journey_plan_partial_location' do
     it 'returns partial location for a state' do
       state = 'site_address'
-      DatashiftJourney::Configuration.call.partial_location = ""
+      DatashiftJourney::Configuration.call.partial_location = ''
       expect(helper.journey_plan_partial_location(state)).to eq "/#{state}"
 
       DatashiftJourney::Configuration.call.partial_location = nil
@@ -13,13 +13,12 @@ RSpec.describe DatashiftJourney::ApplicationHelper do
 
     it 'returns partial location, correctly joining paths for a state' do
       state = 'site_address'
-      DatashiftJourney::Configuration.call.partial_location = "shared/states"
+      DatashiftJourney::Configuration.call.partial_location = 'shared/states'
       expect(helper.journey_plan_partial_location(state)).to eq "shared/states/#{state}"
 
-      DatashiftJourney::Configuration.call.partial_location = "states/"
+      DatashiftJourney::Configuration.call.partial_location = 'states/'
       expect(helper.journey_plan_partial_location(state)).to eq "states/#{state}"
     end
-
   end
 
   describe '#error_link_anchor' do

@@ -1,18 +1,18 @@
-require_dependency "reform"
+require_dependency 'reform'
 
 module DatashiftJourney
 
   class BaseForm < Reform::Form
 
-    #include ActionView::Helpers::TranslationHelper
+    # include ActionView::Helpers::TranslationHelper
     include Reform::Form::ActiveModel::Validations
 
     # Hmmmm the reform ActiveModel::Validations include requires some odd stuff
     delegate :model_name, to: :model
 
-    #def build_errors
+    # def build_errors
     #  model.errors
-    #end
+    # end
 
     # Ok our stuff now
 
@@ -48,7 +48,6 @@ module DatashiftJourney
       !redirection_url.nil?
     end
 
-
     # Default is to display a submit button - which essentially calls our Controller and
     # moves the state forwards, if validate/save etc all pass
     # Individual forms/views may want to over ride, e.g at journey's end or to use their own buttons
@@ -63,21 +62,24 @@ module DatashiftJourney
       params.fetch(params_key, {})
     end
 
-    # Class methods as used heavily from class method validation methods
-
-    def self.locale_key
-      self.name.underscore
-    end
-
-    # Scope for locales that initially matches view scope
-    def self.locale_errors
-      # When called from a derived class DerivedForm - self.class.name = Class but self.name = DerivedForm
-      "#{DatashiftJourney.journey_plan_class.name.tableize}.#{self.name.underscore}.errors"
-    end
-
     def logger
       Rails.logger
     end
+
+    # Class methods as used heavily from class method validation methods
+
+    class << self
+      def locale_key
+        name.underscore
+      end
+
+      # Scope for locales that initially matches view scope
+      def locale_errors
+        # When called from a derived class DerivedForm - self.class.name = Class but self.name = DerivedForm
+        "#{DatashiftJourney.journey_plan_class.name.tableize}.#{name.underscore}.errors"
+      end
+    end
+
   end
 
 end

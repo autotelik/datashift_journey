@@ -43,4 +43,3 @@ rescue => x
   # TODO: - remove this block once gem stable
   puts x.inspect
 end
-

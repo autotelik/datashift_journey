@@ -40,7 +40,6 @@ module DatashiftJourney
       response.headers['Expires'] = 'Fri, 01 Jan 1990 00:00:00 GMT'
     end
 
-
     def handle_invalid_authenticity_token(exception)
       Rails.logger.error 'DatashiftJourney::ApplicationController authenticity failed ' \
                          "(browser cookies may have been disabled): #{exception}"

@@ -3,7 +3,6 @@ module DatashiftJourney
 
     # Helper to return whether a partial exists in expected place a particular state
     def journey_plan_partial?(state)
-
       result = lookup_context.find_all("#{DatashiftJourney::Configuration.call.partial_location}/_#{state}").any?
 
       unless result
@@ -20,8 +19,8 @@ module DatashiftJourney
       File.join(DatashiftJourney::Configuration.call.partial_location.to_s, state)
     end
 
-    def submit_button_text(form)
-      t("global.journey_plan.continue")
+    def submit_button_text(_form)
+      t('global.journey_plan.continue')
     end
 
     # This helper  adds a form-group DIV around form elements,
