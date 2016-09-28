@@ -48,7 +48,7 @@ module DatashiftJourney
 
       klass = options[:journey_class].to_s.constantize
 
-      inject_into_class("app/models/#{model_file}", klass, "\n\tinclude EnrollmentJourney\n\n")
+      inject_into_class("app/models/#{model_file(options[:journey_class])}", klass, "\n\tinclude EnrollmentJourney\n\n")
     end
 
     def notify_about_routes
@@ -69,49 +69,6 @@ root to: "datashift_journey/journey_plans#new"
         puts ' '
         puts "      mount DatashiftJourney::Engine => '/'"
       end
-    end
-
-    # This code will be placed in a model concern and the module included in the model
-    def model_journey_code
-      model_definition = <<-APP
-module #{options[:journey_class]}Journey
-
-  DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :set_your_initial_state) do
-
-      # The available API is defined in : datashift_journey/lib/datashift_journey/state_machines/planner.rb
-
-      # A basic example with one set of branches, reconnecting to another common section starting at :review
-      #
-      # sequence [:ship_address, :bill_address]
-      #
-      # split_on_equality( :payment,
-      #                    "payment_card",                  # Helper method on Checkout - returns card type from Payment
-      #                     visa_page: 'visa',              # Map sequence start points to values returned
-      #                     mastercard_page: 'mastercard',  # by "payment_card" helper method
-      #                     paypal_page: 'paypal'
-      #  )
-      #
-      # split_sequence :visa_page, [:page_1_A, :page_2_A]
-      #
-      # split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
-      #
-      # split_sequence :paypal_page, []
-      #
-      # sequence [:review, :complete ]
-    end
-end
-      APP
-      model_definition
-    end
-
-    # Module name  = options[:journey_class]Journey
-
-    def model_file
-      "#{options[:journey_class].underscore}.rb"
-    end
-
-    def concern_file
-      "#{options[:journey_class].underscore}_journey.rb"
     end
 
   end
