@@ -10,7 +10,7 @@ Provides a generic Controller, Views and data collection model (for storing form
 If you prefer, you can easily provide your own ActiveRecord  data collection model, and still use the same
  state machine based DSL.
 
-This DSL provides high level syntactic sugar to program the steps or pages through your journey steps.
+This DSL provides high level syntactic sugar to program the steps or pages through your site.
 
 Generators are provided that can generate skeleton views and backing Reform forms for each step.
 
@@ -162,16 +162,11 @@ and also forward and backwards navigation between them.
 
 A view partial and associated form, will be expected for each state.
 
-If these do not exists yet, generators are provided that will create these for you, one per state.
-
-```ruby
-rails generate datashift_journey:forms
-```
 
 ### The Forms
 
-The Forms tend to do work traditionally performed in the Controller, for managing data required for a view,
-and validating / saving the data entered into the HTML form. 
+The Forms tend to do work traditionally performed in the Controller, such as managing data required for a view,
+managing params, validating and saving the data entered into the HTML form. 
 
 **Generators are provided that can create skeleton Forms and Partials, one per state(page).**
 
@@ -183,20 +178,20 @@ rails generate datashift_journey:views
 
 #### Naming conventions
 
-The DSJ Controller will search for a related Form for each state using the Factory class/method
+> The Classified version of the state name, plus "Form", so a `:billing_address` state should be backed
+by a form called `BillingAddressForm`
+
+The DSJ Controller will search for a matching Form for each state using the Factory class/method
 
 ```ruby
 DatashiftState::FormObjectFactory.form_object_for(journey_plan)
 ```
 
-The expected form Class name is defined as  :
+In code, the expected form Class name is defined as  :
 
 ```ruby
 "#{modules}::#{journey_plan.state.classify}Form"
 ```
-
-> i.e The Classified version of the state name, plus "Form", so a `:billing_address` state should be backed
-by a form called `BillingAddressForm`
 
 When using namespaces the *module* structure , can be set via the DSJ Configuration object,
 which can be set, using a standard block format, in an initializer, as so:
@@ -219,8 +214,15 @@ And a current state of :address - then the Controller will attempt to use Form c
 MyCheckoutEngine::States::AddressForm
 ```
 
+#### Null Forms
+
 When **no form** is required for a specific HTML page, you an specify that NullForm is to be used,
-either globally for ALL missing forms
+either globally for ALL missing forms, or for specific named forms.
+
+The null form means no params are validated, and no save performed, for example for a mid sequence, text only
+ helper page, or for a text only branch terminating page.
+
+To set globally
 
 ```ruby
 DatashiftJourney::Configuration.configure do |config|
@@ -228,7 +230,7 @@ DatashiftJourney::Configuration.configure do |config|
 end
 ```
 
-Or individually by adding the states with no data collection requirements, to the list of `null_form` states
+To set for individual states, with no data collection requirements, add to list of `null_form` states
 
 ```ruby
 DatashiftJourney::Configuration.configure do |config|
@@ -236,10 +238,11 @@ DatashiftJourney::Configuration.configure do |config|
 end
 ```
     
-There are a couple of base classes available, that will do most of the Form work for you if you inherit from them.
+There are a couple of base classes available, that will do most of the Form work, if you inherit from them.
 
-When usign the DSJ Colleciton models, you can derive from `DatashiftJourney::BaseCollectorForm`, when using your own model
-use `DatashiftJourney::BaseForm` .
+When usign the DSJ Collection models, you can derive from `DatashiftJourney::BaseCollectorForm`.
+
+When using your own model use `DatashiftJourney::BaseForm` .
     
 The Form must have a factory method, and a constructor that expects a JourneyPlan model instance.
 
