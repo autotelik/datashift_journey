@@ -89,6 +89,8 @@ module DatashiftJourney
       #
       attr_reader :review_data
 
+      # rubocop:disable Metrics/MethodLength
+
       def prepare_from_locale(model, locale_key = '.journey_plan_review')
         sections = I18n.t("#{locale_key}.sections", default: {})
 
@@ -96,7 +98,7 @@ module DatashiftJourney
 
         unless sections.is_a?(Hash)
           Rails.logger.error("Bad syntax in your review YAML - Expect a 'sections' Hash element")
-          raise RuntimeError.new("Bad syntax in your review YAML - Expect a 'sections' Hash element")
+          raise "Bad syntax in your review YAML - Expect a 'sections' Hash element"
         end
 
         @model_object = model
@@ -118,12 +120,9 @@ module DatashiftJourney
           # Direct data on parent Model, where key is - direct:
           key = "#{locale_key}.sections.#{section}.direct"
 
-          if I18n.exists?(key)
-            I18n.t(key).each { |column| row_to_review_data(model_object, column) }
-          end
+          I18n.t(key).each { |column| row_to_review_data(model_object, column) } if I18n.exists?(key)
 
           # Associated data - children of parent
-
           key = "#{locale_key}.sections.#{current_section}.associations"
 
           if I18n.exists?(key)
@@ -202,15 +201,13 @@ module DatashiftJourney
       end
 
       def find_association(method_chain)
-        arr = method_chain.to_s.split('.')
-
-        arr.inject(model_object) { |o, a| o.send(a) }
+        method_chain.to_s.split('.').inject(model_object) { |a, e| a.send(e) }
       end
 
       def send_chain(method_chain)
         arr = method_chain.to_s.split('.')
         begin
-          arr.inject(current_review_object) { |o, a| o.send(a) }
+          arr.inject(current_review_object) { |a, e| a.send(e) }
         rescue => e
           Rails.logger.error("Failed to process method chain #{method_chain} : #{e.message}")
           return I18n.t('.journey_plan_review.missing_data')

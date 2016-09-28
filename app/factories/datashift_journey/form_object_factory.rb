@@ -22,10 +22,9 @@ module DatashiftJourney
       private
 
       def null_form_for_state(journey_plan)
+        return DatashiftJourney::NullForm if Configuration.call.use_null_form_when_no_form
 
-        return DatashiftJourney::NullForm if(Configuration.call.use_null_form_when_no_form)
-
-        return DatashiftJourney:: NullForm if(null_form_requirested?(journey_plan.state))
+        return DatashiftJourney:: NullForm if null_form_requirested?(journey_plan.state)
 
         nil
       end
@@ -39,25 +38,21 @@ module DatashiftJourney
       end
 
       def form_class_for(journey_plan)
+        form_name(journey_plan.state).constantize
+      rescue => x
 
-        begin
-          form_name(journey_plan.state).constantize
-        rescue => x
+        null_form = null_form_for_state(journey_plan)
 
-          null_form = null_form_for_state(journey_plan)
+        puts 'GOT KLASS', null_form
 
-          puts "GOT KLASS", null_form
-
-          unless null_form
-            Rails.logger.debug(x.backtrace.first)
-            Rails.logger.debug(x.inspect)
-            Rails.logger.debug("No Form class found for state #{journey_plan.state} - #{x.message}")
-            return nil
-          end
-
-          null_form
+        unless null_form
+          Rails.logger.debug(x.backtrace.first)
+          Rails.logger.debug(x.inspect)
+          Rails.logger.debug("No Form class found for state #{journey_plan.state} - #{x.message}")
+          return nil
         end
 
+        null_form
       end
     end
 

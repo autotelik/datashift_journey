@@ -3,18 +3,16 @@ module DatashiftJourney
   module InitializerCommon
 
     def create_initializer_file(journey_class)
-
       # The app must inform datashift_journey of the model class, that hosts the journey plan
       # For example, in config/initializers/datashift_journey.rb
       # DatashiftJourney.journey_plan_class = "Checkout"
 
-      create_file "config/initializers/datashift_journey.rb" do
+      create_file 'config/initializers/datashift_journey.rb' do
         "\nDatashiftJourney.journey_plan_class = '#{journey_class}'\n\n"\
         "DatashiftJourney::Configuration.configure do |config|\n"\
         "  config.partial_location = '#{journey_class.pluralize.underscore}'\n"\
         "end\n"
       end
-
     end
 
     # The journey is stored in a separate concern (module) so model itself uncluttered
@@ -32,7 +30,7 @@ module DatashiftJourney
       end
 
       insert_into_file File.join('config', 'application.rb'), after: "class Application < Rails::Application\n" do
-        %Q{
+        %{
 
       config.to_prepare do
         Dir.glob(File.join(Rails.root, "app/decorators", "**/*_decorator*.rb")).each do |c|
@@ -42,35 +40,32 @@ module DatashiftJourney
 
 }
       end
-
     end
-
 
     def notify_about_routes
       insert_into_file File.join('config', 'routes.rb'), after: "Rails.application.routes.draw do\n" do
-        %Q{
+        %(
 # This line mounts Datashift Journey's routes at the root of your application.
 # If you would like to change where this engine is mounted, simply change the :at option to something different.
 #
 mount DatashiftJourney::Engine => "/"
 
 root to: "datashift_journey/journey_plans#new"
-}
+)
       end
 
       unless options[:quiet]
-        puts "*" * 50
+        puts '*' * 50
         puts "We added the following line to your application's config/routes.rb file:"
-        puts " "
+        puts ' '
         puts "      mount DatashiftJourney::Engine => '/'"
       end
     end
 
-
     # This code will be placed in a model concern and the module included in the model
 
     def module_journey_code(journey_class)
-      module_definition=<<-APP
+      module_definition = <<-APP
 module #{journey_class}Journey
   #{model_journey_code(journey_class)}
 end
@@ -78,9 +73,9 @@ end
       module_definition
     end
 
-    def model_journey_code(journey_class)
-      model_definition=<<-APP
-DatashiftJourney::Journey::MachineBuilder.extend_journey_plan_class(initial: :set_your_initial_state) do
+    def model_journey_code(_journey_class)
+      model_definition = <<-APP
+DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :set_your_initial_state) do
 
     # The available API is defined in : datashift_journey/lib/datashift_journey/state_machines/planner.rb
 
@@ -117,6 +112,7 @@ end
     def concern_file(journey_class)
       "#{journey_class.underscore}_journey.rb"
     end
+
     def decorator_file(journey_class)
       "#{journey_class.underscore}_decorator.rb"
     end

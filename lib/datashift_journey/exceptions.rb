@@ -24,4 +24,3 @@ module DatashiftJourney
   class PlannerBlockError < CoreException; end
 
 end
-

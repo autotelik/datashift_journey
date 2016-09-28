@@ -4,10 +4,10 @@ module DatashiftJourney
 
   class InstallCollectorGenerator < Rails::Generators::Base
 
-    desc "This generator copies over DSJ migrations to use the generic Collector data models"
+    desc 'This generator copies over DSJ migrations to use the generic Collector data models'
 
     def install_migrations
-      say_status :copying, "migrations"
+      say_status :copying, 'migrations'
       `rake railties:install:migrations`
     end
 
@@ -28,7 +28,7 @@ module DatashiftJourney
     private
 
     def klass
-      "DatashiftJourney::Collector"
+      'DatashiftJourney::Collector'
     end
 
   end

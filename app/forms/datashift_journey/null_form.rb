@@ -1,4 +1,4 @@
-require_dependency "reform"
+require_dependency 'reform'
 
 # A specialized Form class for use with states that do not require Form functionality,
 # just render the Partial

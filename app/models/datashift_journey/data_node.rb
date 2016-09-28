@@ -4,7 +4,7 @@ module DatashiftJourney
   #
   class DataNode < ActiveRecord::Base
 
-    self.table_name = "dsj_data_nodes"
+    self.table_name = 'dsj_data_nodes'
 
   end
 

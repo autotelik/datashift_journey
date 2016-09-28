@@ -32,7 +32,7 @@ module DatashiftJourney
     end
 
     def link_url
-      # TODO Implement automatic reviewable
+      # TODO: Implement automatic reviewable
       # return  journey_plan_reviewing_path if journey_plan.try! :under_review?
 
       return start_url unless journey_plan
@@ -41,7 +41,7 @@ module DatashiftJourney
     end
 
     def start_url
-        DatashiftJourney::Configuration.call.backto_start_url
+      DatashiftJourney::Configuration.call.backto_start_url
     end
 
     def journey_plan_back_url

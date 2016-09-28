@@ -1,5 +1,5 @@
 require 'state_machines-activerecord'
-require "has_secure_token"
+require 'has_secure_token'
 
 require_relative 'datashift_journey/engine'
 require 'reform'

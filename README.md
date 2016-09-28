@@ -122,7 +122,7 @@ You will need to edit the jounrey and set the initial: step.
 Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
 ```ruby
-  MachineBuilder.extend_journey_plan_class(initial: :ship_address) do
+  MachineBuilder.create_journey_plan(initial: :ship_address) do
       sequence [:ship_address, :bill_address]
 
       # first define the sequences
