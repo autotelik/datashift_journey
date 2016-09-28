@@ -81,22 +81,29 @@ DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :set_your
 
     # A basic example with one set of branches, reconnecting to another common section starting at :review
     #
-    # sequence [:ship_address, :bill_address]
-    #
-    # split_on_equality( :payment,
-    #                    "payment_card",                  # Helper method on Checkout - returns card type from Payment
-    #                     visa_page: 'visa',              # Map sequence start points to values returned
-    #                     mastercard_page: 'mastercard',  # by "payment_card" helper method
-    #                     paypal_page: 'paypal'
-    #  )
-    #
-    # split_sequence :visa_page, [:page_1_A, :page_2_A]
-    #
-    # split_sequence :mastercard_page, [:page_1_B, :page_2_B, :page_3_B]
-    #
-    # split_sequence :paypal_page, []
-    #
-    # sequence [:review, :complete ]
+DatashiftJourney::MachineBuilder.create_journey_plan(initial: :ship_address) do
+
+      sequence [:ship_address, :bill_address]
+
+      # first define the sequences
+      split_sequence :visa_sequence, [:visa_page1, :visa_page2]
+
+      split_sequence :mastercard_sequence, [:page_mastercard1, :page_mastercard2, :page_mastercard3]
+
+      split_sequence :paypal_sequence, []
+
+      # now define the parent state and the routing criteria to each sequence
+
+      split_on_equality( :payment,
+                         "payment_card",    # Helper method on Checkout that returns card type from Payment
+                         visa_sequence: 'visa',
+                         mastercard_sequence: 'mastercard',
+                         paypal_sequence: 'paypal'
+      )
+
+      # All branches recombine here at review
+      sequence [:review, :complete ]
+  end
 
 end
       APP

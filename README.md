@@ -3,21 +3,23 @@
 [![Build Status](https://travis-ci.org/autotelik/datashift_journey.svg?branch=master)](https://travis-ci.org/autotelik/datashift_journey)
 
 Define a Forms based journey through your site, such as a questionnaire, checkout, survey, registration process etc
-using a simple state machine based DSL.
+using a state machine based DSL.
 
-Provides a generic data collection model, Controller and Views to manages navigation for you, 
-and collecting the form data.
-state machine
-If you prefer, you can easily provide your own ActiveRecord model, to collate the data,
-and plot a  multi-page journey, using the same state machine based DSL.
+Provides a generic Controller, Views and data collection model (for storing form data), and manages navigation for you.
+ 
+If you prefer, you can easily provide your own ActiveRecord  data collection model, and still use the same
+ state machine based DSL.
 
-The DSL provides high level syntactic sugar to program the journey steps, and associated views and backing forms.
+This DSL provides high level syntactic sugar to program the steps or pages through your journey steps.
 
-Forward and back navigation through the different paths, is automatically generated.
+Generators are provided that can generate skeleton views and backing Reform forms for each step.
 
-The paths can split, based on values collected or provided by user, and can reconnect later.
+Forward and back navigation, through the different paths, is automatically generated, via state machine transitions.
 
-The underlying gems we are using :
+The routes through the site can split multiple times, down different branches, based on values collected,
+and can reconnect later to common sequences.
+
+The main underlying gems we use include :
 
 * https://github.com/state-machines/state_machines
 * https://github.com/state-machines/state_machines-activerecord
@@ -115,14 +117,23 @@ end
 
 ### Define the journey
 
-A stubbed out journey definition is added by the initializer to a concern of the supplied model.
+A skeleton journey definition is added by the initializer to a concern of the supplied model.
 
-You will need to edit the jounrey and set the initial: step.
+If using the DSJ Collector this will be
+
+`app/decorators/datashift_journey/collector_decorator.rb`
+
+If using your own model, for example Checkout, this will be
+
+`app/models/concerns/checkouts_journey.rb`
+
+In here you can plot the details of your site journey and set the initial: step.
 
 Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
 ```ruby
   MachineBuilder.create_journey_plan(initial: :ship_address) do
+  
       sequence [:ship_address, :bill_address]
 
       # first define the sequences
@@ -141,6 +152,7 @@ Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkou
                          paypal_sequence: 'paypal'
       )
 
+      # All branches recombine here at review
       sequence [:review, :complete ]
   end
 ```
