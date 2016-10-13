@@ -35,7 +35,7 @@ module DatashiftJourney
                       state_machine machine_name, args do
                         instance_eval(&block) # sets the context to be StateMachine class'
 
-                        instance_eval('build_journey_plan_events') # Journey has been pre parsed - now build navigation
+                        instance_eval('build_journey_plan') # Journey has been pre parsed - now build navigation
                       end
                     end
                   else

@@ -35,24 +35,19 @@ module DatashiftJourney
         sequence_list << Sequence.new(state, split: true)
 
         seq_to_target_value_map.each do |seq_id, trigger_value|
-          if split_sequence_map[seq_id]
-            split_sequence_map[seq_id].entry_state = state
-            split_sequence_map[seq_id].trigger_method = attr_reader
-            split_sequence_map[seq_id].trigger_value = trigger_value
+          if branch_sequence_map[seq_id]
+            branch_sequence_map[seq_id].entry_state = state
+            branch_sequence_map[seq_id].trigger_method = attr_reader
+            branch_sequence_map[seq_id].trigger_value = trigger_value
           else
-            seq = Sequence.new(nil, entry_state: state, trigger_method: attr_reader, trigger_value: trigger_value)
-            split_sequence_map[seq_id] = seq
+            seq = Sequence.new(nil, id: seq_id, entry_state: state, trigger_method: attr_reader, trigger_value: trigger_value)
+            branch_sequence_map.add_branch(seq_id, seq)
           end
         end
       end
 
-      def split_sequence(sequence_id, *list)
-        if split_sequence_map[sequence_id]
-          split_sequence_map[sequence_id] += list.flatten
-        else
-          split_sequence_map[sequence_id] = Sequence.new(list.flatten)
-        end
-        # puts "DEBUG: Added Split Seq for [#{sequence_id}] #{split_sequence_map[sequence_id].inspect}"
+      def branch_sequence(sequence_id, *list)
+        branch_sequence_map.add_or_concat(sequence_id, list)
       end
 
       def self.hash_klass
@@ -61,53 +56,37 @@ module DatashiftJourney
 
       protected
 
-      def build_split_sequence_events(sequence, prev_seq, next_seq)
-        # Create BACK from this entry state to the exit point of any PREVIOUS sequence
-        create_back(sequence.split_entry_state, prev_seq.last) if prev_seq.last
+      # Based upon the current sequences, events defined build the Complete Plan,
+      # including back and next navigation
+      #
+      def build_journey_plan
 
-        split_sequence_map.branches_for(sequence).each do |branch|
-          # puts "\n\nDEBUG: MATCH - Process Branch - #{branch.inspect}"
-
-          # Back and next for any states within the split sequence itself
-          create_pairs branch
-
-          # N.B A split sequence can actually be empty
-          #
-          # i.e Some branches may jump straight from the split point straight to next common sequence
-
-          # Now work out the start and end points for this split.
-          next_state = branch.empty? ? next_seq.first : branch.first
-
-          # back from first seq state (or if empty next sequence) to this decision state
-          split_entry_state = sequence.split_entry_state
-
-          # If branch has no states, a VALUE triggered BACK will be created later
-          create_back(branch.first, split_entry_state) unless branch.empty?
-
-          build_triggered_next(branch, split_entry_state, next_state)
-
-          # LAST item in branch connects to FIRST item of NEXT sequence (unless empty and already built with trigger)
-          create_next(branch.last, next_seq.first) if !branch.empty? && next_seq.first
-        end
-      end
-
-      def build_journey_plan_events
-        # Ordered collection of sequences
+        # The Order of sequences should have been preserved as insertion order
 
         sequence_list.each_with_index do |sequence, i|
-          # put "\nDEBUG: *** START BUILDING NAV FOR #{sequence.inspect} (#{i})"
-
           prev_seq = i.zero? ? EmptySequence.new : sequence_list[i - 1]
 
           next_seq = sequence_list[i + 1] || EmptySequence.new
 
           if sequence.split?
+            #puts "\nDEBUG: *** BUILDING SPLITTER #{sequence.inspect} (#{i})"
             build_split_sequence_events(sequence, prev_seq, next_seq)
           else
 
+            # If previous seq is a branch we need to build conditional back transitions, to the end state
+            # of each branch (based on the same criteria that originally split the branch)
             if prev_seq.split?
-              build_triggered_back(sequence, prev_seq)
+              begin
+                #puts "\nDEBUG: *** BUILDING SEQ TO SPLIT #{sequence.inspect} (#{i})"
+                build_triggered_back(sequence, prev_seq)
+              rescue => x
+                puts x.inspect
+                puts "Failed in Seq [#{sequence.inspect}] (#{i}) - to create back events to Previous Seq #{prev_seq}"
+                raise x
+              end
+
             elsif prev_seq.last
+              #puts "\nDEBUG: *** BUILDING SEQ #{sequence.inspect} (#{i})"
               create_back(sequence.first, prev_seq.last)
             end
 
@@ -119,10 +98,70 @@ module DatashiftJourney
         end
       end
 
+
+      def build_split_sequence_events(sequence, prev_seq, next_seq)
+
+        # puts "\n\nDEBUG: PROCESS SPLIT SEQ #{sequence.inspect}"
+        # puts "DEBUG: SPLIT prev_seq #{prev_seq.inspect}"
+        # puts "DEBUG: SPLIT next_seq #{next_seq.inspect}"
+
+        # Create BACK from this entry state to the exit point of any PREVIOUS sequence
+        create_back(sequence.split_entry_state, prev_seq.last) if prev_seq.last
+
+        branch_sequence_map.branches_for(sequence).each do |branch|
+          begin
+            #puts "\n\nDEBUG: Process Branch - #{branch.inspect}"
+
+            # Back and next for any states within the split sequence itself
+            create_pairs branch
+
+            # N.B A split sequence can actually be empty
+            #
+            # i.e Some branches may jump straight from the split point straight to next common sequence
+
+            # Now work out the start and end points for this split.
+            next_state = branch.empty? ? next_seq.first : branch.first
+
+            # back from first seq state (or if empty next sequence) to this decision state
+            split_entry_state = sequence.split_entry_state
+
+            # If branch has no states, a VALUE triggered BACK will be created later
+            create_back(branch.first, split_entry_state) unless branch.empty?
+
+            build_triggered_next(branch, split_entry_state, next_state)
+
+            # N.B When multiple splits occur one after the other, branch.last can equal next_seq.first
+
+            # Not sure if that's reflective that logic not too clever elsewhere but for now
+            # make sure we don't create such a next event to itself
+
+            # LAST item in branch connects to FIRST item of NEXT sequence (unless empty and already built with trigger)
+
+            if !branch.empty? && next_seq.first && (branch.last != next_seq.first)
+              create_next(branch.last, next_seq.first)
+            end
+
+          rescue => x
+            puts x.inspect
+            puts "Failed in Split Sequnce to process Branch #{branch.inspect}"
+            raise x
+          end
+
+        end
+      end
+
       def build_triggered_back(sequence, prev_seq)
+
+        #puts "DEBUG: * BUILD triggered Back for #{sequence.inspect}"
+
         # Create back from FIRST item of THIS sequence to LAST entry of EACH previous BRANCH
-        split_sequence_map.branches_for(prev_seq).each do |branch|
-          create_back(sequence.first, branch.last) do
+        branch_sequence_map.branches_for(prev_seq).each do |branch|
+
+          # Branches can be empty - i.e chain direct to next common sequence
+          # in which case back goes to the split sequence state itself (parent of branch)
+          to_state = branch.last.nil? ? prev_seq.first : branch.last
+
+          create_back(sequence.first, to_state) do
             lambda do |o|
               unless o && o.respond_to?(branch.trigger_method)
                 raise PlannerBlockError, "Cannot Go back - No such method #{branch.trigger_method} on Class #{o.class}"
@@ -150,8 +189,8 @@ module DatashiftJourney
       end
 
       # Key - sequence ID
-      def split_sequence_map
-        @split_sequence_map ||= SplitSequenceMap.new
+      def branch_sequence_map
+        @split_sequence_map ||= BranchSequenceMap.new
       end
 
     end

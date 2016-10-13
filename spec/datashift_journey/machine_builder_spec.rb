@@ -176,15 +176,16 @@ module DatashiftJourney
           # STATE ENGINE DEFINITION
 
           it 'enables a complete journey to be planned via simple DSL', duff: true do
+
             MachineBuilder.create_journey_plan(initial: :ship_address) do
               sequence [:ship_address, :bill_address]
 
               # first define the sequences
-              split_sequence :visa_sequence, [:page_visa_1, :page_visa_2]
+              branch_sequence :visa_sequence, [:page_visa_1, :page_visa_2]
 
-              split_sequence :mastercard_sequence, [:page_mastercard_1, :page_mastercard_2, :page_mastercard_3]
+              branch_sequence :mastercard_sequence, [:page_mastercard_1, :page_mastercard_2, :page_mastercard_3]
 
-              split_sequence :paypal_sequence, []
+              branch_sequence :paypal_sequence, []
 
               # now define the parent state and the routing criteria to each sequence
 
@@ -193,7 +194,7 @@ module DatashiftJourney
                                 visa_sequence: 'visa',
                                 mastercard_sequence: 'mastercard',
                                 paypal_sequence: 'paypal')
-
+             # byebug
               sequence [:review, :complete]
             end
 
@@ -207,7 +208,7 @@ module DatashiftJourney
             expect(checkout.can_next?).to eq true
             checkout.next!
 
-            expect_state_matches_and_next!(checkout, :bill_address)
+            expect_state_canback_cannext_and_next!(checkout, :bill_address)
 
             expect_state_matches(checkout, :payment)
             # But non of the conditions to move on from payment have been met yet so cannot next
@@ -224,9 +225,9 @@ module DatashiftJourney
             expect(checkout.can_next?).to eq true
             checkout.next!
 
-            expect_state_matches_and_next!(checkout, :page_mastercard_1)
-            expect_state_matches_and_next!(checkout, :page_mastercard_2)
-            expect_state_matches_and_next!(checkout, :page_mastercard_3)
+            expect_state_canback_cannext_and_next!(checkout, :page_mastercard_1)
+            expect_state_canback_cannext_and_next!(checkout, :page_mastercard_2)
+            expect_state_canback_cannext_and_next!(checkout, :page_mastercard_3)
 
             expect_state_matches(checkout, :review)
 
@@ -236,7 +237,7 @@ module DatashiftJourney
             expect(checkout.can_back?).to eq true
             checkout.back!
 
-            expect_state_matches_and_next!(checkout, :page_mastercard_3)
+            expect_state_canback_cannext_and_next!(checkout, :page_mastercard_3)
 
             expect_state_matches(checkout, :review)
 
@@ -265,4 +266,59 @@ module DatashiftJourney
       end
     end
   end
+end
+DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :new_or_renew) do
+
+  # The available API is defined in : datashift_journey/lib/datashift_journey/state_machines/planner.rb
+
+  # first define the sequences
+  branch_sequence :new_sequence, [:business_type]
+
+  branch_sequence :renew_sequence, [:enter_reg_number]
+
+  # now define the parent state and the routing criteria to each sequence
+
+  split_on_equality( :new_or_renew,
+                     "new_or_renew_value",    # Helper method on Collector
+                     new_sequence: 'new',
+                     renew_sequence: 'renew'
+  )
+
+
+  # Define the sequences for Business Type split
+  # Partnership Limited Company Public Body Charity Authority Other
+
+  branch_sequence :other_sequence, [:other_business]
+
+  branch_sequence :sole_trader_sequence, [:service_provided]
+
+  # now define the parent state and the routing criteria to each sequence
+
+  split_on_equality( :business_type,
+                     "business_type_value",    # Helper method on Collector,
+                     authority:  'authority',
+                     other_sequence: 'other',
+                     sole_trader_sequence: 'sole_trader',
+                     partnership_sequence: 'partnership',
+                     limited_company: 'limited_company',
+                     public_body:  'public_body',
+                     charity: 'charity'
+  )
+
+  sequence [
+             :construction_demolition,
+             :only_deal_with,
+             :business_details,
+             :contact_details,
+             :key_person,
+             :key_people,
+             :relevant_people,
+             :signup,
+             :signin,
+             :registration_type,
+             :payment,
+             :convictions,
+             :upper_summary
+           ]
+
 end

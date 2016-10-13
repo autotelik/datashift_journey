@@ -13,6 +13,10 @@ module DatashiftJourney
         self.class.state_machine.events.transitions_for(self)
       end
 
+      def pp_state_paths
+        state_paths.each_with_index { |s, i| puts "Event [#{s.events[i]}] from=#{s[i].from} to=#{s[i].to}"}
+      end
+
       # Expects a symbol
       # Returns nil when no such state
       def state_index(state)

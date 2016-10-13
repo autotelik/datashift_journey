@@ -43,8 +43,6 @@ module DatashiftJourney
 
         null_form = null_form_for_state(journey_plan)
 
-        puts 'GOT KLASS', null_form
-
         unless null_form
           Rails.logger.debug(x.backtrace.first)
           Rails.logger.debug(x.inspect)

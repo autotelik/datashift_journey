@@ -15,19 +15,12 @@ module DatashiftJourney
 
     end
 
-    class SplitSequenceMap < ActiveSupport::HashWithIndifferentAccess
-
-      # Find the matching branch sequences for a parent Split (first state)
-      def branches_for(sequence)
-        values.find_all { |branch| (branch.entry_state && branch.entry_state == sequence.split_entry_state) }
-      end
-
-    end
-
     class Sequence
       extend Forwardable
 
-      attr_reader :entry_state, :exit_state
+      attr_reader :id
+
+      attr_reader :entry_state, :exit_state, :states
 
       attr_accessor :split, :trigger_method, :trigger_value
 
@@ -35,12 +28,13 @@ module DatashiftJourney
                      :clear, :drop, :each, :each_with_index,
                      :empty?, :size,
                      :first, :last,
-                     :[], :<<, :<=>, :<<, :==, :[], :[]=, :'+'
+                     :[], :<<, :<=>, :<<, :==, :[], :[]=
 
       # rubocop:disable Metrics/ParameterLists
-      def initialize(states, entry_state: nil, exit_state: nil, trigger_value: nil, trigger_method: nil, split: false)
+      def initialize(states, id: "", entry_state: nil, exit_state: nil, trigger_value: nil, trigger_method: nil, split: false)
         @states = [*states]
 
+        @id = id
         @entry_state = entry_state
         @exit_state = exit_state
         @trigger_method = trigger_method
@@ -48,8 +42,12 @@ module DatashiftJourney
         @split = split
       end
 
+      def add_states(list)
+        @states.concat(list.flatten)
+      end
+
       def inspect
-        "#{self.class.name} #{@states.inspect} "
+        "#{self.class.name}(#{id}) - #{@states.inspect} [splitter = #{split?}]"
       end
 
       def split?
@@ -75,7 +73,7 @@ module DatashiftJourney
 
       private
 
-      attr_reader :states
+      attr_writer :states
     end
 
     class EmptySequence < Sequence

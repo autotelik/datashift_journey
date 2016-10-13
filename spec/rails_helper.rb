@@ -31,7 +31,8 @@ RSpec.configure do |config|
   # certain 'static' tables
   config.before(:suite) do
     DatabaseCleaner.strategy = :truncation
-    DatabaseCleaner.clean
+    DatabaseCleaner.clean_with :truncation, except: %w(ar_internal_metadata)
+    #DatabaseCleaner.clean
   end
 
   config.before do |example|
@@ -55,7 +56,7 @@ RSpec.configure do |config|
   end
 
   config.after do
-    DatabaseCleaner.clean
+    DatabaseCleaner.clean_with :truncation, except: %w(ar_internal_metadata)
   end
 
   # Enables shortcut, t() instead of I18n.t() in tests

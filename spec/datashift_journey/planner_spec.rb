@@ -16,9 +16,9 @@ module DatashiftJourney
 
             Journey::MachineBuilder.create_journey_plan_for(SomeJourney, initial: :new_or_renew) do
               # first define the sequences
-              split_sequence :new_sequence, [:new_sequence_start_page]
+              branch_sequence :new_sequence, [:new_sequence_start_page]
 
-              split_sequence :renew_sequence, [:renew_sequence_start_page, :enter_reg_number]
+              branch_sequence :renew_sequence, [:renew_sequence_start_page, :enter_reg_number]
 
               # now define the parent state and the routing criteria to each sequence
               split_on_equality(:new_or_renew,
@@ -41,6 +41,10 @@ module DatashiftJourney
             expect(journey.can_back?).to eq true
             expect(journey.can_next?).to eq false # the end
 
+            journey.back!
+            expect_state_matches(journey, :new_or_renew)
+
+
             # Other branch
             journey = DatashiftJourney.journey_plan_class.new
 
@@ -51,7 +55,7 @@ module DatashiftJourney
             expect(journey.can_next?).to eq true
             journey.next!
 
-            expect_state_matches_and_next!(journey, :renew_sequence_start_page)
+            expect_state_canback_cannext_and_next!(journey, :renew_sequence_start_page)
 
             expect_state_matches(journey, :enter_reg_number)
             expect(journey.can_back?).to eq true
@@ -69,9 +73,9 @@ module DatashiftJourney
 
           Journey::MachineBuilder.create_journey_plan(initial: :new_or_renew) do
             # test the empty sequences  - next should hit split state of next sequence ()
-            split_sequence :new_sequence, []
+            branch_sequence :new_sequence, []
 
-            split_sequence :renew_sequence, [:renew_sequence_start_page, :enter_reg_number]
+            branch_sequence :renew_sequence, [:renew_sequence_start_page, :enter_reg_number]
 
             # now define the parent state and the routing criteria to each sequence
             split_on_equality(:new_or_renew,
@@ -79,9 +83,9 @@ module DatashiftJourney
                               new_sequence: 'new',
                               renew_sequence: 'renew')
 
-            split_sequence :sole_trader_sequence, [:sole_trader_start]
-            split_sequence :partnership_sequence, [:partnership_start]
-            split_sequence :limited_company_sequence, [:limited_company_start]
+            branch_sequence :sole_trader_sequence, [:sole_trader_start]
+            branch_sequence :partnership_sequence, [:partnership_start]
+            branch_sequence :limited_company_sequence, [:limited_company_start]
 
             split_on_equality(:business_type,
                               'business_type_value',

@@ -16,11 +16,11 @@ RSpec.configure do |_config|
   #   We can transition to next
   #   Fire next
   #
-  def expect_state_matches_and_next!(journey, expected_state, message = nil)
+  def expect_state_canback_cannext_and_next!(journey, expected_state, message = nil)
     expect_state_matches(journey, expected_state, message)
 
-    expect(journey.can_back?).to eq(true), message
-    expect(journey.can_next?).to eq(true), message
+    expect(journey.can_back?).to eq(true), "Expected can_back?  to be true"
+    expect(journey.can_next?).to eq(true), "Expected can_next?  to be true"
 
     journey.next!
   end

@@ -17,13 +17,13 @@ class StateMachine < Thor
 
     puts "\nEVENTS",journey_plan.state_events.inspect
 
-    puts puts "\nSTATE PATHS",journey_plan.state_paths.inspect
+    puts "\nSTATE PATHS",journey_plan.state_paths.inspect
 
-    puts  puts "\nSTATES", state_machine.states.map(&:name).inspect
+    puts "\nSTATES", state_machine.states.map(&:name).inspect
 
-    puts  puts "\nEVENT KEYS", state_machine.events.keys.sort
+    puts "\nEVENT KEYS", state_machine.events.keys.sort
 
-    puts  puts "\nBACK", state_machine.events[:back].known_states.sort
+    puts "\nBACK", state_machine.events[:back].known_states.sort
   end
 
   no_commands do
