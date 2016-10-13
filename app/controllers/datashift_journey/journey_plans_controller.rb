@@ -72,6 +72,8 @@ module DatashiftJourney
       redirect_to(form.redirection_url) && return if form.redirect?
 
       if result && form.save
+        logger.debug("SUCCESS - Updated #{journey_plan.inspect}")
+
         move_next(form)
       else
         logger.debug("FAILED - Form Errors [#{form.errors.inspect}]")
@@ -83,6 +85,9 @@ module DatashiftJourney
     private
 
     def  move_next(form)
+
+      logger.debug "In Move Next [#{form.inspect}]"
+
       form_journey_plan = form.journey_plan
 
       if form_journey_plan.class != DatashiftJourney.journey_plan_class
@@ -91,25 +96,23 @@ module DatashiftJourney
 
       form_journey_plan.reload
 
-      logger.debug("SUCCESS - Updated #{form_journey_plan.inspect}")
-
       # if there is no next event, state_machine dynamic helper can_next? not available
       if !form_journey_plan.respond_to?('can_next?')
 
         logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
 
-        render :journey_end
-
-      elsif form_journey_plan.can_next?
-        form_journey_plan.next!
-
-        redirect_to(datashift_journey.journey_plan_state_path(form_journey_plan.state, form_journey_plan)) && return
-
-      else
-        logger.error("JOURNEY Cannot proceed - not able to transition to next event'")
-
-        redirect_to(datashift_journey.journey_plan_state_path(form_journey_plan.state, form_journey_plan)) && return
+        render :journey_end && return
       end
+
+      if form_journey_plan.can_next?
+        logger.error("JOURNEY Can proceed - transitioning to next event'")
+
+        form_journey_plan.next!
+      else
+        logger.error("JOURNEY Cannot Continue - not able to transition to next event")
+      end
+
+      redirect_to(datashift_journey.journey_plan_state_path(form_journey_plan.state, form_journey_plan)) && return
     end
 
     def form_object(journey)

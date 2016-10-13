@@ -17,6 +17,7 @@ StateMachines::Machine.class_eval do
   end
 
   def create_back(from, to)
+    raise "Bad transitions supplied for Back - FROM #{from} - TO #{to}" if(from.nil? || to.nil?)
     if block_given?
       # puts "DEBUG: Creating BACK transition from #{from} to #{to} with Block"
       transition(from => to, on: :back, if: yield)
@@ -27,6 +28,7 @@ StateMachines::Machine.class_eval do
   end
 
   def create_next(from, to)
+    raise "Bad transitions supplied for Next - FROM #{from} - TO #{to}" if(from.nil? || to.nil?)
     if block_given?
       # puts "DEBUG: Creating NEXT transition from #{from} to #{to} with Block "
       transition(from => to, on: :next, if: yield)

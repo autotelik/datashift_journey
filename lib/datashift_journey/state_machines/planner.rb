@@ -40,10 +40,8 @@ module DatashiftJourney
             split_sequence_map[seq_id].trigger_method = attr_reader
             split_sequence_map[seq_id].trigger_value = trigger_value
           else
-            split_sequence_map[seq_id] = Sequence.new(nil,
-                                                      entry_state: state,
-                                                      trigger_method: attr_reader,
-                                                      trigger_value: trigger_value)
+            seq = Sequence.new(nil, entry_state: state, trigger_method: attr_reader, trigger_value: trigger_value)
+            split_sequence_map[seq_id] = seq
           end
         end
       end

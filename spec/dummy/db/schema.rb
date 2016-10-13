@@ -1,4 +1,3 @@
-# encoding: UTF-8
 # This file is auto-generated from the current state of the database. Instead
 # of editing this file, please use the migrations feature of Active Record to
 # incrementally modify your database, and then regenerate this schema definition.
@@ -11,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160907091700) do
+ActiveRecord::Schema.define(version: 20160915115351) do
 
   create_table "addresses", force: :cascade do |t|
     t.string   "premises",       limit: 200
@@ -74,11 +73,10 @@ ActiveRecord::Schema.define(version: 20160907091700) do
     t.integer  "bill_address_id"
     t.integer  "ship_address_id"
     t.integer  "payment_id"
+    t.index ["bill_address_id"], name: "index_datashift_journey_checkouts_on_bill_address_id"
+    t.index ["payment_id"], name: "index_datashift_journey_checkouts_on_payment_id"
+    t.index ["ship_address_id"], name: "index_datashift_journey_checkouts_on_ship_address_id"
   end
-
-  add_index "datashift_journey_checkouts", ["bill_address_id"], name: "index_datashift_journey_checkouts_on_bill_address_id"
-  add_index "datashift_journey_checkouts", ["payment_id"], name: "index_datashift_journey_checkouts_on_payment_id"
-  add_index "datashift_journey_checkouts", ["ship_address_id"], name: "index_datashift_journey_checkouts_on_ship_address_id"
 
   create_table "datashift_journey_payments", force: :cascade do |t|
     t.string   "name"
@@ -92,18 +90,16 @@ ActiveRecord::Schema.define(version: 20160907091700) do
     t.string   "reference"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["reference"], name: "index_dsj_collectors_on_reference"
+    t.index ["state"], name: "index_dsj_collectors_on_state"
   end
-
-  add_index "dsj_collectors", ["reference"], name: "index_dsj_collectors_on_reference"
-  add_index "dsj_collectors", ["state"], name: "index_dsj_collectors_on_state"
 
   create_table "dsj_collectors_data_nodes", force: :cascade do |t|
     t.integer "collector_id", null: false
     t.integer "data_node_id", null: false
     t.integer "position"
+    t.index ["collector_id", "data_node_id"], name: "collectors_data_nodes_collector_id_data_node_id", unique: true
   end
-
-  add_index "dsj_collectors_data_nodes", ["collector_id", "data_node_id"], name: "collectors_data_nodes_collector_id_data_node_id", unique: true
 
   create_table "dsj_data_nodes", force: :cascade do |t|
     t.string   "form_name"
@@ -113,9 +109,8 @@ ActiveRecord::Schema.define(version: 20160907091700) do
     t.text     "field_value"
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
+    t.index ["field"], name: "index_dsj_data_nodes_on_field"
+    t.index ["form_name"], name: "index_dsj_data_nodes_on_form_name"
   end
-
-  add_index "dsj_data_nodes", ["field"], name: "index_dsj_data_nodes_on_field"
-  add_index "dsj_data_nodes", ["form_name"], name: "index_dsj_data_nodes_on_form_name"
 
 end
