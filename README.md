@@ -292,6 +292,61 @@ This will be required in the path format, if you are using multiple namespaces/f
 
 See The Form to configure visibility of the default continue or submit button.
 
+### DatashiftJourney::Collector
+
+This option uses DatashiftJourney::Collector as the journey plan class, which stored  the data collected,
+ from each state/page in  `collector_data_nodes`
+
+This collection is a series of `DatashiftJourney::DataNode` objects.
+
+When there's a single field on a page to collect, you can inherit from the BaseCollectorForm
+and your state form becomes very simple, for example
+
+```ruby
+class OtherBusinessesForm < DatashiftJourney::BaseCollectorForm
+
+  def params_key
+    :other_businesses
+  end
+
+  property :field_value
+
+  # basic validation - has field been filled in
+  validates :field_value, presence: true
+
+end
+```
+
+Collected data will be stored as a `DatashiftJourney::DataNode` field name is the **underscore** name of the state
+for example given a state BusinessTypeForm, a From BusinessTypeForm, the field name is 'business_type'
+
+For example
+
+```ruby
+DatashiftJourney::DataNode
+    id: 5,
+    form_name: "BusinessTypeForm",
+    field: "business_type",
+    field_presentation: "Business Type",
+    field_type: "string",
+    field_value: "sole_trader"
+```
+
+In Rails form tags within the viwe/partial, the object_name to use is 'field_value'
+
+For example, to select a single field from set of radio buttons :
+
+```ruby
+    <%= f.label :field_value, for: "registration_field_value_soletrader",  class: 'block-label' do %>
+      <%= f.radio_button :field_value, 'sole_trader' %>
+      <%= t '.sole_trader' %>
+    <% end %>
+    <%= f.label :field_value, for: "registration_field_value_partnership",  class: 'block-label' do %>
+      <%= f.radio_button :field_value, 'partnership' %>
+      <%= t '.partnership' %>
+    <% end %>
+```
+
 ### State Jumper Toolbar
 
 There is a development toolbar available for creating and jumping straight to any State
