@@ -2,6 +2,11 @@ module DatashiftJourney
 
   module InitializerCommon
 
+    def next_migration_number(dirname)
+      next_migration_number = current_migration_number(dirname) + 1
+      ActiveRecord::Migration.next_migration_number(next_migration_number)
+    end
+
     def create_initializer_file(journey_class)
       # The app must inform datashift_journey of the model class, that hosts the journey plan
       # For example, in config/initializers/datashift_journey.rb
@@ -21,24 +26,6 @@ module DatashiftJourney
     def journey_concern(journey_class)
       create_file "app/models/concerns/#{concern_file(journey_class)}" do
         model_journey_code(journey_class)
-      end
-    end
-
-    def journey_decorator(journey_class)
-      create_file "app/decorators/#{decorator_file(journey_class)}" do
-        model_journey_code(journey_class)
-      end
-
-      insert_into_file File.join('config', 'application.rb'), after: "class Application < Rails::Application\n" do
-        %{
-
-      config.to_prepare do
-        Dir.glob(File.join(Rails.root, "app/decorators", "**/*_decorator*.rb")).each do |c|
-          require_dependency(c)
-        end
-      end
-
-}
       end
     end
 
@@ -75,35 +62,36 @@ end
 
     def model_journey_code(_journey_class)
       model_definition = <<-APP
-DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :set_your_initial_state) do
+DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :TO_DO_SET_INITIAL_STATE:) do
 
-    # The available API is defined in : datashift_journey/lib/datashift_journey/state_machines/planner.rb
+=begin
+    The available API is defined in : datashift_journey/lib/datashift_journey/state_machines/planner.rb
 
-    # A basic example with one set of branches, reconnecting to another common section starting at :review
-    #
-DatashiftJourney::MachineBuilder.create_journey_plan(initial: :ship_address) do
-
+    A basic example with one set of branches, reconnecting to another common section starting at :review
+ 
+    DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :ship_address) do   
       sequence [:ship_address, :bill_address]
-
-      # first define the sequences
-      split_sequence :visa_sequence, [:visa_page1, :visa_page2]
-
-      split_sequence :mastercard_sequence, [:page_mastercard1, :page_mastercard2, :page_mastercard3]
-
-      split_sequence :paypal_sequence, []
-
-      # now define the parent state and the routing criteria to each sequence
-
-      split_on_equality( :payment,
-                         "payment_card",    # Helper method on Checkout that returns card type from Payment
-                         visa_sequence: 'visa',
-                         mastercard_sequence: 'mastercard',
-                         paypal_sequence: 'paypal'
-      )
-
-      # All branches recombine here at review
-      sequence [:review, :complete ]
-  end
+  
+        # first define the sequences
+        split_sequence :visa_sequence, [:visa_page1, :visa_page2]
+  
+        split_sequence :mastercard_sequence, [:page_mastercard1, :page_mastercard2, :page_mastercard3]
+  
+        split_sequence :paypal_sequence, []
+  
+        # now define the parent state and the routing criteria to each sequence
+  
+        split_on_equality( :payment,
+                           "payment_card",    # Helper method on Checkout that returns card type from Payment
+                           visa_sequence: 'visa',
+                           mastercard_sequence: 'mastercard',
+                           paypal_sequence: 'paypal'
+        )
+  
+        # All branches recombine here at review
+        sequence [:review, :complete ]
+      end
+=end
 
 end
       APP

@@ -1,5 +1,5 @@
 module DatashiftJourney
-
+  module Models
   # This handles collecting data from a Form
   #
   class DataNode < ActiveRecord::Base

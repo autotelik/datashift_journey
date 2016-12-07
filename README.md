@@ -42,22 +42,38 @@ And then execute:
 DatashiftJourney needs a parent or collector model, through which all the data can be collected hangs.
 The concept is like an Application, Checkout, Registration, Enrollment etc.
 
-This model is the entry point into any individual journey, so it is decorated with the state engine, and 
-therefor contains the journey steps, but also has columns or associations to store all the data collected
-on each step.
+This model is the entry point into any individual journey, and must have some mechanism
+such as database model store all the data collected on each step.
+
+This model is also decorated with the state engine, and therefor models the actual journey steps. 
 
 
-### Generic Data Collector
+### SQL Data Collector
  
-A generic Collector is provided out of the box, with the collected data stored on a per step basis,
-in an associated generic key/value type store. The usage within the forms and views is detailed further below. 
+An optional SQL based Collector is provided, which collected data in a database row, one per step,
+as a generic key/value/type store. The usage within the forms and views is detailed further below. 
 
-Using these classes is optional, see next section to use your own models, but to use these DSJ models, 
-simply run the installer - which will copy over relevant migrations etc.
+To use this model as your main JourneyPlan model, simply run the installer,
+ which will setup model and copy over relevant migrations etc.
 
 ```ruby
 rails generate datashift_journey:install_collector
 ```
+
+See below for details of using your own models instead.
+
+### Mongo Data Collector
+ 
+An optional MongoDB based Collector is provided, which collects data in a single document per journey.
+The usage within the forms and views is detailed further below. 
+
+To use this model as your main JourneyPlan model, simply run the installer to setup the model.
+
+```ruby
+rails generate datashift_journey:install_mongo_collector
+```
+
+See below for details of using your own models instead.
 
 ### Custom Data Collector
 

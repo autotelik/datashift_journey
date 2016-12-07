@@ -21,7 +21,7 @@ module DatashiftJourney
   end
 
   def self.default_journey_plan_class_name
-    'DatashiftJourney::Collector'
+    'DatashiftJourney::Models::Collector'
   end
 
 end
