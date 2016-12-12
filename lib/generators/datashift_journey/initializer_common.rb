@@ -23,10 +23,25 @@ module DatashiftJourney
     # The journey is stored in a separate concern (module) so model itself uncluttered
     # This module is auto included in the model
 
-    def journey_concern(journey_class)
-      create_file "app/models/concerns/#{concern_file(journey_class)}" do
+    def journey_plan_host_file(journey_class)
+
+      path = "app/services/datashift_journey"
+
+      create_file File.join(path, "#{journey_class.underscore}_journey.rb") do
         model_journey_code(journey_class)
       end
+
+      service_loader = <<-EOS
+
+    config.to_prepare do
+      Dir.glob(File.join(Rails.root, "#{path}", "**/*.rb")).each do |c|
+        require_dependency(c)
+      end
+    end
+
+ EOS
+      application service_loader
+
     end
 
     def notify_about_routes

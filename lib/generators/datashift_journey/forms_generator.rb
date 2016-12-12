@@ -4,10 +4,12 @@ module DatashiftJourney
 
     # class_option :journey_class, type: :string, required: true, banner: 'The ActiveRecord model to use to manage journey'
 
+    class_option :base_class, type: :string, banner: "The Form's base class"
+
     desc 'This generator creates an initializer and concern to setup and manage the journey Model'
 
     def create_form_per_state
-      if DatashiftJourney.journey_plan_class == DatashiftJourney::Collector
+      if DatashiftJourney.journey_plan_class == DatashiftJourney::Models::Collector
         state_forms_for_collector
       else
         klass = begin
