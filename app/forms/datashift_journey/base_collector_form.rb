@@ -7,7 +7,7 @@ module DatashiftJourney
     def self.factory(journey)
       no_form_name = name.chomp('Form')
 
-      data_node = DatashiftJourney::DataNode.new(
+      data_node = DatashiftJourney::Models::DataNode.new(
         form_name: name,
         field: no_form_name.underscore,
         field_presentation: no_form_name.titleize,

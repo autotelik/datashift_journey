@@ -7,7 +7,7 @@ module DatashiftJourney
     desc 'This generator creates an initializer and concern to setup and manage the journey Model'
 
     def create_form_per_state
-      foo = if DatashiftJourney.journey_plan_class == DatashiftJourney::Collector
+      foo = if DatashiftJourney.journey_plan_class == DatashiftJourney::Models::Collector
               ->(s) { view_for_collector_definition(s) }
             else
               ->(s) { view_for_journey_plan_definition(s) }

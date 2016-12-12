@@ -50,8 +50,8 @@ This model is also decorated with the state engine, and therefor models the actu
 
 ### SQL Data Collector
  
-An optional SQL based Collector is provided, which collects data in a database row, one per step,
-as a generic key/value/type store. The usage within the forms and views is detailed further below. 
+An optional SQL based Collector is provided, which collects data as a field name/value pair, 
+one database row per question.
 
 To setup this model as your main JourneyPlan model, copy over relevant migrations etc, simply run the installer
 
@@ -59,7 +59,9 @@ To setup this model as your main JourneyPlan model, copy over relevant migration
 rails generate datashift_journey:install_collector
 ```
 
-For simplified access to this model in your forms, you can derive from `DatashiftJourney::BaseCollectorForm`
+For simplified access to this model in your forms, you can derive from `DatashiftJourney::BaseCollectorForm`.
+
+If you use the form generator, this will be done for you (unless you specify otherwise via 'base_class' option).
 
 This base class provides access to the current journey plan via a `collector` alias, 
 and the 'save' method this will create a single new node entry. ~

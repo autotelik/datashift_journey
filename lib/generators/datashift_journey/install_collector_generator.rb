@@ -26,7 +26,7 @@ module DatashiftJourney
 
       notify_about_routes
 
-      journey_concern(klass)
+      journey_plan_host_file(klass)
 
       model_journey_code(klass)
     end
