@@ -12,6 +12,10 @@ module DatashiftJourney
         data_nodes.where('form_name = ? AND field = ?', form_name, field)
       end
 
+      def nodes_for_form(form_name)
+        data_nodes.where('form_name = ?', form_name)
+      end
+
     end
   end
 end

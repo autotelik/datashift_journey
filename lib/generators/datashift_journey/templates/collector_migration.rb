@@ -1,4 +1,4 @@
-class DatashiftJourneyCreateCollector < ActiveRecord::Migration<%= migration_version %>
+class DatashiftJourneyCreateCollector < ActiveRecord::Migration
   def change
 
     # The Container - one per journey - in most situations this would belong to a user account

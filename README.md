@@ -50,17 +50,49 @@ This model is also decorated with the state engine, and therefor models the actu
 
 ### SQL Data Collector
  
-An optional SQL based Collector is provided, which collected data in a database row, one per step,
+An optional SQL based Collector is provided, which collects data in a database row, one per step,
 as a generic key/value/type store. The usage within the forms and views is detailed further below. 
 
-To use this model as your main JourneyPlan model, simply run the installer,
- which will setup model and copy over relevant migrations etc.
+To setup this model as your main JourneyPlan model, copy over relevant migrations etc, simply run the installer
 
 ```ruby
 rails generate datashift_journey:install_collector
 ```
 
-See below for details of using your own models instead.
+For simplified access to this model in your forms, you can derive from `DatashiftJourney::BaseCollectorForm`
+
+This base class provides access to the current journey plan via a `collector` alias, 
+and the 'save' method this will create a single new node entry. ~
+
+Currently if your form contains multiple questions you must over ride save yoursefl
+ 
+ TODO Base class that can process multiple fields
+
+#### Example saving fields
+
+```ruby
+  property :company_name, virtual: true
+  property :postcode, virtual: true
+
+  def save
+     
+      collector.data_nodes << DatashiftJourney::DataNode.new(
+        form_name: 'BusinessDetailsForm',
+        field: 'company_name',
+        field_presentation: company_name.titleize,
+        field_type: 'string'
+      )
+
+      collector.save
+    end
+```
+ 
+  
+|To access a form entry there are helpers such as find the value for a form and field
+
+```ruby
+    collector.field_value_for("BusinessTypeForm", "business_type")
+```
 
 ### Mongo Data Collector
  
@@ -256,7 +288,7 @@ end
     
 There are a couple of base classes available, that will do most of the Form work, if you inherit from them.
 
-When usign the DSJ Collection models, you can derive from `DatashiftJourney::BaseCollectorForm`.
+When using the DSJ Collection models, you can derive from `DatashiftJourney::BaseCollectorForm`.
 
 When using your own model use `DatashiftJourney::BaseForm` .
     

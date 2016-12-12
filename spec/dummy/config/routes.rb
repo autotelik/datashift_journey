@@ -1,5 +1,7 @@
 Rails.application.routes.draw do
 
+  root to: "datashift_journey/journey_plans#new"
+
   mount DatashiftJourney::Engine => "/datashift_journey"
 
   get '/shift_state/journey_plans/:state/:id', :to => 'datashift_journey/journey_plans#update'

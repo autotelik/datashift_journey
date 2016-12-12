@@ -20,7 +20,7 @@ module DatashiftJourney
       context 'Multiple Sequences' do
 
         before(:all) do
-          DatashiftJourney::Collector.class_eval do
+          DatashiftJourney::Models::Collector.class_eval do
             def new_or_renew_value
               "new"
             end
@@ -28,10 +28,13 @@ module DatashiftJourney
             def business_type_value
               "sole_trader"
             end
+
+            def service_provided_value
+              "no"
+            end
           end
         end
 
-=begin
         it 'reports that branches are missing when not defined' do
           pending("create a test with a splitter but where some branch_sequences are not defined")
 
@@ -53,9 +56,9 @@ module DatashiftJourney
 
           journey.next!
         end
-=end
 
-        it 'enables the first state to be a branch splitter', duff: true do
+
+        it 'enables the first state to be a branch splitter' do
 
           DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :new_or_renew) do
             branch_sequence :new_sequence, [:business_type]
@@ -106,8 +109,10 @@ module DatashiftJourney
             split_on_equality( :construction_demolition,
                                :construction_demolition_value,
                                registration_type_sequence: 'yes',  # => registration_type
-            #service_provided_yes_sequence: 'no'
             )
+
+            # This branch may actually simplify down to just
+            # sequence [ :registration_type, :business_details]
 
             split_on_equality( :registration_type,
                                :registration_type_value,
@@ -118,20 +123,13 @@ module DatashiftJourney
 
             branch_sequence :carrier_dealer_sequence, [:business_details]
             branch_sequence :broker_dealer_sequence, [:business_details]
-
+            branch_sequence :carrier_broker_dealer_sequence, [:business_details]
 
             # RESTART COMMON JOURNEY AFTER BUSINESS TYPES
 
             sequence [
                        :contact_details,
-                       :key_person,
-                       :key_people,
-                       :relevant_people,
-                       :signup,
-                       :signin,
-                       :payment,
-                       :convictions,
-                       :upper_summary
+                       :postal_address
                      ]
           end
 
