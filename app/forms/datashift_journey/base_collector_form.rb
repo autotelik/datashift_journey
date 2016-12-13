@@ -7,20 +7,20 @@ module DatashiftJourney
     def self.factory(journey)
       no_form_name = name.chomp('Form')
 
-      data_node = DatashiftJourney::Models::DataNode.new(
-        form_name: name,
+      form_field = DatashiftJourney::Models::FormField.new(
+        form: name,
         field: no_form_name.underscore,
         field_presentation: no_form_name.titleize,
         field_type: 'string'
       )
 
-      new(data_node, journey)
+      new(form_field, journey)
     end
 
     def save
       sync    # Update the model so we can neatly check/use the Form's data
 
-      find_model = collector.nodes_for_form_and_field(model.form_name, model.field).first
+      find_model = collector.nodes_for_form_and_field(model.form, model.field).first
 
       if find_model
         find_model.update(field_value: model.field_value)
@@ -28,7 +28,7 @@ module DatashiftJourney
       else
         super # saves the model
 
-        collector.data_nodes << model
+        collector.form_fields << model
         collector.save
       end
     end

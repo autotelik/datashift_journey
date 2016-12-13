@@ -10,31 +10,19 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    create_table :dsj_form do |t|
+    create_table :dsj_form_fields do |t|
       t.string :form,  index: true,  null: false
-      t.string :presentation, :limit => 100
+      t.string :field, index: true,  null: false
+      t.string :field_presentation, :limit => 100
+      t.string :field_type,  null: false
       t.timestamps null: false
     end
 
-    create_table :dsj_form_fields do |t|
-      t.references :form,  index: true,  null: false
-      t.string     :field, index: true,  null: false, :limit => 100
-      t.string     :field_type,          null: false
-      t.string     :field_presentation, :limit => 100
-      t.timestamps null: false
-    end
 
     create_table :dsj_collectors_data_nodes do |t|
       t.references  :collector,  null: false
       t.references  :form_field, null: false
       t.text        :field_value
-      t.timestamps  null: false
-    end
-
-    create_table :dsj_questions do |t|
-      t.references  :form_field, null: false
-      t.text        :raw_text
-      t.string      :I18n_keyd, index: true
       t.timestamps  null: false
     end
 

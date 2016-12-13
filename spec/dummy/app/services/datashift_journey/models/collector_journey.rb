@@ -67,7 +67,7 @@ DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :new_or_r
   # RESTART COMMON JOURNEY AFTER BUSINESS TYPES
 
   sequence [
-               :contact_details,
-               :postal_address
+             :contact_details,
+             :postal_address
            ]
 end

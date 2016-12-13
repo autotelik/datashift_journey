@@ -5,7 +5,7 @@ module DatashiftJourney
       self.table_name = 'dsj_collectors_data_nodes'
 
       belongs_to :collector
-      belongs_to :data_node
+      belongs_to :form_field
 
     end
   end

@@ -6,14 +6,15 @@ module DatashiftJourney
 
       has_many :collector_data_nodes, foreign_key: :collector_id, dependent: :destroy
 
+      # 1-1 with state
+      has_many :forms
+
+      has_many :form_fields, through: :collector_data_nodes
+
       has_many :data_nodes, through: :collector_data_nodes, dependent: :destroy
 
-      def nodes_for_form_and_field(form_name, field)
-        data_nodes.where('form_name = ? AND field = ?', form_name, field)
-      end
-
-      def nodes_for_form(form_name)
-        data_nodes.where('form_name = ?', form_name)
+      def nodes_for_form_field(form_field)
+        collector_data_nodes.find(form_field)
       end
 
     end

@@ -25,7 +25,7 @@ module DatashiftJourney
 
     def journey_plan_host_file(journey_class)
 
-      path = "app/services/datashift_journey"
+      path = "app/services"
 
       create_file File.join(path, "#{journey_class.underscore}_journey.rb") do
         model_journey_code(journey_class)

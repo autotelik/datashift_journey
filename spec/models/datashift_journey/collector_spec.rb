@@ -7,11 +7,11 @@ module DatashiftJourney
 
       let(:collector) { create(:collector) }
 
-      it { is_expected.to have_many(:collector_data_nodes).dependent(:destroy) }
+      it { is_expected.to have_many(:collector_form_fields).dependent(:destroy) }
 
       it 'can save nodes for any given Form and Field', duff: true do
-        company_node = DatashiftJourney::Models::DataNode.new(
-          form_name: 'BusinessDetailsForm',
+        company_node = Models::FormField.new(
+          form: 'BusinessDetailsForm',
           field: :company_name,
           field_presentation: "Enter your Company Name",
           field_type: :string,
@@ -20,10 +20,10 @@ module DatashiftJourney
 
         expect(company_node).to be_valid
 
-        collector.data_nodes << company_node
+        collector.form_fields << company_node
         collector.save
         collector.reload
-        expect(collector.data_nodes.size).to eq 1
+        expect(collector.form_fields.size).to eq 1
       end
     end
 
@@ -31,24 +31,26 @@ module DatashiftJourney
       let(:collector) { create(:collector) }
 
       before(:each) do
-        collector.data_nodes << DatashiftJourney::Models::DataNode.create(
-          form_name: 'BusinessDetailsForm',
+
+        f = Models::Form.create(form: 'BusinessDetailsForm', presentation: "Enter your Company Name")
+
+        collector.form_fields << Models::FormField.create(
+          form: f,
           field: :company_name,
           field_presentation: "Enter your Company Name",
           field_type: :string,
-          field_value:  "Acme Ltd",
         )
       end
 
       it 'return s the node for a given Form and Field', duff: true do
         node = collector.nodes_for_form_and_field('BusinessDetailsForm', 'company_name').first
-        expect(node).to be_a DatashiftJourney::Models::DataNode
+        expect(node).to be_aModels::FormField
       end
 
-      it 'can store multiple Fields against trhe same Form' do
+      it 'can store multiple Fields against the same Form' do
 
-        collector.data_nodes << DatashiftJourney::Models::DataNode.create(
-          form_name: 'BusinessDetailsForm',
+        collector.form_fields << Models::FormField.create(
+          form: 'BusinessDetailsForm',
           field: :company_phone_number,
           field_presentation: "Enter your Company Email",
           field_type: :string,
@@ -56,7 +58,18 @@ module DatashiftJourney
         )
 
         collector.reload
-        expect(collector.data_nodes.size).to eq 2
+        expect(collector.form_fields.size).to eq 2
+
+        expect(collector.nodes_for_form('BusinessDetailsForm').size).to eq 2
+      end
+
+      it 'can store store data against a Field in a DataNode' do
+
+        collector.data_nodes << Models::CollectorDataNode.create(form_field: company_form_field,
+                                                                 field_value: FFaker::Internet.email)
+
+        collector.reload
+        expect(collector.form_fields.size).to eq 2
 
         expect(collector.nodes_for_form('BusinessDetailsForm').size).to eq 2
       end

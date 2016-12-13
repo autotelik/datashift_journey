@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160915115351) do
+ActiveRecord::Schema.define(version: 20161212200016) do
 
   create_table "addresses", force: :cascade do |t|
     t.string   "premises",       limit: 200
@@ -95,22 +95,23 @@ ActiveRecord::Schema.define(version: 20160915115351) do
   end
 
   create_table "dsj_collectors_data_nodes", force: :cascade do |t|
-    t.integer "collector_id", null: false
-    t.integer "data_node_id", null: false
-    t.integer "position"
-    t.index ["collector_id", "data_node_id"], name: "collectors_data_nodes_collector_id_data_node_id", unique: true
+    t.integer  "collector_id",  null: false
+    t.integer  "form_field_id", null: false
+    t.text     "field_value"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["collector_id", "form_field_id"], name: "collectors_data_nodes_collector_id_form_field_id", unique: true
   end
 
-  create_table "dsj_data_nodes", force: :cascade do |t|
-    t.string   "form_name"
-    t.string   "field"
+  create_table "dsj_form_fields", force: :cascade do |t|
+    t.string   "form",                           null: false
+    t.string   "field",                          null: false
     t.string   "field_presentation", limit: 100
-    t.string   "field_type"
-    t.text     "field_value"
+    t.string   "field_type",                     null: false
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
-    t.index ["field"], name: "index_dsj_data_nodes_on_field"
-    t.index ["form_name"], name: "index_dsj_data_nodes_on_form_name"
+    t.index ["field"], name: "index_dsj_form_fields_on_field"
+    t.index ["form"], name: "index_dsj_form_fields_on_form"
   end
 
 end

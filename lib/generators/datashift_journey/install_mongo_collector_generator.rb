@@ -28,7 +28,7 @@ module DatashiftJourney
 
     def migration_data
       <<RUBY
-      field :form_name, type: String
+      field :form, type: String
       field :field , type: String
       field :value, type: String
 RUBY
