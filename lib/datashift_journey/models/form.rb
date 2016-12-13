@@ -4,11 +4,12 @@ module DatashiftJourney
     # This stores a single Field in a Form, where a field is generally a form
     # element that collects some kind of data
     #
-    class FormField < ActiveRecord::Base
+    class Form < ActiveRecord::Base
 
-      self.table_name = 'dsj_form_fields'
+      self.table_name = 'dsj_forms'
 
-      belongs_to :form
+      has_many :form_fields
+
     end
   end
 end

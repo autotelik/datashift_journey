@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161212200016) do
+ActiveRecord::Schema.define(version: 20161213160210) do
 
   create_table "addresses", force: :cascade do |t|
     t.string   "premises",       limit: 200
@@ -86,8 +86,8 @@ ActiveRecord::Schema.define(version: 20161212200016) do
   end
 
   create_table "dsj_collectors", force: :cascade do |t|
-    t.string   "state"
-    t.string   "reference"
+    t.string   "state",      null: false
+    t.string   "reference",  null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["reference"], name: "index_dsj_collectors_on_reference"
@@ -104,14 +104,31 @@ ActiveRecord::Schema.define(version: 20161212200016) do
   end
 
   create_table "dsj_form_fields", force: :cascade do |t|
-    t.string   "form",                           null: false
-    t.string   "field",                          null: false
-    t.string   "field_presentation", limit: 100
+    t.integer  "form_id",                        null: false
+    t.string   "field",              limit: 100, null: false
     t.string   "field_type",                     null: false
+    t.string   "field_presentation", limit: 100
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
     t.index ["field"], name: "index_dsj_form_fields_on_field"
-    t.index ["form"], name: "index_dsj_form_fields_on_form"
+    t.index ["form_id"], name: "index_dsj_form_fields_on_form_id"
+  end
+
+  create_table "dsj_forms", force: :cascade do |t|
+    t.string   "form",                     null: false
+    t.string   "presentation", limit: 100
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.index ["form"], name: "index_dsj_forms_on_form"
+  end
+
+  create_table "dsj_questions", force: :cascade do |t|
+    t.integer  "form_field_id", null: false
+    t.text     "raw_text"
+    t.string   "I18n_keyd"
+    t.datetime "created_at",    null: false
+    t.datetime "updated_at",    null: false
+    t.index ["I18n_keyd"], name: "index_dsj_questions_on_I18n_keyd"
   end
 
 end

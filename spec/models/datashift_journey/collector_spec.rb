@@ -5,22 +5,33 @@ module DatashiftJourney
 
     context("Empty") do
 
-      let(:collector) { create(:collector) }
+      let(:collector) { create(:collector, state: :contact_details) }
 
-      it { is_expected.to have_many(:collector_form_fields).dependent(:destroy) }
+      it { is_expected.to have_many(:form_fields).dependent(false) }
+      it { is_expected.to have_many(:collector_data_nodes).dependent(:destroy) }
 
-      it 'can save nodes for any given Form and Field', duff: true do
-        company_node = Models::FormField.new(
-          form: 'BusinessDetailsForm',
-          field: :company_name,
-          field_presentation: "Enter your Company Name",
-          field_type: :string,
-          field_value:  "Acme Ltd",
+      it 'can create a Form to associated with a state and fields', duff: true do
+
+        business_details_form = Models::Form.new(
+            form: 'BusinessDetailsForm',
+            presentation: "Enter the details of your Business",
         )
 
-        expect(company_node).to be_valid
+        expect(business_details_form).to be_valid
+      end
 
-        collector.form_fields << company_node
+      it 'can save nodes for any given Form and Field', duff: true do
+
+        name_field = Models::FormField.new(
+          form: create(:form),
+          field: :name,
+          field_presentation: "Enter your Name",
+          field_type: :string
+        )
+
+        expect(name_field).to be_valid
+
+        collector.form_fields << name_field
         collector.save
         collector.reload
         expect(collector.form_fields.size).to eq 1

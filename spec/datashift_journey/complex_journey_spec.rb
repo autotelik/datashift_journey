@@ -133,7 +133,7 @@ module DatashiftJourney
                      ]
           end
 
-          journey = DatashiftJourney.journey_plan_class.new
+          journey = DatashiftJourney.journey_plan_class.new(reference: "UNIQUE_1234")
 
           expect_state_matches(journey, :new_or_renew)
           expect(journey.can_back?).to eq false # this is the initial state
