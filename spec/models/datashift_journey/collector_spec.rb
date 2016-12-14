@@ -54,8 +54,8 @@ module DatashiftJourney
       end
 
       it 'return s the node for a given Form and Field', duff: true do
-        node = collector.nodes_for_form_and_field('BusinessDetailsForm', 'company_name').first
-        expect(node).to be_aModels::FormField
+        node = collector.node_for_form_and_field('BusinessDetailsForm', 'company_name')
+        expect(node).to be_a Models::CollectorDataNode
       end
 
       it 'can store multiple Fields against the same Form' do

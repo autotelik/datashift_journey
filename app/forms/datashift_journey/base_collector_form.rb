@@ -20,7 +20,7 @@ module DatashiftJourney
     def save
       sync    # Update the model so we can neatly check/use the Form's data
 
-      find_model = collector.nodes_for_form_and_field(model.form, model.field).first
+      find_model = collector.node_for_form_and_field(model.form, model.field).first
 
       if find_model
         find_model.update(field_value: model.field_value)
