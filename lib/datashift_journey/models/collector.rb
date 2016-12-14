@@ -4,17 +4,26 @@ module DatashiftJourney
 
       self.table_name = 'dsj_collectors'
 
-      has_many :collector_data_nodes, foreign_key: :collector_id, dependent: :destroy
+      include DatashiftJourney::ReferenceGenerator.new(prefix: 'C')
 
-      has_many :form_fields, through: :collector_data_nodes
+      has_many :data_nodes, class_name: "CollectorDataNode", foreign_key: :collector_id, dependent: :destroy
+
+      has_many :form_fields, through: :data_nodes, source: :form_field
+
+      has_many :forms, through: :form_fields
 
       def node_for_form_and_field(form_name, field_name)
         form_field = FormField.for_form_and_field(form_name, field_name)
-        collector_data_nodes.where(form_field: form_field).first
+        return nil unless form_field
+        data_nodes.where(form_field: form_field).first
       end
 
-      def nodes_for_form_field(form_field)
-        collector_data_nodes.find(form_field).all
+      def node_for_form_field(form_field)
+        data_nodes.find(form_field).first
+      end
+
+      def nodes_for_form(form_name)
+        forms.where(form_name: form_name).first.data_nodes.all.to_a
       end
 
     end

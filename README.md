@@ -187,11 +187,11 @@ Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkou
       sequence [:ship_address, :bill_address]
 
       # first define the sequences
-      split_sequence :visa_sequence, [:visa_page1, :visa_page2]
+      branch_sequence :visa_sequence, [:visa_page1]
 
-      split_sequence :mastercard_sequence, [:page_mastercard1, :page_mastercard2, :page_mastercard3]
+      branch_sequence :mastercard_sequence, [:page_mastercard1, :page_mastercard2]
 
-      split_sequence :paypal_sequence, []
+      branch_sequence :paypal_sequence, []
 
       # now define the parent state and the routing criteria to each sequence
 

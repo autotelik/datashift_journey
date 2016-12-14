@@ -11,8 +11,8 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
     end
 
     create_table :dsj_forms do |t|
-      t.string :form,  index: true,  null: false
-      t.string :presentation, :limit => 100
+      t.string :form_name,    index: true,  null: false
+      t.string :presentation, limit: 100
       t.timestamps null: false
     end
 
@@ -20,7 +20,7 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
       t.references :form,  index: true,  null: false
       t.string     :field, index: true,  null: false, :limit => 100
       t.string     :field_type,          null: false
-      t.string     :field_presentation, :limit => 100
+      t.string     :field_presentation,  limit: 100
       t.timestamps null: false
     end
 

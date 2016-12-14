@@ -115,11 +115,11 @@ ActiveRecord::Schema.define(version: 20161213160210) do
   end
 
   create_table "dsj_forms", force: :cascade do |t|
-    t.string   "form",                     null: false
+    t.string   "form_name",                null: false
     t.string   "presentation", limit: 100
     t.datetime "created_at",               null: false
     t.datetime "updated_at",               null: false
-    t.index ["form"], name: "index_dsj_forms_on_form"
+    t.index ["form_name"], name: "index_dsj_forms_on_form_name"
   end
 
   create_table "dsj_questions", force: :cascade do |t|

@@ -8,7 +8,14 @@ module DatashiftJourney
 
       self.table_name = 'dsj_forms'
 
-      has_many :form_fields
+      has_many :form_fields, dependent: :destroy
+
+      has_many :data_nodes,
+               through: :form_fields,
+               class_name: "CollectorDataNode",
+               foreign_key: :collector_id,
+               dependent: :destroy
+
 
     end
   end

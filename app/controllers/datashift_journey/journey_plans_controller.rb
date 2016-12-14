@@ -19,7 +19,8 @@ module DatashiftJourney
     end
 
     def create
-      jp_instance = DatashiftJourney.journey_plan_class.new
+      # new not create so @ first state - otherwise next will go to 3rd state not 2nd
+      jp_instance = DatashiftJourney.journey_plan_class.create
 
       form = form_object(jp_instance)
 
