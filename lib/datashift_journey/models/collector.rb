@@ -1,3 +1,5 @@
+# These models are in lib since usage of them is Optional
+
 module DatashiftJourney
   module Models
     class Collector < ActiveRecord::Base
@@ -23,7 +25,9 @@ module DatashiftJourney
       end
 
       def nodes_for_form(form_name)
-        forms.where(form_name: form_name).first.data_nodes.all.to_a
+        form = forms.where(form_name: form_name).first
+        return [] unless form
+        form.data_nodes.all.to_a
       end
 
     end

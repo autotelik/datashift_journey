@@ -12,7 +12,6 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
 
     create_table :dsj_forms do |t|
       t.string :form_name,    index: true,  null: false
-      t.string :presentation, limit: 100
       t.timestamps null: false
     end
 
@@ -31,12 +30,22 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
       t.timestamps  null: false
     end
 
-    create_table :dsj_questions do |t|
-      t.references  :form_field, null: false
+    create_table :dsj_snippets do |t|
       t.text        :raw_text
-      t.string      :I18n_keyd, index: true
+      t.string      :I18n_key, index: true
       t.timestamps  null: false
     end
+
+    create_table :dsj_forms_snippets do |t|
+      t.references  :form, null: false
+      t.references  :snippet, null: false
+    end
+
+    create_table :dsj_fields_snippets do |t|
+      t.references  :form_field, null: false
+      t.references  :snippet, null: false
+    end
+
 
     add_foreign_key :collectors_data_nodes, :dsj_collectors, column: :form_field_id
 

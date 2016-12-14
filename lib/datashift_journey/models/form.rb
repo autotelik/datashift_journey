@@ -13,7 +13,7 @@ module DatashiftJourney
       has_many :data_nodes,
                through: :form_fields,
                class_name: "CollectorDataNode",
-               foreign_key: :collector_id,
+               foreign_key: :form_id,
                dependent: :destroy
 
 

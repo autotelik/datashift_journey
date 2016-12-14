@@ -12,6 +12,8 @@ module DatashiftJourney
 
       has_many :data_nodes, class_name: "CollectorDataNode", foreign_key: :form_field_id, dependent: :destroy
 
+      has_one :snippet, class_name: "FieldSnippet", foreign_key: :form_field_id, dependent: :destroy
+
       scope :for_form_and_field,   ->(form_name, field_name) {
         form = Form.where("form_name = ?", form_name).first
         return nil unless form
