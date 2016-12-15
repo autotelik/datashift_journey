@@ -25,7 +25,7 @@ module DatashiftJourney
     end
 
     # The form can  manage the main journey plan model and/or an associated model
-    # for example Payment or Address models associated with your main Checkout model.
+    # for example Payment or Address collector associated with your main Checkout model.
     # To supply an associated model, your factory could look something like
     #
     #   def self.factory(checkout)

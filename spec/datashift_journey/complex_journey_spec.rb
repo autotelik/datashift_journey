@@ -20,7 +20,7 @@ module DatashiftJourney
       context 'Multiple Sequences' do
 
         before(:all) do
-          DatashiftJourney::Models::Collector.class_eval do
+          DatashiftJourney::Collector::Collector.class_eval do
             def new_or_renew_value
               "new"
             end

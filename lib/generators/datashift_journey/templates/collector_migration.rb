@@ -10,13 +10,13 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    create_table :dsj_forms do |t|
+    create_table :dsj_page_states do |t|
       t.string :form_name,    index: true,  null: false
       t.timestamps null: false
     end
 
     create_table :dsj_form_fields do |t|
-      t.references :form,  index: true,  null: false
+      t.references :page_state,  index: true,  null: false
       t.string     :field, index: true,  null: false, :limit => 100
       t.string     :field_type,          null: false
       t.string     :field_presentation,  limit: 100
@@ -36,8 +36,8 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
       t.timestamps  null: false
     end
 
-    create_table :dsj_forms_snippets do |t|
-      t.references  :form, null: false
+    create_table :dsj_page_states_snippets do |t|
+      t.references  :page_state, null: false
       t.references  :snippet, null: false
     end
 

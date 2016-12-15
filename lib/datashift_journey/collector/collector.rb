@@ -1,7 +1,7 @@
-# These models are in lib since usage of them is Optional
+# These collector are in lib since usage of them is Optional
 
 module DatashiftJourney
-  module Models
+  module Collector
     class Collector < ActiveRecord::Base
 
       self.table_name = 'dsj_collectors'

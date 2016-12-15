@@ -1,5 +1,5 @@
 module DatashiftJourney
-  module Models
+  module Collector
 
     class Snippet < ActiveRecord::Base
 

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 module DatashiftJourney
-  RSpec.describe Models::Collector, type: :model do
+  RSpec.describe Collector::Collector, type: :model do
 
     context("Empty") do
 
@@ -12,7 +12,7 @@ module DatashiftJourney
 
       it 'can create a Form to associated with a state and fields', duff: true do
 
-        business_details_form = Models::Form.new(
+        business_details_form = Collector::Form.new(
             form_name: 'BusinessDetailsForm',
             presentation: "Enter the details of your Business",
         )
@@ -22,7 +22,7 @@ module DatashiftJourney
 
       it 'can save nodes for any given Form and Field', duff: true do
 
-        name_field = Models::FormField.new(
+        name_field = Collector::FormField.new(
             form: create(:form),
             field: :name,
             field_presentation: "Enter your Name",
@@ -42,10 +42,10 @@ module DatashiftJourney
 
       let(:collector) { create(:collector) }
 
-      let(:form) { Models::Form.create(form_name: 'BusinessDetailsForm', presentation: "Enter your Company Name") }
+      let(:form) { Collector::Form.create(form_name: 'BusinessDetailsForm', presentation: "Enter your Company Name") }
 
       let(:form_field) do
-        Models::FormField.create(
+        Collector::FormField.create(
             form: form,
             field: :company_name,
             field_presentation: "Enter your Company Name",
@@ -53,7 +53,7 @@ module DatashiftJourney
         )
       end
       let(:email_form_field) do
-        Models::FormField.create(
+        Collector::FormField.create(
             form: form,
             field: :company_email,
             field_presentation: "Enter your Company Email",
@@ -69,12 +69,12 @@ module DatashiftJourney
 
         it 'returns the node for a given Form and Field', duff: true do
           node = collector.node_for_form_and_field('BusinessDetailsForm', 'company_name')
-          expect(node).to be_a Models::CollectorDataNode
+          expect(node).to be_a Collector::CollectorDataNode
         end
 
         it 'can store multiple Fields against the same Form' do
 
-          collector.form_fields << Models::FormField.create(
+          collector.form_fields << Collector::FormField.create(
               form: form,
               field: :company_email,
               field_presentation: "Enter your Company Email",

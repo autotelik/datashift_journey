@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :collector, class: DatashiftJourney::Models::Collector do
+  factory :collector, class: DatashiftJourney::Collector::Collector do
 
     reference  FFaker::Product.model
     # N.B state must be a valid state from the defined journey

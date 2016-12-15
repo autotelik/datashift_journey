@@ -2,7 +2,7 @@ module DatashiftJourney
   # This handles supplying data for a SUMMARY or REVIEW page or e.g. an email contaning a summary,
   # usually as the key/value data, associated with an Enrollment state.
   #
-  # N.B - Our state engine models the state of the journey (not essentially the state of the journey_plan), hence a state
+  # N.B - Our state engine collector the state of the journey (not essentially the state of the journey_plan), hence a state
   # is more analogous to Page
   # So here review data is assigned for DATA collected DURING a particular state - effectively the data
   # saved during the UPDATE on that State

@@ -1,5 +1,5 @@
 FactoryGirl.define do
-  factory :form_field, class: DatashiftJourney::Models::FormField do
+  factory :form_field, class: DatashiftJourney::Collector::FormField do
 
     form 'BusinessDetailsForm'
     field :company_name

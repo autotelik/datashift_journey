@@ -10,7 +10,7 @@ module DatashiftJourney
 
     source_root File.expand_path("../templates", __FILE__)
 
-    desc 'This generator copies over DSJ migrations to use the generic Collector data models'
+    desc 'This generator copies over DSJ migrations to use the generic Collector data collector'
 
     def copy_collector_migration
         migration_template "collector_migration.rb", "db/migrate/datashift_journey_create_collector.rb", migration_version: migration_version

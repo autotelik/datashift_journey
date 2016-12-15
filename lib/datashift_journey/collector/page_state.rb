@@ -1,12 +1,11 @@
 module DatashiftJourney
-  module Models
+  module Collector
 
-    # This stores a single Field in a Form, where a field is generally a form
-    # element that collects some kind of data
+    # This stores details for rendering and storing a Page related to a single State, associated with state engine
     #
-    class Form < ActiveRecord::Base
+    class PageState < ActiveRecord::Base
 
-      self.table_name = 'dsj_forms'
+      self.table_name = 'dsj_page_states'
 
       has_many :form_fields, dependent: :destroy
 

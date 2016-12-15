@@ -1,5 +1,5 @@
 module DatashiftJourney
-  module Models
+  module Collector
     class FieldSnippet < ActiveRecord::Base
 
       self.table_name = 'dsj_fields_snippets'

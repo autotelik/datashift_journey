@@ -83,7 +83,7 @@ Metrics/MethodLength:
   Max: 30
 
 # As a web app, as long as the team commit to using well named classes for
-# controllers, models etc it should not be necessary to add top-level class
+# controllers, collector etc it should not be necessary to add top-level class
 # documentation.
 Documentation:
   Enabled: false
