@@ -12,9 +12,16 @@ module DatashiftJourney
       has_many :data_nodes,
                through: :form_fields,
                class_name: "CollectorDataNode",
-               foreign_key: :form_id,
+               foreign_key: :page_state_id,
                dependent: :destroy
 
+      has_many :page_state_snippets, foreign_key: :page_state_id
+
+      has_many :snippets, through: :page_state_snippets#foreign_key: :page_state_id
+
+      def header
+        snippets.collect {|s| s.I18n_key.present? ? I18n.t(s.I18n_key) : s.raw_text }.join(" ")
+      end
 
     end
   end

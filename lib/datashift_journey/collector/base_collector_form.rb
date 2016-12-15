@@ -14,17 +14,11 @@ module DatashiftJourney
 
         form_fields = page_state.form_fields
 
-        puts "FIELDS  #{page_state.form_fields.inspect}  #{page_state.form_fields.empty?}"
+        puts "#{page_state.form_fields.size} FIELDS #{page_state.form_fields.inspect} "
 
         form_fields.collect { |ff| journey_plan.data_nodes.build(form_field: ff ) }
-=begin
-        <%= journey_plan.form_fields.where(form: journey_plan.forms.where(form_name: 'ShipAddress')).each do |ff| %>
-      <legend class="visuallyhidden"><%= ff.snippet ? t(ff.snippet.I18n_key) : "Not found" %></legend>
-      <%= f.label ff.field,  ff.snippet ? t(ff.snippet.I18n_key) : "Not found", class: 'form-label' %>
-        <%#= f.text_field "#{ff.field}_value", class: 'form-control form-control-char-50' %>
-  <% end %>
-=end
-        new(journey_plan)
+
+        new(page_state, journey_plan)
       end
 
       alias_attribute :collector, :journey_plan
@@ -35,7 +29,7 @@ module DatashiftJourney
       end
 
       def self.find_or_create_page_state
-        Collector::PageState.where(form_name: collector_form_name).first_or_create
+        PageState.where(form_name: collector_form_name).first_or_create
       end
 
       def self.create_missing_collector_field(page_state)
