@@ -21,7 +21,15 @@ module DatashiftJourney
   end
 
   def self.default_journey_plan_class_name
-    'DatashiftJourney::Models::Collector'
+    collector_journey_plan_class.name
+  end
+
+  def self.collector_journey_plan_class
+    DatashiftJourney::Collector::Collector
+  end
+
+  def self.using_collector?
+    DatashiftJourney.journey_plan_class == collector_journey_plan_class
   end
 
 end

@@ -10,9 +10,7 @@
 
   <%= hidden_field_tag "rendered_state", local_assigns[:rendered_state] || state  %>
 
-  <% if(journey_plan_partial?(state)) %>
-    <%= render journey_plan_partial_location(state), form: form, f: f, journey_plan: journey_plan %>
-  <% end %>
+  <%= render_if_exists state, form: form, f: f, journey_plan: journey_plan %>
 
   <% if form.show_submit_button? %>
     <div class="form-group">

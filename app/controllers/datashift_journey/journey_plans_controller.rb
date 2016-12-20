@@ -2,6 +2,9 @@ module DatashiftJourney
 
   class JourneyPlansController < ApplicationController
 
+    # TODO investigate further - does not seem to work
+    # prepend_view_path DatashiftJourney::Configuration.call.partial_location
+
     include ValidateState
 
     # Run BEFORE other filters to ensure the current journey_plan has been selected from the DB

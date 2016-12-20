@@ -1,16 +1,30 @@
 module DatashiftJourney
   module ApplicationHelper
 
-    # Helper to return whether a partial exists in expected place a particular state
-    def journey_plan_partial?(state)
-      result = lookup_context.find_all("#{DatashiftJourney::Configuration.call.partial_location}/_#{state}").any?
+    def render_if_exists(state, *args)
 
-      unless result
-        Rails.logger.warn("DatashiftJourney - no partial found for state #{state}")
-        Rails.logger.warn("DatashiftJourney searched path(s) [views/#{DatashiftJourney::Configuration.call.partial_location}]")
+      lookup_context.prefixes.prepend DatashiftJourney::Configuration.call.partial_location
+
+      Rails.logger.debug("DSJ search path(s) [#{lookup_context.prefixes.inspect}]")
+
+      if(lookup_context.exists?(state, lookup_context.prefixes, true))
+        render(state, *args)
+      elsif DatashiftJourney.using_collector?
+        Rails.logger.debug("DSJ - Using generic Collector viws, no partial found for state #{state}")
+        render('datashift_journey/collector/generic_form', *args)
       end
 
-      result
+    end
+
+    # Returns true if '_state' partial exists in configured location (Configuration.partial_location)
+
+    def journey_plan_partial?(state)
+
+      return true if(lookup_context.exists?(state, [DatashiftJourney::Configuration.call.partial_location], true))
+
+      Rails.logger.warn("DSJ - No partial found for [#{state}] in path(s) [#{lookup_context.prefixes.inspect}]")
+
+      false
     end
 
     # helper to return the location of a partial for a particular state
