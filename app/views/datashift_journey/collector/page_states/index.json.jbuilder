@@ -1,0 +1,1 @@
+json.array! page_states, partial: 'page_states/page_state', as: :page_state

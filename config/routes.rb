@@ -2,6 +2,9 @@ DatashiftJourney::Engine.routes.draw do
 
   resources :journey_plans, only: [:create, :new, :edit, :update]
 
+  # TODO - Devise generates routes based on module selection .. like we are trying to do with optional Collector
+  #   https://github.com/plataformatec/devise/blob/88724e10adaf9ffd1d8dbfbaadda2b9d40de756a/lib/devise/rails/routes.rb
+
   # TO INVESTIGATE - On an error processing a state user is redirected but this goes to
   #   => http://localhost:3000/journey_plans/(:id)  via a get- which is index or show
   # This currently fixes the issue so a refresh leaves user on right page

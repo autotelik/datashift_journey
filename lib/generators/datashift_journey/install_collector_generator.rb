@@ -26,6 +26,18 @@ module DatashiftJourney
 
       notify_about_routes
 
+      insert_into_file File.join('config', 'routes.rb'), before: "end\n" do
+%(
+  # This line mounts Datashift Journey's Collector routes
+  #
+  namespace :api, constraints: { format: 'json' } do
+    namespace :v1 do
+      resources :page_states, only: [:create], controller: 'datashift_journey/page_states'
+    end
+  end
+)
+      end
+
       journey_plan_host_file(klass)
 
       model_journey_code(klass)
