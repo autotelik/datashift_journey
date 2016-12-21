@@ -26,14 +26,14 @@ AllCops:
 # New rule and seems to be a ruboco bug with automatic cleanup so disabling
 # turns until(pc.valid?) into  untilpc.valid? which ruby chokes on
 
-Style/RedundantParentheses:
-    Enabled: false
-
-
 # Looks cluttered/ugly having your first method directly after the module/class declaration
 Style/EmptyLinesAroundModuleBody:
     Enabled: false
 Style/EmptyLinesAroundClassBody:
+    Enabled: false
+Style/Lambda:
+    Enabled: false
+Style/RedundantParentheses:
     Enabled: false
 
 # Rubymine disagrees and not sure how to fix Rubymine indentation right now

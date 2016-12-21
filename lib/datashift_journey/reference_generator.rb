@@ -45,7 +45,7 @@ module DatashiftJourney
     end
 
     def new_candidate(length)
-      @prefix + length.times.map { @candidates.sample(random: @random) }.join
+      @prefix + Array.new(length) { @candidates.sample(random: @random) }.join
     end
   end
 end

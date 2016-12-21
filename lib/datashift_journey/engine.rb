@@ -1,3 +1,14 @@
+begin
+  require_relative 'exceptions'
+  require_relative 'configuration'
+  require_relative 'reference_generator'
+  require_relative 'collector/collector'
+  require_relative 'state_machines/state_machine_core_ext'
+rescue => x
+  # TODO: - remove this block once gem stable
+  puts x.inspect
+end
+
 module DatashiftJourney
 
   class Engine < ::Rails::Engine
@@ -8,9 +19,9 @@ module DatashiftJourney
     config.autoload_paths += Dir["#{config.root}/lib/**/"]
 
     config.to_prepare do
-      Dir.glob(File.join(Engine.root, 'app/decorators', '**/*_decorator*.rb')).each do |c|
-        require_dependency(c)
-      end
+      # Dir.glob(File.join(Engine.root, 'app/decorators', '**/*_decorator*.rb')).each do |c|
+      #   require_dependency(c)
+      # end
 
       # Helpers for dealing with back and next
       DatashiftJourney.journey_plan_class.send :include, DatashiftJourney::StateMachines::Extensions
@@ -35,10 +46,7 @@ module DatashiftJourney
 end
 
 begin
-  require_relative 'exceptions'
-  require_relative 'configuration'
   require_relative 'datashift_journey'
-  require_relative 'state_machines/state_machine_core_ext'
 rescue => x
   # TODO: - remove this block once gem stable
   puts x.inspect

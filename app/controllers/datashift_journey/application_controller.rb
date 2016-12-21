@@ -21,15 +21,16 @@ module DatashiftJourney
     private
 
     def set_i18n_locale_from_params
-      if params[:locale]
-        available = I18n.available_locales.map(&:to_s)
-        if available.include?(params[:locale])
-          I18n.locale = params[:locale]
-          logger.debug "locale set to: #{params[:locale]}"
-        else
-          flash.now[:notice] = "#{params[:locale]} translation not available"
-          logger.error flash.now[:notice]
-        end
+      return unless params[:locale]
+
+      available = I18n.available_locales.map(&:to_s)
+
+      if available.include?(params[:locale])
+        I18n.locale = params[:locale]
+        logger.debug "locale set to: #{params[:locale]}"
+      else
+        flash.now[:notice] = "#{params[:locale]} translation not available"
+        logger.error flash.now[:notice]
       end
     end
 

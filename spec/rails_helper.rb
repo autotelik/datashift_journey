@@ -6,6 +6,9 @@ require 'spec_helper'
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
+
+  StateMachines::Machine.ignore_method_conflicts = true
+
   config.use_transactional_fixtures = false
 
   # RSpec Rails can automatically mix in different behaviours to your tests
@@ -32,7 +35,7 @@ RSpec.configure do |config|
   config.before(:suite) do
     DatabaseCleaner.strategy = :truncation
     DatabaseCleaner.clean_with :truncation, except: %w(ar_internal_metadata)
-    #DatabaseCleaner.clean
+    # DatabaseCleaner.clean
   end
 
   config.before do |example|

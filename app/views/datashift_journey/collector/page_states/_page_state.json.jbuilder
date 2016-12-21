@@ -1,1 +1,0 @@
-json.extract! page_state, :id,

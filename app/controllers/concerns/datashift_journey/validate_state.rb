@@ -19,6 +19,7 @@ module DatashiftJourney
     # It is not expected to redirect or halt processing chain - it is simply to ensure state is manged correctly,
     # for situations outside standard state flow/processing
     #
+    # rubocop:disable  Style/GuardClause
     def validate_state
       current_index = journey_plan.current_state_index
 

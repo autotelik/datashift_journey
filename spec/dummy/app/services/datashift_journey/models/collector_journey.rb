@@ -1,10 +1,6 @@
 DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :new_or_renew) do
 
-  branch_sequence :new_sequence, [:business_type]
-
-  branch_sequence :renew_sequence, [:enter_reg_number]
-
-  # now define the parent state and the routing criteria to each sequence
+  # the parent state and the routing criteria to each sequence
 
   split_on_equality( :new_or_renew,
                      "new_or_renew_value",    # Helper method on Collector
@@ -12,6 +8,9 @@ DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :new_or_r
                      renew_sequence: 'renew'
   )
 
+  branch_sequence :new_sequence, [:business_type]
+
+  branch_sequence :renew_sequence, [:enter_reg_number]
 
   # Define the sequences for Business Type split
   # Partnership Limited Company Public Body Charity Authority Other

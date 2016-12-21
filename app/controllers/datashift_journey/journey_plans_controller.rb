@@ -2,7 +2,7 @@ module DatashiftJourney
 
   class JourneyPlansController < ApplicationController
 
-    # TODO investigate further - does not seem to work
+    # TODO: investigate further - does not seem to work
     # prepend_view_path DatashiftJourney::Configuration.call.partial_location
 
     include ValidateState
@@ -88,8 +88,7 @@ module DatashiftJourney
 
     private
 
-    def  move_next(form)
-
+    def move_next(form)
       logger.debug "In Move Next [#{form.inspect}]"
 
       form_journey_plan = form.journey_plan
@@ -101,7 +100,7 @@ module DatashiftJourney
       form_journey_plan.reload
 
       # if there is no next event, state_machine dynamic helper can_next? not available
-      if !form_journey_plan.respond_to?('can_next?')
+      unless form_journey_plan.respond_to?('can_next?')
 
         logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
 
@@ -113,7 +112,7 @@ module DatashiftJourney
 
         form_journey_plan.next!
       else
-        logger.error("JOURNEY Cannot Continue - not able to transition to next event")
+        logger.error('JOURNEY Cannot Continue - not able to transition to next event')
       end
 
       redirect_to(datashift_journey.journey_plan_state_path(form_journey_plan.state, form_journey_plan)) && return

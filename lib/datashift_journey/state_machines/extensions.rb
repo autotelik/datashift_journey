@@ -14,7 +14,7 @@ module DatashiftJourney
       end
 
       def pp_state_paths
-        state_paths.each_with_index { |s, i| puts "Event [#{s.events[i]}] from=#{s[i].from} to=#{s[i].to}"}
+        state_paths.each_with_index { |s, i| puts "Event [#{s.events[i]}] from=#{s[i].from} to=#{s[i].to}" }
       end
 
       # Expects a symbol

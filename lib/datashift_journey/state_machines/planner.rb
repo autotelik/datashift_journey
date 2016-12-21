@@ -60,7 +60,6 @@ module DatashiftJourney
       # including back and next navigation
       #
       def build_journey_plan
-
         # The Order of sequences should have been preserved as insertion order
 
         sequence_list.each_with_index do |sequence, i|
@@ -69,7 +68,7 @@ module DatashiftJourney
           next_seq = sequence_list[i + 1] || EmptySequence.new
 
           if sequence.split?
-            #puts "\nDEBUG: *** BUILDING SPLITTER #{sequence.inspect} (#{i})"
+            # puts "\nDEBUG: *** BUILDING SPLITTER #{sequence.inspect} (#{i})"
             build_split_sequence_events(sequence, prev_seq, next_seq)
           else
 
@@ -77,7 +76,7 @@ module DatashiftJourney
             # of each branch (based on the same criteria that originally split the branch)
             if prev_seq.split?
               begin
-                #puts "\nDEBUG: *** BUILDING SEQ TO SPLIT #{sequence.inspect} (#{i})"
+                # puts "\nDEBUG: *** BUILDING SEQ TO SPLIT #{sequence.inspect} (#{i})"
                 build_triggered_back(sequence, prev_seq)
               rescue => x
                 puts x.inspect
@@ -86,7 +85,7 @@ module DatashiftJourney
               end
 
             elsif prev_seq.last
-              #puts "\nDEBUG: *** BUILDING SEQ #{sequence.inspect} (#{i})"
+              # puts "\nDEBUG: *** BUILDING SEQ #{sequence.inspect} (#{i})"
               create_back(sequence.first, prev_seq.last)
             end
 
@@ -98,9 +97,7 @@ module DatashiftJourney
         end
       end
 
-
       def build_split_sequence_events(sequence, prev_seq, next_seq)
-
         # puts "\n\nDEBUG: PROCESS SPLIT SEQ #{sequence.inspect}"
         # puts "DEBUG: SPLIT prev_seq #{prev_seq.inspect}"
         # puts "DEBUG: SPLIT next_seq #{next_seq.inspect}"
@@ -110,7 +107,7 @@ module DatashiftJourney
 
         branch_sequence_map.branches_for(sequence).each do |branch|
           begin
-            #puts "\n\nDEBUG: Process Branch - #{branch.inspect}"
+            # puts "\n\nDEBUG: Process Branch - #{branch.inspect}"
 
             # Back and next for any states within the split sequence itself
             create_pairs branch
@@ -146,17 +143,14 @@ module DatashiftJourney
             puts "Failed in Split Sequnce to process Branch #{branch.inspect}"
             raise x
           end
-
         end
       end
 
       def build_triggered_back(sequence, prev_seq)
-
-        #puts "DEBUG: * BUILD triggered Back for #{sequence.inspect}"
+        # puts "DEBUG: * BUILD triggered Back for #{sequence.inspect}"
 
         # Create back from FIRST item of THIS sequence to LAST entry of EACH previous BRANCH
         branch_sequence_map.branches_for(prev_seq).each do |branch|
-
           # Branches can be empty - i.e chain direct to next common sequence
           # in which case back goes to the split sequence state itself (parent of branch)
           to_state = branch.last.nil? ? prev_seq.first : branch.last
@@ -173,6 +167,9 @@ module DatashiftJourney
       end
 
       def build_triggered_next(branch, from, to)
+        # N.B sequences can self terminate i.e no further sequences and end of the journey
+        return unless from && from != to
+
         create_next(from, to) do
           lambda do |o|
             unless o && o.respond_to?(branch.trigger_method)
@@ -180,7 +177,7 @@ module DatashiftJourney
             end
             o.send(branch.trigger_method) == branch.trigger_value
           end
-        end if from && from != to # N.B sequences can self terminate i.e no further sequences and end of the journey
+        end
       end
 
       # Ordered collection of sequences

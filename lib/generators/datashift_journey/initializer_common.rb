@@ -24,8 +24,7 @@ module DatashiftJourney
     # This module is auto included in the model
 
     def journey_plan_host_file(journey_class)
-
-      path = "app/services"
+      path = 'app/services'
 
       create_file File.join(path, "#{journey_class.underscore}_journey.rb") do
         model_journey_code(journey_class)
@@ -39,9 +38,8 @@ module DatashiftJourney
       end
     end
 
- EOS
+      EOS
       application service_loader
-
     end
 
     def notify_about_routes
@@ -56,12 +54,12 @@ module DatashiftJourney
 )
       end
 
-      unless options[:quiet]
-        puts '*' * 50
-        puts "We added the following line to your application's config/routes.rb file:"
-        puts ' '
-        puts "      mount DatashiftJourney::Engine => '/'"
-      end
+      return if options[:quiet]
+
+      puts '*' * 50
+      puts "We added the following line to your application's config/routes.rb file:\n"
+      puts "  mount DatashiftJourney::Engine => '/'"
+      puts '  root to: "datashift_journey/journey_plans#new"'
     end
 
     # This code will be placed in a model concern and the module included in the model
@@ -83,26 +81,26 @@ DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :TO_DO_SE
     The available API is defined in : datashift_journey/lib/datashift_journey/state_machines/planner.rb
 
     A basic example with one set of branches, reconnecting to another common section starting at :review
- 
-    DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :ship_address) do   
+
+    DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :ship_address) do
       sequence [:ship_address, :bill_address]
-  
+
         # first define the sequences
         branch_sequence :visa_sequence, [:visa_page1, :visa_page2]
-  
+
         branch_sequence :mastercard_sequence, [:page_mastercard1, :page_mastercard2, :page_mastercard3]
-  
+
         branch_sequence :paypal_sequence, []
-  
+
         # now define the parent state and the routing criteria to each sequence
-  
+
         split_on_equality( :payment,
                            "payment_card",    # Helper method on Checkout that returns card type from Payment
                            visa_sequence: 'visa',
                            mastercard_sequence: 'mastercard',
                            paypal_sequence: 'paypal'
         )
-  
+
         # All branches recombine here at review
         sequence [:review, :complete ]
       end

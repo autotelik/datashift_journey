@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20161213160210) do
+ActiveRecord::Schema.define(version: 20161221100703) do
 
   create_table "addresses", force: :cascade do |t|
     t.string   "premises",       limit: 200
@@ -103,32 +103,40 @@ ActiveRecord::Schema.define(version: 20161213160210) do
     t.index ["collector_id", "form_field_id"], name: "collectors_data_nodes_collector_id_form_field_id", unique: true
   end
 
+  create_table "dsj_fields_snippets", force: :cascade do |t|
+    t.integer "form_field_id", null: false
+    t.integer "snippet_id",    null: false
+  end
+
   create_table "dsj_form_fields", force: :cascade do |t|
-    t.integer  "form_id",                        null: false
+    t.integer  "page_state_id",                  null: false
     t.string   "field",              limit: 100, null: false
     t.string   "field_type",                     null: false
     t.string   "field_presentation", limit: 100
     t.datetime "created_at",                     null: false
     t.datetime "updated_at",                     null: false
     t.index ["field"], name: "index_dsj_form_fields_on_field"
-    t.index ["form_id"], name: "index_dsj_form_fields_on_form_id"
+    t.index ["page_state_id"], name: "index_dsj_form_fields_on_page_state_id"
   end
 
-  create_table "dsj_forms", force: :cascade do |t|
-    t.string   "form_name",                null: false
-    t.string   "presentation", limit: 100
-    t.datetime "created_at",               null: false
-    t.datetime "updated_at",               null: false
-    t.index ["form_name"], name: "index_dsj_forms_on_form_name"
+  create_table "dsj_page_states", force: :cascade do |t|
+    t.string   "form_name",  null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["form_name"], name: "index_dsj_page_states_on_form_name"
   end
 
-  create_table "dsj_questions", force: :cascade do |t|
-    t.integer  "form_field_id", null: false
+  create_table "dsj_page_states_snippets", force: :cascade do |t|
+    t.integer "page_state_id", null: false
+    t.integer "snippet_id",    null: false
+  end
+
+  create_table "dsj_snippets", force: :cascade do |t|
     t.text     "raw_text"
-    t.string   "I18n_keyd"
-    t.datetime "created_at",    null: false
-    t.datetime "updated_at",    null: false
-    t.index ["I18n_keyd"], name: "index_dsj_questions_on_I18n_keyd"
+    t.string   "I18n_key"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["I18n_key"], name: "index_dsj_snippets_on_I18n_key"
   end
 
 end

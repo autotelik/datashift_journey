@@ -31,7 +31,7 @@ module DatashiftJourney
                      :[], :<<, :<=>, :<<, :==, :[], :[]=
 
       # rubocop:disable Metrics/ParameterLists
-      def initialize(states, id: "", entry_state: nil, exit_state: nil, trigger_value: nil, trigger_method: nil, split: false)
+      def initialize(states, id: '', entry_state: nil, exit_state: nil, trigger_value: nil, trigger_method: nil, split: false)
         @states = [*states]
 
         @id = id

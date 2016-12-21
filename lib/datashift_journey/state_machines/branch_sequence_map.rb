@@ -20,7 +20,7 @@ module DatashiftJourney
       end
 
       def add_branch(id, sequence)
-        #puts "DEBUG: ADDING TO SEQ [#{id}] BRANCH #{sequence.inspect}"
+        # puts "DEBUG: ADDING TO SEQ [#{id}] BRANCH #{sequence.inspect}"
         self[id] = sequence
       end
 

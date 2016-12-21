@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe DatashiftJourney::ApplicationHelper, :type => :helper do
+RSpec.describe DatashiftJourney::ApplicationHelper, type: :helper do
   describe '#journey_plan_partial_location' do
     it 'returns partial location for a state' do
       state = 'site_address'

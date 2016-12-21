@@ -176,7 +176,6 @@ module DatashiftJourney
           # STATE ENGINE DEFINITION
 
           it 'enables a complete journey to be planned via simple DSL', duff: true do
-
             MachineBuilder.create_journey_plan(initial: :ship_address) do
               sequence [:ship_address, :bill_address]
 
@@ -194,7 +193,7 @@ module DatashiftJourney
                                 visa_sequence: 'visa',
                                 mastercard_sequence: 'mastercard',
                                 paypal_sequence: 'paypal')
-             # byebug
+              # byebug
               sequence [:review, :complete]
             end
 

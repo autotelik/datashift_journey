@@ -19,8 +19,8 @@ RSpec.configure do |_config|
   def expect_state_canback_cannext_and_next!(journey, expected_state, message = nil)
     expect_state_matches(journey, expected_state, message)
 
-    expect(journey.can_back?).to eq(true), "Expected can_back?  to be true"
-    expect(journey.can_next?).to eq(true), "Expected can_next?  to be true"
+    expect(journey.can_back?).to eq(true), 'Expected can_back?  to be true'
+    expect(journey.can_next?).to eq(true), 'Expected can_next?  to be true'
 
     journey.next!
   end

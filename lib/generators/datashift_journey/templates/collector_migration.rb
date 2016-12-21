@@ -1,6 +1,8 @@
 class DatashiftJourneyCreateCollector < ActiveRecord::Migration
-  def change
 
+  # rubocop:disable Metrics/MethodLength
+
+  def change
     # The Container - one per journey - in most situations this would belong to a user account
     # of person logged in and taking journey
 
@@ -11,13 +13,13 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
     end
 
     create_table :dsj_page_states do |t|
-      t.string :form_name,    index: true,  null: false
+      t.string :form_name, index: true, null: false
       t.timestamps null: false
     end
 
     create_table :dsj_form_fields do |t|
-      t.references :page_state,  index: true,  null: false
-      t.string     :field, index: true,  null: false, :limit => 100
+      t.references :page_state, index: true, null: false
+      t.string     :field, index: true,  null: false, limit: 100
       t.string     :field_type,          null: false
       t.string     :field_presentation,  limit: 100
       t.timestamps null: false
@@ -46,11 +48,9 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
       t.references  :snippet, null: false
     end
 
-
     add_foreign_key :collectors_data_nodes, :dsj_collectors, column: :form_field_id
 
     add_index :dsj_collectors_data_nodes, [:collector_id, :form_field_id], unique: true,
-              name: 'collectors_data_nodes_collector_id_form_field_id'
-
+                                                                           name: 'collectors_data_nodes_collector_id_form_field_id'
   end
 end

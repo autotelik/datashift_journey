@@ -1,12 +1,27 @@
-
 module DatashiftJourney
-  class PageStatesController < ApplicationController
+  class PageStatesController < ActionController::API
 
     def index
-      @page_states = DatashiftJourney::Collector::PageState.all
+      @page_states = Collector::PageState.all
 
-      # Render of the output is automatic via the Views
-      # To see JSON format : app/views/datashift_journey/collector/page_states/index.json.jbuilder
+      render json: PageStatePresenter.minimal_hash_for_collection(@page_states)
+    end
+
+    def create
+      @page_state = Collector::PageState.new(page_state_params)
+
+      if @page_state.save
+        render json: @page_state, status: :created
+      else
+        render json: @page_state.errors, status: :unprocessable_entity
+      end
+    end
+
+    private
+
+    # Only allow a trusted parameter "white list" through.
+    def page_state_params
+      params.require(:page_state).permit(:form_name)
     end
 
   end

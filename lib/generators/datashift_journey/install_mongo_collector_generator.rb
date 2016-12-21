@@ -25,7 +25,6 @@ module DatashiftJourney
       model_journey_code(klass)
     end
 
-
     def migration_data
       <<RUBY
       field :form, type: String
@@ -37,7 +36,7 @@ RUBY
     private
 
     def klass
-      'DatashiftJourney::Models::MongoCollector'
+      'DatashiftJourney::MongoCollector::MongoCollector'
     end
 
   end

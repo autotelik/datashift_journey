@@ -44,7 +44,6 @@ module DatashiftJourney
             journey.back!
             expect_state_matches(journey, :new_or_renew)
 
-
             # Other branch
             journey = DatashiftJourney.journey_plan_class.new
 
