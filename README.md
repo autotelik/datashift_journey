@@ -2,22 +2,20 @@
 
 [![Build Status](https://travis-ci.org/autotelik/datashift_journey.svg?branch=master)](https://travis-ci.org/autotelik/datashift_journey)
 
-Define a Forms based journey through your site, such as a questionnaire, checkout, survey, registration process etc
-using a state machine based DSL.
+Quickly and easily build questionnaires, application forms, checkouts, surveys, registration processes etc.
+                     
+Using a simple state machine based DSL, quickly define a multi page journey through your site.
 
-Provides a generic Controller, Views and data collection model (for storing form data), and manages navigation for you.
- 
-If you prefer, you can easily provide your own ActiveRecord  data collection model, and still use the same
- state machine based DSL.
+The DSL provides high level syntactic sugar to program the steps or pages through your site,
+including complex branching depending on collected values.
 
-This DSL provides high level syntactic sugar to program the steps or pages through your site.
+That is the paths through the site can split and reconnect later to common sequences, multiple times.
 
-Generators are provided that can generate skeleton views and backing Reform forms for each step.
+Generate and use associated backing Reform forms to validate and store data, collected from your visitors.
 
-Forward and back navigation, through the different paths, is automatically generated, via state machine transitions.
+Different storage models are provided out of the box or use your own models.
 
-The routes through the site can split multiple times, down different branches, based on values collected,
-and can reconnect later to common sequences.
+Generate the associated views, DSJ will use the journey plan to create navigation buttons like Back and Next for you.
 
 The main underlying gems we use include :
 
@@ -39,14 +37,19 @@ And then execute:
     
 ## Setup and Configuration - Initializer
 
-DatashiftJourney needs a parent or collector model, through which all the data can be collected hangs.
-The concept is like an Application, Checkout, Registration, Enrollment etc.
+DatashiftJourney needs a parent journey plan model, that interacts with the state machine, stores the current
+state of an individual's journey, and provides the entry point for all the data collected.
 
-This model is the entry point into any individual journey, and must have some mechanism
-such as database model store all the data collected on each step.
+Imagine an Application process or Checkout, the visitor enters data and we need a mechanism to store the data
+ collected at each step.
 
-This model is also decorated with the state engine, and therefor models the actual journey steps. 
+The model to use is completely optional, and the requirements on it are very basic, to hold a state attribute
+- see section 'Custom Data Collector'
 
+How you populate the data is up to you within your Forms.
+ 
+DSJ currently provides a generic SQL based option, with generic Forms to save the data out of the box, 
+with more to come.
 
 ### SQL Data Collector
  
@@ -98,8 +101,9 @@ Currently if your form contains multiple questions you must over ride save yours
 
 ### Mongo Data Collector
  
-An optional MongoDB based Collector is provided, which collects data in a single document per journey.
-The usage within the forms and views is detailed further below. 
+ # TODO
+ 
+An optional MongoDB based Collector is under development, which will collect data in a single document per journey.
 
 To use this model as your main JourneyPlan model, simply run the installer to setup the model.
 
