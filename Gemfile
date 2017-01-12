@@ -20,4 +20,7 @@ group :test do
   gem "database_cleaner", "~> 1.5"
   gem "fuubar", "~> 2.0"            # Enhanced rspec progress formatter
   gem "capybara", "~> 2.6"
+
+  gem "simplecov"
+  gem "codeclimate-test-reporter", "~> 1.0.0"
 end
