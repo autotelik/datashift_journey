@@ -1,6 +1,8 @@
 module DatashiftJourney
   class PageStatesController < ActionController::API
 
+    # PageState contains details for rendering and storing a Page related to a single State
+    #
     def index
       @page_states = Collector::PageState.all
 

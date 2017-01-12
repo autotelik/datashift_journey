@@ -20,7 +20,7 @@ module DatashiftJourney
       has_many :snippets, through: :page_state_snippets # foreign_key: :page_state_id
 
       def header
-        snippets.collect { |s| s.I18n_key.present? ? I18n.t(s.I18n_key) : s.raw_text }.join(' ')
+        Snippet.to_sentance( snippets )
       end
 
     end

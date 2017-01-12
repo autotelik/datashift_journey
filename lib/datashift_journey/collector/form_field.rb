@@ -26,7 +26,7 @@ module DatashiftJourney
       }
 
       def question
-        snippets.collect { |s| s.I18n_key.present? ? I18n.t(s.I18n_key) : s.raw_text }.join(' ')
+        Snippet.to_sentance( snippets )
       end
 
     end
