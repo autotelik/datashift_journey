@@ -1,3 +1,5 @@
+require_dependency "datashift_journey/application_controller"
+
 module DatashiftJourney
 
   class JourneyPlansController < ApplicationController
