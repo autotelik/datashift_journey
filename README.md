@@ -1,6 +1,7 @@
 ## DataShift Journey
 
 [![Build Status](https://travis-ci.org/autotelik/datashift_journey.svg?branch=master)](https://travis-ci.org/autotelik/datashift_journey)
+[![Code Climate](https://codeclimate.com/github/autotelik/datashift_journey/badges/gpa.svg)](https://codeclimate.com/github/autotelik/datashift_journey)
 
 Quickly and easily build questionnaires, application forms, checkouts, surveys, registration processes etc.
                      
