@@ -10,3 +10,6 @@ branches:
 addons:
     code_climate:
         repo_token: c4243abf782bcf9e4ab4797dab674c366b2294a0581087578f8b0152358fba50
+
+after_success:
+  - bundle exec codeclimate-test-reporter
