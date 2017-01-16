@@ -23,4 +23,5 @@ en:
   hello: "Hello world"
   back: "back"
   backto_start_link: "http://www.dummyapp.uk"
+  rspec_snippet_text: "test sentance for I18n snippets"
 

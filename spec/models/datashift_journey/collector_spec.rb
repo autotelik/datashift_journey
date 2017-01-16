@@ -8,14 +8,6 @@ module DatashiftJourney
       it { is_expected.to have_many(:form_fields).dependent(false) }
       it { is_expected.to have_many(:data_nodes).dependent(:destroy) }
 
-      it 'can create a PageState to associated with a state and fields', duff: true do
-        business_details_form = Collector::PageState.new(
-          form_name: 'BusinessDetailsForm',
-        )
-
-        expect(business_details_form).to be_valid
-      end
-
       it 'can save nodes for any given PageState and Field', duff: true do
         name_field = Collector::FormField.new(
           page_state: create(:collector_page_state),
