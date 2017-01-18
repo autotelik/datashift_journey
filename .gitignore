@@ -1,5 +1,4 @@
 /.rspec-local
-# not sure where this is comign from so for now ignoring
 coverage
 # A developer can override the project's .rspec by adding thier own .rspec-local
 .rspec-local

@@ -3,7 +3,10 @@ ENV['RAILS_ENV'] ||= 'test'
 require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 
 require "simplecov"
-SimpleCov.start
+
+SimpleCov.start "rails" do
+  add_filter "spec/factories"
+end
 
 require 'rspec/rails'
 require 'factory_girl_rails'
