@@ -5,6 +5,8 @@ module DatashiftJourney
     #
     class PageState < ActiveRecord::Base
 
+      validates_presence_of :form_name
+
       self.table_name = 'dsj_page_states'
 
       has_many :form_fields, dependent: :destroy

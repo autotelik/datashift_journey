@@ -15,7 +15,7 @@ module DatashiftJourney
       if @page_state.save
         render json: @page_state, status: :created
       else
-        render json: @page_state.errors, status: :unprocessable_entity
+        render json: { errors: @page_state.errors }, status: :unprocessable_entity
       end
     end
 
@@ -23,7 +23,7 @@ module DatashiftJourney
 
     # Only allow a trusted parameter "white list" through.
     def page_state_params
-      params.require(:page_state).permit(:form_name)
+      params.fetch(:page_state, {}).permit(:form_name)
     end
 
   end

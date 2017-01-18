@@ -20,7 +20,7 @@ module DatashiftJourney
       expect(json.length).to eq(10)
     end
 
-    it 'creates a new page state' do
+    it 'creates a new page state and responds with JSON body containing expected PageState' do
       expect {
         post '/api/v1/page_states', { page_state: { form_name: 'BrandNewPage' } }, {}
       }.to change(Collector::PageState, :count).by(1)
@@ -33,5 +33,20 @@ module DatashiftJourney
       expect(json).to have_key 'form_name'
       expect(json['form_name']).to eq 'BrandNewPage'
     end
+
+    it 'rejects badly defined page state and responds with Unprocesable entity' do
+      expect {
+        post '/api/v1/page_states', { page_state: {} }, {}
+      }.to_not change(Collector::PageState, :count)
+
+      expect(response.status).to eq(422)
+
+      json = JSON.parse(response.body)
+
+      expect(json).to have_key 'errors'
+      expect(json['errors']).to  have_key 'form_name'
+      expect(json['errors']['form_name']).to eq ["can't be blank"]
+    end
+
   end
 end
