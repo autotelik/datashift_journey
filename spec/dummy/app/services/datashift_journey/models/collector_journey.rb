@@ -35,3 +35,17 @@ DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :new_or_r
                :postal_address
            ]
 end
+
+DatashiftJourney::Collector::Collector.class_eval do
+  def new_or_renew_value
+    'new'
+  end
+
+  def business_type_value
+    'sole_trader'
+  end
+
+  def service_provided_value
+    'no'
+  end
+end

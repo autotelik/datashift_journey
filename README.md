@@ -4,10 +4,18 @@
 [![Code Climate](https://codeclimate.com/github/autotelik/datashift_journey/badges/gpa.svg)](https://codeclimate.com/github/autotelik/datashift_journey)
 [![Test Coverage](https://codeclimate.com/github/autotelik/datashift_journey/badges/coverage.svg)](https://codeclimate.com/github/autotelik/datashift_journey/coverage)
 
-Quickly and easily build questionnaires, application forms, checkouts, surveys, registration processes etc.
+A Rails software Wizard(https://en.wikipedia.org/wiki/Wizard_%28software%29)
+
+Quickly create a sequence of forms (dialogs) that lead your user through a series
+ of defined steps - ideal for questionnaires, application forms, checkouts, surveys, registration processes etc.
                      
 Using a simple state machine based DSL, quickly define a multi page journey through your site.
 
+State is maintained in one of the backends, with different storage models being provided
+ out of the box, or use your own model structure.
+
+Full server-side processing can be delayed until the submission of the final form.
+ 
 The DSL provides high level syntactic sugar to program the steps or pages through your site,
 including complex branching depending on collected values.
 
@@ -15,7 +23,6 @@ That is the paths through the site can split and reconnect later to common seque
 
 Generate and use associated backing Reform forms to validate and store data, collected from your visitors.
 
-Different storage models are provided out of the box or use your own models.
 
 Generate the associated views, DSJ will use the journey plan to create navigation buttons like Back and Next for you.
 

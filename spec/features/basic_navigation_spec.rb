@@ -1,30 +1,23 @@
-# require "rails_helper"
-# module FloodRiskEngine
-#   RSpec.describe "CorrespondenceContact - Email" do
-#
-#     context "Full Journey" do
-#       # N.B this does not test that this journey matches the very latest state engine journey,
-#       # only successful progress though this, our current understanding of the journey.
-#
-#       let :journey do
-#         [registration_page,
-#          applicant_contact_page,
-#          organisation_type_individual_page,
-#          individual_page,
-#          individual_address_page,
-#          correspondence_contact_page,
-#          choosing_farming_data_page,
-#          choosing_site_address_page,
-#          choosing_exemption_page
-#         ]
-#       end
-#
-#       scenario "happy path straight through Individual journey" do
-#         journey.each_with_index do |po, i|
-#           po.advance_page
-#           expect(page).to be_on_page_object journey[i + 1] if(journey[i + 1])
-#         end
-#       end
+require "rails_helper"
+module DatashiftJourney
+
+  RSpec.describe "Basic Navigation Feature" do
+
+    before(:all) do
+      DatashiftJourney.journey_plan_class = 'DatashiftJourney::Collector::Collector'
+    end
+
+    scenario "home page" do
+      visit root_path
+      expect(page).to have_text "New or renew"
+    end
+
+    scenario "move on from home page by clicking Continue" do
+      visit root_path
+      click_button("Continue")
+      expect(page).to have_text "Business type"
+    end
+
 #
 #       scenario "happy path straight through Other journey and back" do
 #         journey.each_with_index do |po, _i|
@@ -122,5 +115,5 @@
 #         expect(page).to have_error_anchors :email_address_confirmation
 #       end
 #     end
-#   end
-# end
+  end
+end

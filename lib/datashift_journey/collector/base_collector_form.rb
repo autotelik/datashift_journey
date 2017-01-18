@@ -13,8 +13,6 @@ module DatashiftJourney
 
         form_fields = page_state.form_fields
 
-        puts "#{page_state.form_fields.size} FIELDS #{page_state.form_fields.inspect} "
-
         form_fields.collect { |ff| journey_plan.data_nodes.build(form_field: ff) }
 
         new(page_state, journey_plan)
@@ -32,7 +30,6 @@ module DatashiftJourney
       end
 
       def self.create_missing_collector_field(page_state)
-        puts "CREATE MISSING FIELD FOR #{page_state.inspect}"
         FormField.create(page_state: page_state,
                          field: collector_form_name.underscore,
                          field_type: :string)

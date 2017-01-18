@@ -17,21 +17,6 @@ module DatashiftJourney
       end
 
       context 'Multiple Sequences' do
-        before(:all) do
-          DatashiftJourney::Collector::Collector.class_eval do
-            def new_or_renew_value
-              'new'
-            end
-
-            def business_type_value
-              'sole_trader'
-            end
-
-            def service_provided_value
-              'no'
-            end
-          end
-        end
 
         it 'reports that branches are missing when not defined' do
           pending('create a test with a splitter but where some branch_sequences are not defined')

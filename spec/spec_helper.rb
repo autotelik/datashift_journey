@@ -4,8 +4,10 @@ require File.expand_path("../dummy/config/environment.rb",  __FILE__)
 
 require "simplecov"
 
-SimpleCov.start "rails" do
+SimpleCov.start do
   add_filter "spec/factories"
+  add_filter "spec/dummy"
+  add_filter "app"
 end
 
 require 'rspec/rails'
@@ -31,4 +33,19 @@ RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
 
+end
+
+# Decorate model with helper methods required for BRANCHING in Test journey plans
+
+DatashiftJourney::Collector::Collector.class_eval do
+  def construction_demolition_value
+    'yes'
+  end
+
+  def registration_type_value
+    # carrier_dealer_sequence:
+    'carrier_dealer'
+    # broker_dealer_sequence: 'broker_dealer',
+    # carrier_broker_dealer_sequence: 'carrier_broker_dealer')
+  end
 end
