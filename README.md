@@ -4,33 +4,32 @@
 [![Code Climate](https://codeclimate.com/github/autotelik/datashift_journey/badges/gpa.svg)](https://codeclimate.com/github/autotelik/datashift_journey)
 [![Test Coverage](https://codeclimate.com/github/autotelik/datashift_journey/badges/coverage.svg)](https://codeclimate.com/github/autotelik/datashift_journey/coverage)
 
-A Rails software Wizard(https://en.wikipedia.org/wiki/Wizard_%28software%29)
+A Rails software [Wizard](https://en.wikipedia.org/wiki/Wizard_%28software%29)
 
-Quickly create a sequence of forms (dialogs) that lead your user through a series
+Quickly create a sequence of forms (dialogs) that lead a visitor through a series
  of defined steps - ideal for questionnaires, application forms, checkouts, surveys, registration processes etc.
                      
-Using a simple state machine based DSL, quickly define a multi page journey through your site.
+Provides a simple DSL to quickly define a multi page journey through your site,
+including complex branching, and rejoining, dependent on collected values.
+
+That is, the paths through the site can split (branch) and reconnect later to common sequences, multiple times.
 
 State is maintained in one of the backends, with different storage models being provided
  out of the box, or use your own model structure.
 
 Full server-side processing can be delayed until the submission of the final form.
+
+The DSL provides a simplified layer on top of a State Machine, with the main underlying gems being :
  
-The DSL provides high level syntactic sugar to program the steps or pages through your site,
-including complex branching depending on collected values.
-
-That is the paths through the site can split and reconnect later to common sequences, multiple times.
-
+ * https://github.com/state-machines/state_machines
+ * https://github.com/state-machines/state_machines-activerecord
+ * https://github.com/apotonick/reform
+ 
+#### Generators included
+ 
 Generate and use associated backing Reform forms to validate and store data, collected from your visitors.
 
-
 Generate the associated views, DSJ will use the journey plan to create navigation buttons like Back and Next for you.
-
-The main underlying gems we use include :
-
-* https://github.com/state-machines/state_machines
-* https://github.com/state-machines/state_machines-activerecord
-* https://github.com/apotonick/reform
 
 ## Getting started
 
@@ -46,24 +45,22 @@ And then execute:
     
 ## Setup and Configuration - Initializer
 
-DatashiftJourney needs a parent journey plan model, that interacts with the state machine, stores the current
-state of an individual's journey, and provides the entry point for all the data collected.
+DatashiftJourney needs a parent model on which to store the Journey Plan.
 
-Imagine an Application process or Checkout, the visitor enters data and we need a mechanism to store the data
- collected at each step.
+This is the model that stores the complete state machine, with all relevent events and transitions,
+the current state of an individual's journey, and therefor the entry point for the data collected per visitor.
 
-The model to use is completely optional, and the requirements on it are very basic, to hold a state attribute
-- see section 'Custom Data Collector'
+The model to use is completely optional, and the minimum requirements are very basic - to hold a `state` attribute
 
-How you populate the data is up to you within your Forms.
- 
-DSJ currently provides a generic SQL based option, with generic Forms to save the data out of the box, 
-with more to come.
+How you populate the data is up to you within your Forms, use your own style or,
+we currently provide a generic SQL based model out of the box for collecting data, with generic Forms to save the data.
+
+For performing your own data collection - see section 'Custom Data Collector'
 
 ### SQL Data Collector
  
-An optional SQL based Collector is provided, which collects data as a field name/value pair, 
-one database row per question.
+An optional SQL based Collector is provided, which collects data as a series of nodes, essentially 
+keyed on the form, and holding field name/value pairs, one database row per question.
 
 To setup this model as your main JourneyPlan model, copy over relevant migrations etc, simply run the installer
 
