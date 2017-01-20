@@ -24,9 +24,6 @@ module DatashiftJourney
         data_nodes.find(form_field).first
       end
 
-#      Could not find the source association(s) "form" or :forms in
-# model DatashiftJourney::Collector::FormField. Try 'has_many :forms, :through => :form_fields, :source => <name>'. Is it one of page_state, data_nodes, snippets, or field_snippets?
-
       def nodes_for_form(form_name)
         form = page_states.where(form_name: form_name).first
         return [] unless form

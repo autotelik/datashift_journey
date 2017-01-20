@@ -26,7 +26,7 @@ module DatashiftJourney
       }
 
       def question
-        Snippet.to_sentance( snippets )
+        Snippet.to_sentance(snippets)
       end
 
     end

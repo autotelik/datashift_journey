@@ -32,8 +32,8 @@ module DatashiftJourney
 
       let(:page_snippet) {
         Collector::FieldSnippet.create(
-            form_field: page_state,
-            snippet: Collector::Snippet.create(raw_text: 'Enter your Company Name')
+          form_field: page_state,
+          snippet: Collector::Snippet.create(raw_text: 'Enter your Company Name')
         )
       }
 

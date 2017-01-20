@@ -6,7 +6,7 @@ module DatashiftJourney
     def index
       @page_states = Collector::PageState.all
 
-      render json: PageStatePresenter.minimal_hash_for_collection(@page_states)
+      render json: PageStatePresenter.minimal_hash_for_collection(@page_states), status: :ok
     end
 
     def create

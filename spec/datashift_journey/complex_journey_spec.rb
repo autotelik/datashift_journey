@@ -17,7 +17,6 @@ module DatashiftJourney
       end
 
       context 'Multiple Sequences' do
-
         it 'reports that branches are missing when not defined' do
           pending('create a test with a splitter but where some branch_sequences are not defined')
 

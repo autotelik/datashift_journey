@@ -8,6 +8,5 @@ FactoryGirl.define do
         object.save!
       end
     end
-
   end
 end

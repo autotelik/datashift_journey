@@ -14,11 +14,9 @@ module DatashiftJourney
           business_details_form = PageState.new(form_name: 'BusinessDetailsForm')
           expect(business_details_form).to be_valid
         end
-
       end
 
       context('Populated') do
-
         let(:page_state) { create(:collector_page_state, :with_snippets) }
 
         it 'returns the snippets as a single header paragraph' do
@@ -26,9 +24,7 @@ module DatashiftJourney
           expect(page_state.header).to include  page_state.snippets.first.raw_text
           expect(page_state.header).to include  page_state.snippets.last.raw_text
         end
-
       end
-
     end
   end
 end

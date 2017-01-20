@@ -4,9 +4,7 @@ rescue LoadError
   puts 'You must `gem install bundler` and `bundle install` to run rake tasks'
 end
 
-
 load 'rails/tasks/statistics.rake'
-
 
 APP_RAKEFILE = File.expand_path("../spec/dummy/Rakefile", __FILE__)
 
@@ -23,3 +21,6 @@ desc "Run all specs in spec directory (excluding plugin specs)"
 RSpec::Core::RakeTask.new(:spec => 'app:db:test:prepare')
 
 task :default => :spec
+
+# Added as this was quick way to make tasks like rswag:specs:swaggerize available to the Engine
+Rails.application.load_tasks

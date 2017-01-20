@@ -59,8 +59,8 @@ class  #{state.classify}Form < DatashiftJourney::Collector::BaseCollectorForm
   end
 
   # Data collection performed by base class but if you need custom processing, the forms
-  # fields are represented as a series of DataNode objects, with the actual data saved in :field_value 
-  # 
+  # fields are represented as a series of DataNode objects, with the actual data saved in :field_value
+  #
   # collection :data_nodes do
   #   property :field_value
   # end

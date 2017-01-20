@@ -1,4 +1,4 @@
-require_dependency "datashift_journey/application_controller"
+require_dependency 'datashift_journey/application_controller'
 
 module DatashiftJourney
 

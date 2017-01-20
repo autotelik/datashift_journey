@@ -6,7 +6,6 @@ require 'spec_helper'
 Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
 
 RSpec.configure do |config|
-
   StateMachines::Machine.ignore_method_conflicts = true
 
   config.use_transactional_fixtures = false

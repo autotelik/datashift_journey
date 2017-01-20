@@ -22,7 +22,7 @@ module DatashiftJourney
       has_many :snippets, through: :page_state_snippets # foreign_key: :page_state_id
 
       def header
-        Snippet.to_sentance( snippets )
+        Snippet.to_sentance(snippets)
       end
 
     end

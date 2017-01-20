@@ -44,9 +44,8 @@ module DatashiftJourney
       json = JSON.parse(response.body)
 
       expect(json).to have_key 'errors'
-      expect(json['errors']).to  have_key 'form_name'
+      expect(json['errors']).to have_key 'form_name'
       expect(json['errors']['form_name']).to eq ["can't be blank"]
     end
-
   end
 end
