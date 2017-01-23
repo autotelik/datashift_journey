@@ -16,7 +16,7 @@ module DatashiftJourney
 
         json = parse(response)
 
-        puts json
+        dump_json response
 
         # test for the 200 status-code
         expect(response).to be_success

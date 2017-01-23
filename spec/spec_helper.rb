@@ -41,6 +41,10 @@ RSpec.configure do |config|
     JSON.parse(response.body)['data']['attributes']
   end
 
+  def dump_json(response)
+    puts response.body
+  end
+
 end
 
 # Decorate model with helper methods required for BRANCHING in Test journey plans
