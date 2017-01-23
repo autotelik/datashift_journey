@@ -18,7 +18,7 @@ module DatashiftJourney
                 name: s.name,
                 qualified_name: s.qualified_name,
                 human_name: s.human_name,
-                #branches: s.branches,
+                branches: s.branches,
                 #known_states: s.known_states
             }
           end
