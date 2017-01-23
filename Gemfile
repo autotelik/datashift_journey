@@ -4,6 +4,7 @@ ruby "2.3.2"
 gemspec
 
 gem 'rswag'
+gem 'active_model_serializers'
 
 group :development, :test do
   # These can be used in DEV for creating an enrollment at any stage in life cycle

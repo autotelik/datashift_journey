@@ -13,6 +13,7 @@ module DatashiftJourney
 
         form_fields = page_state.form_fields
 
+        # add one data node per form field - data nodes hold the COLLECTED VALUES
         form_fields.collect { |ff| journey_plan.data_nodes.build(form_field: ff) }
 
         new(page_state, journey_plan)

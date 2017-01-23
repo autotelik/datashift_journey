@@ -6,46 +6,87 @@ module DatashiftJourney
       config.render_views = true
     end
 
-    it 'sends a list of page states' do
-      create_list(:collector_page_state, 10)
-
-      get '/api/v1/page_states'
-
-      json = JSON.parse(response.body)
-
-      # test for the 200 status-code
-      expect(response).to be_success
-
-      # check to make sure the right amount of messages are returned
-      expect(json.length).to eq(10)
+    def parse(response)
+      JSON.parse(response.body)
     end
 
-    it 'creates a new page state and responds with JSON body containing expected PageState' do
-      expect {
-        post '/api/v1/page_states', { page_state: { form_name: 'BrandNewPage' } }, {}
-      }.to change(Collector::PageState, :count).by(1)
-
-      json = JSON.parse(response.body)
-
-      # test for the 200 status-code
-      expect(response).to be_success
-
-      expect(json).to have_key 'form_name'
-      expect(json['form_name']).to eq 'BrandNewPage'
+    def parse_attribs(response)
+      JSON.parse(response.body)['data']['attributes']
     end
 
-    it 'rejects badly defined page state and responds with Unprocesable entity' do
-      expect {
-        post '/api/v1/page_states', { page_state: {} }, {}
-      }.to_not change(Collector::PageState, :count)
 
-      expect(response.status).to eq(422)
+    context "API" do
 
-      json = JSON.parse(response.body)
+      let(:expected_page_states) { 3 }
 
-      expect(json).to have_key 'errors'
-      expect(json['errors']).to have_key 'form_name'
-      expect(json['errors']['form_name']).to eq ["can't be blank"]
+      before :each do
+        create_list(:collector_page_state, 3)
+      end
+
+      it 'sends a list of page states' do
+
+        get '/api/v1/page_states'
+
+        json = parse(response)
+
+        # test for the 200 status-code
+        expect(response).to be_success
+
+        # check to make sure the right amount of messages are returned
+        expect(json['data'].length).to eq(expected_page_states)
+      end
+
+      it 'creates a new page state and responds with JSON body containing expected PageState' do
+        expect {
+          post '/api/v1/page_states', params: { page_state: { form_name: 'BrandNewPage' } }
+        }.to change(Collector::PageState, :count).by(1)
+
+        # test for the 200 status-code
+        expect(response).to be_success
+
+        jdata = parse_attribs(response)
+
+        expect(jdata).to have_key 'form-name'
+        expect(jdata['form-name']).to eq 'BrandNewPage'
+      end
+
+      it 'rejects badly defined page state and responds with Unprocesable entity' do
+        expect {
+          post '/api/v1/page_states', params: { page_state: {} }
+        }.to_not change(Collector::PageState, :count)
+
+        expect(response.status).to eq(422)
+
+        json = parse(response)
+
+        expect(json).to have_key 'errors'
+
+        e = json['errors'][0]
+        expect(e).to have_key "source"
+        expect(e).to have_key "detail"
+        expect(e['detail']).to eq "can't be blank"
+      end
+
+      it "should get a valid page state"  do
+        page_state = Collector::PageState.first
+        get "/api/v1/page_states/#{page_state.id}"
+        expect(response).to be_success
+        jdata = parse response
+
+        expect( page_state.id.to_s).to eq jdata['data']['id']
+        expect( page_state.form_name).to eq  jdata['data']['attributes']['form-name']
+
+        #see Rails.application.routes.default_url_options = {
+        expect( page_state_url(page_state, { host: "localhost", port: 3000 }) ).to eq jdata['data']['links']['self']
+      end
+
+      it "Should get JSON:API error block when requesting page state data with invalid ID" do
+        get '/api/v1/page_states/zzz'
+        expect(response.status).to eq(404)
+        jdata = parse response
+        expect( "Wrong ID provided").to eq  jdata['errors'][0]['detail']
+        expect( '/data/attributes/id').to eq  jdata['errors'][0]['source']['pointer']
+      end
     end
   end
 end

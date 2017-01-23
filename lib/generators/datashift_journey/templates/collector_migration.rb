@@ -3,6 +3,7 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
   # rubocop:disable Metrics/MethodLength
 
   def change
+
     # The Container - one per journey - in most situations this would belong to a user account
     # of person logged in and taking journey
 
@@ -11,6 +12,10 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
       t.string :reference, index: true, unique: true, null: false
       t.timestamps null: false
     end
+
+    # Our Collector BaseForm Conventions
+    #   A Reform form for each state with the name <state>Form
+    #   A database PagerState with form_name as this view's Form class
 
     create_table :dsj_page_states do |t|
       t.string :form_name, index: true, null: false
