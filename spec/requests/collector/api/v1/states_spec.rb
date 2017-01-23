@@ -1,24 +1,18 @@
 require 'rails_helper'
 
 module DatashiftJourney
-  describe 'API' do
+
+  describe 'States API' do
+
     RSpec.configure do |config|
       config.render_views = true
     end
 
-    def parse(response)
-      JSON.parse(response.body)
-    end
-
-    def parse_attribs(response)
-      JSON.parse(response.body)['data']['attributes']
-    end
-
-    context "states" do
+    context "list" do
 
       it 'sends a list of states of current JourneyPlan model' do
 
-        get '/api/v1/api/state_list'
+        get '/api/v1/states'
 
         json = parse(response)
 

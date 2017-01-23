@@ -20,9 +20,9 @@ Rails.application.routes.draw do
   #
   scope :api, constraints: { format: 'json' } do
     scope :v1 do
-      resources :page_states, only: [:index, :create, :show], controller: 'datashift_journey/page_states'
+      resources :states, only: [:index], controller: 'datashift_journey/api/v1/states'
 
-      get '/api/state_list',  :to => 'datashift_journey/api/v1/api#state_list'
+      resources :page_states, only: [:index, :create, :show], controller: 'datashift_journey/page_states'
     end
   end
 end

@@ -1,19 +1,12 @@
 require 'rails_helper'
 
 module DatashiftJourney
+
   describe 'Collector::PageState API' do
+
     RSpec.configure do |config|
       config.render_views = true
     end
-
-    def parse(response)
-      JSON.parse(response.body)
-    end
-
-    def parse_attribs(response)
-      JSON.parse(response.body)['data']['attributes']
-    end
-
 
     context "API" do
 

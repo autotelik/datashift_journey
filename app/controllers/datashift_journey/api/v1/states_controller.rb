@@ -2,9 +2,9 @@ module DatashiftJourney
   module Api
     module V1
 
-      class ApiController < ActionController::API
+      class StatesController < ActionController::API
 
-        def state_list
+        def index
 
           states = DatashiftJourney.journey_plan_class.state_machine.states.collect do |s|
             {

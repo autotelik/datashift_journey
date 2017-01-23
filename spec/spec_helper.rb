@@ -33,6 +33,14 @@ RSpec.configure do |config|
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
 
+  def parse(response)
+    JSON.parse(response.body)
+  end
+
+  def parse_attribs(response)
+    JSON.parse(response.body)['data']['attributes']
+  end
+
 end
 
 # Decorate model with helper methods required for BRANCHING in Test journey plans
