@@ -10,24 +10,21 @@ module DatashiftJourney
     include ValidateState
 
     # Run BEFORE other filters to ensure the current journey_plan has been selected from the DB
-    prepend_before_filter :set_journey_plan, only: [:edit, :update, :destroy, :back_a_state]
+    prepend_before_filter :set_journey_plan, only: [:edit, :new, :update, :destroy, :back_a_state]
+
+    prepend_before_filter :set_journey_plan_class, only: [:create]
 
     # Validate state and state related params - covers certain edge cases such as browser refresh
     before_action :validate_state, only: [:edit, :update]
 
     def new
-      journey_plan = DatashiftJourney.journey_plan_class.new
-
       logger.debug "Rendering initial state [#{journey_plan.state}]"
 
       render locals: { journey_plan: journey_plan, form: form_object(journey_plan) }
     end
 
     def create
-      # new not create so @ first state - otherwise next will go to 3rd state not 2nd
-      jp_instance = DatashiftJourney.journey_plan_class.create
-
-      form = form_object(jp_instance)
+      form = form_object(journey_plan_class.create)
 
       result = form.validate(params)
 
@@ -36,6 +33,7 @@ module DatashiftJourney
       redirect_to(form.redirection_url) && return if form.redirect?
 
       if result && form.save
+        puts form.inspect
         move_next(form)
       else
         render :new, locals: { journey_plan: form.journey_plan, form: form }
@@ -95,9 +93,10 @@ module DatashiftJourney
 
       form_journey_plan = form.journey_plan
 
-      if form_journey_plan.class != DatashiftJourney.journey_plan_class
-        raise "ClassError - Your Form's model is not a #{DatashiftJourney.journey_plan_class} - #{form_journey_plan.inspect}"
-      end
+      # TODO - Can we still perform such a check when the klass comes in the params ??
+     # if form_journey_plan.class != DatashiftJourney.journey_plan_class
+     #   raise "ClassError - Your Form's model is not a #{DatashiftJourney.journey_plan_class} - #{form_journey_plan.inspect}"
+      #end
 
       form_journey_plan.reload
 
@@ -124,17 +123,23 @@ module DatashiftJourney
       DatashiftJourney::FormObjectFactory.form_object_for(journey)
     end
 
+    def set_journey_plan_class
+      @journey_plan_class = params[:journey_plan_class] ? params[:journey_plan_class].constantize : DatashiftJourney.journey_plan_class
+    end
+
     def set_journey_plan
+
+      set_journey_plan_class
+
       token = params[:id] || params[:journey_plan_id]
 
       # https://github.com/robertomiranda/has_secure_token
       # TODO: how to auto insert has_secure_token into the underlying journey plan model
       # and add in migration thats adds the token column
       # @journey_plan = DatashiftJourney.journey_plan_class.find_by_token!(token)
-
-      @journey_plan = DatashiftJourney.journey_plan_class.find(token)
+      @journey_plan = token ? journey_plan_class.find(token) : journey_plan_class.new
     end
 
-    attr_reader :journey_plan
+    attr_reader :journey_plan_class, :journey_plan
   end
 end

@@ -7,11 +7,11 @@ class  NewOrRenewForm < DatashiftJourney::Collector::BaseCollectorForm
   # Data collection performed by base class but if you need custom processing, the forms
   # fields are represented as a series of DataNode objects, with the actual data saved in :field_value 
   # 
-  # collection :data_nodes do
-  #   property :field_value
-  # end
+  collection :data_nodes do
+    property :field
 
-  # Example basic validation - has field been filled in :
-  # validates :field_value, presence: true
+    # Example basic validation - has field been filled in :
+    validates :field, presence: true
+  end
 
 end

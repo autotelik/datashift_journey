@@ -14,6 +14,13 @@ module DatashiftJourney
     scenario 'move on from home page by clicking Continue' do
       visit root_path
       click_button('Continue')
+      expect(page).to have_text 'New or renew'
+    end
+
+    scenario 'move on from home page by clicking Continue' do
+      visit root_path
+      fill_in 'data_nodes_field', with: "My Company Name"
+      click_button('Continue')
       expect(page).to have_text 'Business type'
     end
 

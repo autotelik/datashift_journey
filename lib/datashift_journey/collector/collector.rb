@@ -1,4 +1,4 @@
-# These collector are in lib since usage of them is Optional
+# These collector classes inlcuding this MODEL are in lib since usage of them is Optional
 
 module DatashiftJourney
   module Collector

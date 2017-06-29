@@ -49,7 +49,7 @@ module DatashiftJourney
     private
 
     def init_journey_plan_class
-      @journey_plan_class = (default_journey_plan_class_name) unless @journey_plan_class
+      @journey_plan_class = (default_journey_plan_class_name).constantize unless @journey_plan_class
 
       @journey_plan_class
     end
