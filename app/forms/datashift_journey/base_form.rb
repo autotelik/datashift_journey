@@ -5,7 +5,6 @@ module DatashiftJourney
   class BaseForm < Reform::Form
 
     # include ActionView::Helpers::TranslationHelper
-    include Reform::Form::ActiveModel::Validations
 
     # Hmmmm the reform ActiveModel::Validations include requires some odd stuff
     delegate :model_name, to: :model

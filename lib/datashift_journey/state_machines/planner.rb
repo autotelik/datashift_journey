@@ -61,14 +61,13 @@ module DatashiftJourney
       #
       def build_journey_plan
         # The Order of sequences should have been preserved as insertion order
-
         sequence_list.each_with_index do |sequence, i|
           prev_seq = i.zero? ? EmptySequence.new : sequence_list[i - 1]
 
           next_seq = sequence_list[i + 1] || EmptySequence.new
 
           if sequence.split?
-            # puts "\nDEBUG: *** BUILDING SPLITTER #{sequence.inspect} (#{i})"
+            #puts "\nDEBUG: *** BUILDING SPLITTER #{sequence.inspect} (#{i})"
             build_split_sequence_events(sequence, prev_seq, next_seq)
           else
 
@@ -76,7 +75,7 @@ module DatashiftJourney
             # of each branch (based on the same criteria that originally split the branch)
             if prev_seq.split?
               begin
-                # puts "\nDEBUG: *** BUILDING SEQ TO SPLIT #{sequence.inspect} (#{i})"
+                #puts "\nDEBUG: *** BUILDING SEQ TO SPLIT #{sequence.inspect} (#{i})"
                 build_triggered_back(sequence, prev_seq)
               rescue => x
                 puts x.inspect
@@ -85,7 +84,7 @@ module DatashiftJourney
               end
 
             elsif prev_seq.last
-              # puts "\nDEBUG: *** BUILDING SEQ #{sequence.inspect} (#{i})"
+              #puts "\nDEBUG: *** BUILDING SEQ #{sequence.inspect} (#{i})"
               create_back(sequence.first, prev_seq.last)
             end
 

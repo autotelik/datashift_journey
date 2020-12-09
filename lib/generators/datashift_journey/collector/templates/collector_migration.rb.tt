@@ -1,0 +1,45 @@
+class DatashiftJourneyCreateCollector < ActiveRecord::Migration[<%= @migration_version %>]
+
+  # rubocop:disable Metrics/MethodLength
+
+  def change
+
+    create_table :dsj_forms do |t|
+      t.string :form_name, index: true, null: false
+      t.timestamps null: false
+    end
+
+    create_table :dsj_form_fields do |t|
+      t.references :form, index: true, null: false
+      t.string     :field, index: true,  null: false, limit: 100
+      t.string     :field_type,          null: false
+      t.string     :field_presentation,  limit: 100
+      t.timestamps null: false
+    end
+
+    # The plan is an instance of the main JourneyPlan
+    create_table :dsj_collector_data_nodes do |t|
+      t.references  :plan,  null: false, polymorphic: true
+      t.references  :form_field, null: false
+      t.text        :field_value
+      t.timestamps  null: false
+    end
+
+    create_table :dsj_snippets do |t|
+      t.text        :raw_text
+      t.string      :I18n_key, index: true
+      t.timestamps  null: false
+    end
+
+    create_table :dsj_forms_snippets do |t|
+      t.references  :form, null: false
+      t.references  :snippet, null: false
+    end
+
+    create_table :dsj_fields_snippets do |t|
+      t.references  :form_field, null: false
+      t.references  :snippet, null: false
+    end
+
+  end
+end

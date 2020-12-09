@@ -10,16 +10,17 @@ module DatashiftJourney
     include ValidateState
 
     # Run BEFORE other filters to ensure the current journey_plan has been selected from the DB
-    prepend_before_filter :set_journey_plan, only: [:edit, :new, :update, :destroy, :back_a_state]
+    prepend_before_action :set_journey_plan, only: [:edit, :new, :update, :destroy, :back_a_state]
 
-    prepend_before_filter :set_journey_plan_class, only: [:create]
+    prepend_before_action :set_journey_plan_class, only: [:create]
 
     # Validate state and state related params - covers certain edge cases such as browser refresh
     before_action :validate_state, only: [:edit, :update]
 
     def new
-      logger.debug "Rendering initial state [#{journey_plan.state}]"
+      puts "Rendering initial state [#{journey_plan.state}]"
 
+      # Find the form class backing the view
       render locals: { journey_plan: journey_plan, form: form_object(journey_plan) }
     end
 
@@ -33,6 +34,7 @@ module DatashiftJourney
       redirect_to(form.redirection_url) && return if form.redirect?
 
       if result && form.save
+        logger.debug("Saved Form [#{form.inspect}] - Move to Next")
         puts form.inspect
         move_next(form)
       else
@@ -101,17 +103,17 @@ module DatashiftJourney
       form_journey_plan.reload
 
       # if there is no next event, state_machine dynamic helper can_next? not available
-      unless form_journey_plan.respond_to?('can_next?')
+      unless form_journey_plan.respond_to?('can_skip_fwd?')
 
         logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
 
         render :journey_end && return
       end
 
-      if form_journey_plan.can_next?
+      if form_journey_plan.can_skip_fwd?
         logger.error("JOURNEY Can proceed - transitioning to next event'")
 
-        form_journey_plan.next!
+        form_journey_plan.skip_fwd!
       else
         logger.error('JOURNEY Cannot Continue - not able to transition to next event')
       end

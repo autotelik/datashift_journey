@@ -1,0 +1,12 @@
+Description:
+    This generator will setup a full Datashift Journey Plan.
+
+    Creates a model file to hold the plan.
+
+    Creates an initializer file at config/initializers
+
+Example:
+    bin/rails generate setup Model
+
+    This will create :
+        app/models/datashift_journey/model.rb

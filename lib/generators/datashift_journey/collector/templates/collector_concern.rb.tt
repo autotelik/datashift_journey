@@ -1,0 +1,34 @@
+module DatashiftJourney
+  module Collector
+
+    extend ActiveSupport::Concern
+
+    included do
+        include DatashiftJourney::ReferenceGenerator.new(prefix: 'C')
+
+        # See app/models/datashift_journey/collector/data_node.rb
+        has_many :data_nodes, class_name: 'DatashiftJourney::Collector::DataNode', foreign_key: :plan_id, dependent: :destroy, as: :plan
+
+        has_many :form_fields, through: :data_nodes, source: :form_field
+
+        has_many :page_states, through: :form_fields
+    end
+
+    def node_for_form_and_field(form_name, field_name)
+      form_field = DatashiftJourney::Collector::FormField.for_form_and_field(form_name, field_name)
+      return nil unless form_field
+      data_nodes.where(form_field: form_field).first
+    end
+
+    def node_for_form_field(form_field)
+      data_nodes.find(form_field).first
+    end
+
+    def nodes_for_form(form_name)
+      form = page_states.where(form_name: form_name).first
+      return [] unless form
+      form.data_nodes.all.to_a
+    end
+
+  end
+end

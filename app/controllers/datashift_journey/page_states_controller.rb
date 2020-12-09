@@ -1,5 +1,5 @@
 module DatashiftJourney
-  class PageStatesController < ActionController::API
+  class FormsController < ActionController::API
 
     include DatashiftJourney::ErrorRenderer
 
@@ -8,24 +8,24 @@ module DatashiftJourney
     # PageState contains details for rendering and storing a Page related to a single State
     #
     def index
-      @page_states = Collector::PageState.all
+      @collector_forms = Collector::Form.all
 
-      render json: @page_states, status: :ok
+      render json: @collector_forms, status: :ok
     end
 
     def create
-      @page_state = Collector::PageState.new(page_state_params)
+      @collector_form = Collector::Form.new(page_state_params)
 
-      if @page_state.save
-        render json: @page_state, status: :created
+      if @collector_form.save
+        render json: @collector_form, status: :created
       else
-        render_error(@page_state, :unprocessable_entity) and return
-        #render json: { errors: @page_state.errors }, status: :unprocessable_entity
+        render_error(@collector_form, :unprocessable_entity) and return
+        #render json: { errors: @collector_form.errors }, status: :unprocessable_entity
       end
     end
 
     def show
-      render json: @page_state
+      render json: @collector_form
     end
 
     private
@@ -37,11 +37,11 @@ module DatashiftJourney
 
     def set_user
       begin
-        @page_state = Collector::PageState.find params[:id]
+        @collector_form = Collector::Form.find params[:id]
       rescue ActiveRecord::RecordNotFound
-        page_state = Collector::PageState.new
-        page_state.errors.add(:id, "Wrong ID provided")
-        render_error(page_state, 404) and return
+        collector_form = Collector::Form.new
+        collector_form.errors.add(:id, "Wrong ID provided")
+        render_error(collector_form, 404) and return
       end
     end
 

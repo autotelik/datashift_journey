@@ -7,10 +7,7 @@ module DatashiftJourney
       def form_object_for(journey_plan)
         klass = form_class_for(journey_plan)
 
-        unless klass
-          raise(FormObjectError,
-                "Failed to load form class #{form_name(journey_plan.state)} for state #{journey_plan.state}")
-        end
+        raise(FormObjectError, "Failed to load form class #{form_name(journey_plan.state)} for state #{journey_plan.state}") unless klass
 
         klass.factory(journey_plan)
       end

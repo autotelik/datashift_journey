@@ -1,19 +1,20 @@
 module DatashiftJourney
   module Collector
 
-    # This stores details for rendering and storing a Page related to a single State, associated with state engine
+    # This stores details for rendering and storing data on a Form
+    # related to a single State
     #
-    class PageState < ActiveRecord::Base
+    class Form < ActiveRecord::Base
 
       validates_presence_of :form_name
 
-      self.table_name = 'dsj_page_states'
+      self.table_name = 'dsj_forms'
 
-      has_many :form_fields, dependent: :destroy
+      has_many :form_fields, class_name: 'DatashiftJourney::Collector::FormField', dependent: :destroy
 
       has_many :data_nodes,
                through: :form_fields,
-               class_name: 'CollectorDataNode',
+               class_name: 'DatashiftJourney::Collector::DataNode',
                foreign_key: :page_state_id,
                dependent: :destroy
 

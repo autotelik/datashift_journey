@@ -8,9 +8,6 @@ module DatashiftJourney
 
       if lookup_context.exists?(state, lookup_context.prefixes, true)
         render(state, *args)
-      elsif DatashiftJourney.using_collector?
-        Rails.logger.debug("DSJ - Using generic Collector viws, no partial found for state #{state}")
-        render('datashift_journey/collector/generic_form', *args)
       end
     end
 
