@@ -1,0 +1,11 @@
+<% ids = form.definition.form_fields.map(&:id)  %>
+
+<% form.journey_plan.data_nodes.select { |dn| ids.include?(dn.form_field_id)  }.sort.each_with_index do |data_node, i| %>
+  <%= f.fields_for :data_nodes, data_node do |a| %>
+    <div class="form-group">
+      <%= a.label data_node.form_field.name %>
+      <%= hidden_field_tag "deployment[data_nodes][form_field][#{i}]", data_node.form_field.name %>
+      <%= text_field_tag "deployment[data_nodes][field_value][#{i}]", data_node.field_value, size: "64", class: "form-control", required: true %>
+    </div>
+  <% end  %>
+<% end  %>

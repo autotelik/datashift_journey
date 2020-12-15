@@ -7,7 +7,7 @@
 A Rails software [Wizard](https://en.wikipedia.org/wiki/Wizard_%28software%29)
 
 Quickly create a sequence of forms (dialogs) that lead a visitor through a series
- of defined steps - ideal for questionnaires, application forms, checkouts, surveys, registration processes etc.
+ of defined steps - ideal for questionnaires, application forms, checkouts, configurations, surveys, registration processes etc.
                      
 Provides a simple DSL to quickly define a multi page journey through your site,
 including complex branching, and rejoining, dependent on collected values.
@@ -51,17 +51,17 @@ This will generate a number of files, including a model file, migration to creat
 >If using an existing model, it's **vital** that this journey class has a string column called `state`
    i.e If you need to add an associated migration yourself it should contain `t.string :state`
 
-A concern is added, to hold the journey plan (and avoid cluttering the model too much), that is auto included in the model.
+In this example this model would be located at : `app/models/checkout.rb`
 
-You can edit this concern and configure your required steps in the plan. 
+A stub for entering the journey plan is added to the model.
+
+You should edit this model and configure your required steps in the plan. 
 
 Details of the API are supplied in comments in the file and TODO: <link>
-
-In this example this concern would be located at : `app/models/concerns/checkout_model_journey.rb`
  
 An initializer will also be created at : `config/initializers/datashift_journey.rb`
      
-Inside the initializer you can change which model to use as the plan.
+Inside the initializer you can change which model to use as the plan and set various configuration options.
      
 ### Defining the Journey Plan
 
@@ -72,6 +72,9 @@ In here you defines the steps of the apps journey and set the initial step.
 Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkout`
 
 ```ruby
+
+class Checkout < ApplicationRecord
+
   DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :ship_address) do
   
       # Two simple sequential steps
@@ -99,31 +102,28 @@ Here's a simple example for a basic checkout, on an ActiveRecord model, `Checkou
       # All different card type branches, recombine here at review
       sequence [:review, :complete ]
   end
+
+....
 ```
     
 A state machine will be generated with all steps starting at :ship_address and finishing at :complete,
 and forward and backwards navigation between them.
 
-> *A view partial and associated form, will be expected for each state.*
-
-### Views
-
-Each step will need a view, usually a form to collect information from, but can be a static page or any content you like really.
- 
-A **generator** is provided to create these associated views for you, one per state(page).
-
-Once you are happy with your journey plan run :
-
-```bash
- rails generate datashift_journey:views
-```
+> *A backing Reform style Form and associated view partial, will be expected for each state.*
 
 ### View Forms
 
-You can use the Forms pattern to back a view. These tend to do the work traditionally performed in the Controller, 
-such as managing presentation data required for a view, managing params, validating and saving the data entered into forms. 
+The default controllers expect the Forms pattern to back each view. 
+
+DSJ includes the Reform gem and utilises their Form - see - https://github.com/trailblazer/reform
+                                             
+These tend to do the work traditionally performed in the Controller, so our controller can stay generic
+and focused on navigation.
+
+Forms give you the flexability to implement your own strategies for dealing with the presentation data required for a view, 
+managing params, validating entreed values, and saving the data entered into forms. 
  
-A **generator** is provided that can create skeleton Forms fro you, one per state(page).
+A **generator** is provided that can create skeleton Forms for you, one per state(page).
 
 Options
  
@@ -134,8 +134,37 @@ Options
 ```
 Generated Forms derive from `datashift_journey/app/forms/datashift_journey/base_form.rb` 
  
-And ultimately from Reform::Form - see - https://github.com/trailblazer/reform
+And ultimately from Reform::Form
  
+### Views
+ 
+ Each step will need a view, usually a form to collect information from, but can be a static page or any content you like really.
+  
+ A **generator** is provided that can create a starter set of partial views for you, one per state(page).
+ 
+ So, once the journey plan has been fully defined run :
+ 
+ ```bash
+  rails generate datashift_journey:views
+ ```
+ 
+ The Controller will expect a view partial, for each related Form.
+ 
+ The partials are rendered passing in the Form as a local variable.
+ 
+ The location of the partial to use for a certain state is given by helper
+ 
+           def journey_plan_partial_location( state )
+ 
+ The default is `app/views` but path can be changed using Configuration option `partial_location`
+ 
+ This will be required in the path format, if you are using multiple namespaces/folders
+ 
+ ```ruby
+    DatashiftJourney::Configuration.configure do |config|
+      config.partial_location = "checkout_engine"
+    end
+ ```
 ### Data Collection
 Ultimately the views and forms are there to collect data from a User, validate and store it.
 
@@ -148,8 +177,11 @@ Alternatively a generic SQL based data collector is provided for use with the ge
 
 ### Data Collector
  
-This setup will collect data as a series of nodes, essentially keyed on the form name (state), 
-and holding field name/value pairs i.e one database row per question/answer.
+This setup will add a migration, creating a number of tables to manage the collection of data, on a form by form basis,
+ stored as a series of nodes, essentially keyed on the form class and name (state).
+ 
+The journey plan class is decorated with an association the the data nodes, so each instance of the journey holds all the data for that joureny,
+as a collection of fields (name/value) i.e one database row per question/answer.
 
 To use this concern as your main data collection agent, simply run the installer
 
@@ -157,82 +189,49 @@ To use this concern as your main data collection agent, simply run the installer
 rails generate datashift_journey:collector
 ```
 
-This will copy over concern, relevant migrations and decorate the journey plan class.
+This will create relevant migrations and decorate your journey plan class with data collection attributes.
 
-For simplified access to this model in your forms, derive from `DatashiftJourney::BaseCollectorForm`.
-
->>>>>
-This base class provides access to the current journey plan via a `collector` alias, 
-and the 'save' method this will create a single new node entry. ~
-
-Currently if your form contains multiple questions you must over ride save yoursefl
- 
- TODO Base class that can process multiple fields
->>>>>>>>>>
->
-#### Example saving fields
-
-```ruby
-  property :company_name, virtual: true
-  property :postcode, virtual: true
-
-  def save
-     
-      collector.data_nodes << DatashiftJourney::DataNode.new(
-        form_name: 'BusinessDetailsForm',
-        field: 'company_name',
-        field_presentation: company_name.titleize,
-        field_type: 'string'
-      )
-
-      collector.save
-    end
-```
- 
-To access a form entry there are helpers such as find the value for a form and field
-
-```ruby
-    collector.field_value_for("BusinessTypeForm", "business_type")
-```
+To access manually, derive your form from `DatashiftJourney::Collector::BaseCollectorForm`.
 
 ### Mongo Data Collector
  
- # TODO
+#### TODO
  
 An optional MongoDB based Collector is under development, which will collect data in a single document per journey.
 
-To use this model as your main JourneyPlan model, simply run the installer to setup the model.
+To use this model as your main data collection class, simply run the installer to setup the model.
 
 ```ruby
 rails generate datashift_journey:install_mongo_collector
 ```
 
-See below for details of using your own models instead.
+#### Journeys End
 
-### Custom Data Collector
+The controller should identify when the last state has been submitted and there are no further states to be rendered.
 
-To ensure all helpers etc are available throughout, either inherit from our controller
+After processing the last state, the controller will redirect to the JourneyEndsController and its default new view will be rendered.
+
+To provide your own end page, in your app simply override this view - `app/views/datashift_journey/journey_ends/new.html.erb`
+
+You can also implement an `on_journey_end` hook, in your JourneyPlan class, which will be called by the controller
+(if implemented) **before** the view is rendered.
+
+For example, you can spin off jobs that parse and process the data
 
 ```ruby
-class ApplicationController < DatashiftJourney::ApplicationController
+class Checkout < ApplicationRecord
+  def on_journey_end
+    Apoc::CreateOrderWorker.perform_async(self.id)
+  end
 ```
-Or in your ApplicationController pull in our engines helpers
 
-```ruby
-  helper DatashiftJourney::Engine.helpers
-```
-  
+#### Internals
 
-
-
-
-#### Naming conventions
-
-> The Classified version of the state name, plus "Form", so a `:billing_address` state should be backed
-by a form called `BillingAddressForm`
+> The Classified version of the state name, plus "Form", so a `:billing_address` state should have an associated form called `BillingAddressForm`
 
 The DSJ Controller will search for a matching Form for each state using the Factory class/method
 
+## OUT OF DATE
 ```ruby
 DatashiftState::FormObjectFactory.form_object_for(journey_plan)
 ```
@@ -263,6 +262,7 @@ And a current state of :address - then the Controller will attempt to use Form c
 ```ruby
 MyCheckoutEngine::States::AddressForm
 ```
+## END OUT OF DATE
 
 #### Null Forms
 
@@ -287,24 +287,7 @@ DatashiftJourney::Configuration.configure do |config|
   config.null_form_list = [:confirm_page_with_no_data, :brexit]
 end
 ```
-    
-There are a couple of base classes available, that will do most of the Form work, if you inherit from them.
 
-When using the DSJ Collection models, you can derive from `DatashiftJourney::BaseCollectorForm`.
-
-When using your own model use `DatashiftJourney::BaseForm` .
-    
-The Form must have a factory method, and a constructor that expects a JourneyPlan model instance.
-
-For example
-
-```ruby
-    # Default factory using our basic Collector model
-    def self.factory(collector)
-      new(collector)
-    end
-```  
-  
 Once the Form class has been identified the Controller will attempt to create the new form object
 passing in the current journey plan object.
 
@@ -319,28 +302,6 @@ Over ride and return false if you wish to **hide** the button.
     false
  end
 ```
-
-### The Views
-
-The Controller will expect a view partial, for each related Form.
-
-The partials are rendered passing in the Form as a local variable.
-
-The location of the partial to use for a certain state is given by helper
-
-          def journey_plan_partial_location( state )
-
-The default is `app/views` but path can be changed using Configuration option `partial_location`
-
-This will be required in the path format, if you are using multiple namespaces/folders
-
-```ruby
-   DatashiftJourney::Configuration.configure do |config|
-     config.partial_location = "checkout_engine"
-   end
-```
-
-See The Form to configure visibility of the default continue or submit button.
 
 ### DatashiftJourney::Collector
 

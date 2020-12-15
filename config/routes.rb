@@ -22,6 +22,8 @@ DatashiftJourney::Engine.routes.draw do
   # factory is optional - without it will create bare bones journey_class object with state set
   get '/state_jumper/:state/(:factory)', :to => 'state_jumper#build_and_display', :as => :build_and_display
 
+  resources :journey_ends, only: [:show]
+
 =begin
 
   patch '/journey_plans/update/:state', :to => 'journey_plans#update', :as => :update_journey_plan

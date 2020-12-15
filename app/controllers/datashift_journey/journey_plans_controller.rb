@@ -4,42 +4,58 @@ module DatashiftJourney
 
   class JourneyPlansController < ApplicationController
 
-    # TODO: investigate further - does not seem to work
-    # prepend_view_path DatashiftJourney::Configuration.call.partial_location
-
     include ValidateState
 
     # Run BEFORE other filters to ensure the current journey_plan has been selected from the DB
-    prepend_before_action :set_journey_plan, only: [:edit, :new, :update, :destroy, :back_a_state]
+    prepend_before_action :set_journey_plan, only: [:new, :destroy, :back_a_state]
 
-    prepend_before_action :set_journey_plan_class, only: [:create]
+    prepend_before_action :set_reform_object, only: [:create, :edit, :update]
+    #prepend_before_action :set_journey_plan_class, only: [:create]
 
     # Validate state and state related params - covers certain edge cases such as browser refresh
     before_action :validate_state, only: [:edit, :update]
 
     def new
-      puts "Rendering initial state [#{journey_plan.state}]"
+      # Find and create the form object, backing the current states view
+      reform = FormObjectFactory.form_object_for(journey_plan)
 
-      # Find the form class backing the view
-      render locals: { journey_plan: journey_plan, form: form_object(journey_plan) }
+      render locals: { journey_plan: journey_plan, form: reform }
     end
 
     def create
-      form = form_object(journey_plan_class.create)
+      # TOFIX - Validation from params is broken
+      # NoMethodError (undefined method `each_with_index' for #<ActionController::Parameters:0x000055eacfa2c370>):
+      # 16:50:36 web.1       | representable (3.0.4) lib/representable/pipeline.rb:38:in `call'
+      result = true
+      #result = form.validate(params)
+      #logger.debug("VALIDATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
 
-      result = form.validate(params)
+      #redirect_to(form.redirection_url) && return if form.redirect?
 
-      logger.debug("VALIDATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
+      journey_plan = journey_plan_class.new
 
-      redirect_to(form.redirection_url) && return if form.redirect?
+      form_params = params.fetch(@reform.params_key, {})
 
-      if result && form.save
-        logger.debug("Saved Form [#{form.inspect}] - Move to Next")
-        puts form.inspect
-        move_next(form)
-      else
-        render :new, locals: { journey_plan: form.journey_plan, form: form }
+      form_params["data_nodes"] # =>{"form_field"=>{"0"=>"name", "1"=>"namespace"}, "field_value"=>{"0"=>"dfsdf", "1"=>"ghfghf"}}}
+
+      fields = form_params["data_nodes"]["form_field"]
+      values = form_params["data_nodes"]["field_value"]
+
+      fields.each do |idx, name|
+        ff = Collector::FormField.where(name: name, form_definition: @reform.definition).first
+        next unless ff
+        Collector::DataNode.find_or_create_by!(plan: journey_plan, form_field: ff) do |node|
+          node.field_value = values[idx]
+        end
       end
+
+      #if result && form.save
+      logger.debug("CREATED Plan [#{journey_plan.inspect}] - Move to Next")
+      puts journey_plan.inspect
+      move_next(journey_plan)
+      # else
+      #  render :new, locals: { journey_plan: form.journey_plan, form: form }
+      # end
     end
 
     def back_a_state
@@ -64,65 +80,78 @@ module DatashiftJourney
 
     def edit
       logger.debug "Editing journey_plan [#{journey_plan.inspect}]"
-
-      render locals: { journey_plan: journey_plan, form: form_object(journey_plan) }
+      render locals: { journey_plan: @journey_plan, form: @reform }
     end
 
     def update
-      form = form_object(journey_plan)
+      # form = FormObjectFactory.form_object_for(journey_plan)
+      #
+      # logger.debug("UPDATE - CALLING VALIDATE ON Form #{form.class}")
+      #
+      # result = form.validate(params)
+      #
+      # redirect_to(form.redirection_url) && return if form.redirect?
+      #
+      # if result && form.save
+      #   logger.debug("SUCCESS - Updated #{journey_plan.inspect}")
+      #
+      #   move_next(journey_plan)
+      # else
+      #   logger.debug("FAILED - Form Errors [#{form.errors.inspect}]")
+      #
+      #   render :edit, locals: { journey_plan: journey_plan, form: form }
+      # end
+      form_params = params.fetch(@reform.params_key, {})
 
-      logger.debug("UPDATE - CALLING VALIDATE ON Form #{form.class}")
+      data_nodes = form_params["data_nodes"] # =>{"form_field"=>{"0"=>"name", "1"=>"namespace"}, "field_value"=>{"0"=>"dfsdf", "1"=>"ghfghf"}}}
 
-      result = form.validate(params)
+      if data_nodes.present?
+        fields = form_params["data_nodes"]["form_field"]
+        values = form_params["data_nodes"]["field_value"]
 
-      redirect_to(form.redirection_url) && return if form.redirect?
-
-      if result && form.save
-        logger.debug("SUCCESS - Updated #{journey_plan.inspect}")
-
-        move_next(form)
-      else
-        logger.debug("FAILED - Form Errors [#{form.errors.inspect}]")
-
-        render :edit, locals: { journey_plan: journey_plan, form: form }
+        fields.each do |idx, name|
+          ff = Collector::FormField.where(name: name, form_definition: @reform.definition).first
+          next unless ff
+          Collector::DataNode.find_or_create_by!(plan: journey_plan, form_field: ff) do |node|
+            node.field_value = values[idx]
+          end
+        end
       end
+
+      logger.debug("UPDATED Plan [#{journey_plan.inspect}] - Move to Next")
+      puts journey_plan.inspect
+
+      move_next(journey_plan) && return
     end # UPDATE
 
     private
 
-    def move_next(form)
-      logger.debug "In Move Next [#{form.inspect}]"
+    def move_next(journey_plan)
+      journey_plan.reload
 
-      form_journey_plan = form.journey_plan
-
-      # TODO - Can we still perform such a check when the klass comes in the params ??
-     # if form_journey_plan.class != DatashiftJourney.journey_plan_class
-     #   raise "ClassError - Your Form's model is not a #{DatashiftJourney.journey_plan_class} - #{form_journey_plan.inspect}"
-      #end
-
-      form_journey_plan.reload
-
-      # if there is no next event, state_machine dynamic helper can_next? not available
-      unless form_journey_plan.respond_to?('can_skip_fwd?')
-
-        logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
-
-        render :journey_end && return
+      if journey_plan.next_state_name.blank?
+        logger.error("JOURNEY ENDED - no next transition - rendering 'journey_end'")
+        redirect_to(datashift_journey.journey_end_path(journey_plan)) && return
       end
 
-      if form_journey_plan.can_skip_fwd?
-        logger.error("JOURNEY Can proceed - transitioning to next event'")
+      # if there is no next event, state_machine dynamic helper can_next? not available
+      unless journey_plan.respond_to?('can_skip_fwd?')
+        logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
+        redirect_to(datashift_journey.journey_end_path(journey_plan)) && return
+      end
 
-        form_journey_plan.skip_fwd!
+      if journey_plan.can_skip_fwd?
+        logger.error("JOURNEY Can proceed - transitioning to next event'")
+        pp journey_plan.state
+        journey_plan.skip_fwd!
+        pp journey_plan.state
       else
         logger.error('JOURNEY Cannot Continue - not able to transition to next event')
       end
 
-      redirect_to(datashift_journey.journey_plan_state_path(form_journey_plan.state, form_journey_plan)) && return
-    end
+      pp journey_plan
 
-    def form_object(journey)
-      DatashiftJourney::FormObjectFactory.form_object_for(journey)
+      redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
     end
 
     def set_journey_plan_class
@@ -130,7 +159,6 @@ module DatashiftJourney
     end
 
     def set_journey_plan
-
       set_journey_plan_class
 
       token = params[:id] || params[:journey_plan_id]
@@ -140,6 +168,17 @@ module DatashiftJourney
       # and add in migration thats adds the token column
       # @journey_plan = DatashiftJourney.journey_plan_class.find_by_token!(token)
       @journey_plan = token ? journey_plan_class.find(token) : journey_plan_class.new
+    end
+
+    def set_reform_object
+      set_journey_plan_class
+
+      token = params[:id] || params[:journey_plan_id]
+
+      journey_plan = token ? journey_plan_class.find(token) : journey_plan_class.new
+      @reform = FormObjectFactory.form_object_for(journey_plan)
+
+      @journey_plan = @reform.journey_plan
     end
 
     attr_reader :journey_plan_class, :journey_plan

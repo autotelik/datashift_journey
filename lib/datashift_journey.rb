@@ -45,11 +45,6 @@ module DatashiftJourney
     @journey_plan_class
   end
 
-  def self.default_journey_plan_class_name
-    # TOFIX - collector is now a concern we can mixin to any Planner
-    # collector_journey_plan_class.name
-  end
-
   def self.journey_plan_class
     @journey_plan_class = @journey_plan_class.to_s.constantize if @journey_plan_class.is_a?(String) || @journey_plan_class.is_a?(Symbol)
     @journey_plan_class
@@ -57,10 +52,6 @@ module DatashiftJourney
 
   def self.state_names(machine: :state)
     DatashiftJourney.journey_plan_class.state_machine(machine).states.map(&:name)
-  end
-
-  def self.use_default_journey_plan_class
-    DatashiftJourney.journey_plan_class = DatashiftJourney.default_journey_plan_class_name
   end
 
 end

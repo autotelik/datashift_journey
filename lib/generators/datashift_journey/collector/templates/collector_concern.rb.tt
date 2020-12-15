@@ -15,7 +15,7 @@ module DatashiftJourney
     end
 
     def node_for_form_and_field(form_name, field_name)
-      form_field = DatashiftJourney::Collector::FormField.for_form_and_field(form_name, field_name)
+      form_field = DatashiftJourney::Collector::FormBackingModel.for_form_and_field(form_name, field_name)
       return nil unless form_field
       data_nodes.where(form_field: form_field).first
     end

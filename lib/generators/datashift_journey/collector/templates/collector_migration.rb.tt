@@ -4,21 +4,22 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration[<%= @migration_v
 
   def change
 
-    create_table :dsj_forms do |t|
-      t.string :form_name, index: true, null: false
+    create_table :dsj_form_definitions do |t|
+      t.string :state, index: true, null: false
+      t.string :klass, index: true, null: false
       t.timestamps null: false
     end
 
     create_table :dsj_form_fields do |t|
-      t.references :form, index: true, null: false
-      t.string     :field, index: true,  null: false, limit: 100
-      t.string     :field_type,          null: false
-      t.string     :field_presentation,  limit: 100
+      t.references :form_definition, index: true, null: false
+      t.string     :name, index: true,  null: false, limit: 100
+      t.string     :category, index: true, null: false
+      t.text       :presentation
       t.timestamps null: false
     end
 
-    # The plan is an instance of the main JourneyPlan
-    create_table :dsj_collector_data_nodes do |t|
+    # The plan is an instance of a JourneyPlan class
+    create_table :dsj_data_nodes do |t|
       t.references  :plan,  null: false, polymorphic: true
       t.references  :form_field, null: false
       t.text        :field_value
@@ -32,7 +33,7 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration[<%= @migration_v
     end
 
     create_table :dsj_forms_snippets do |t|
-      t.references  :form, null: false
+      t.references  :form_model, null: false
       t.references  :snippet, null: false
     end
 

@@ -4,18 +4,29 @@ module DatashiftJourney
   class FormObjectFactory
 
     class << self
-      def form_object_for(journey_plan)
-        klass = form_class_for(journey_plan)
 
+      # Create a form object from the current states Form class
+      #
+      # Each form can provide a factory to drive how its constructed, or can rely on the base classes factory method
+      #
+      def form_object_for(journey_plan)
+        # Get ReForm form for current state
+        klass = form_class_for(journey_plan)
         raise(FormObjectError, "Failed to load form class #{form_name(journey_plan.state)} for state #{journey_plan.state}") unless klass
 
-        klass.factory(journey_plan)
+        # Create new instance of form for current journey instance
+        klass.new(journey_plan)
       end
 
       def form_name(state)
         @form_name_mod ||= Configuration.call.forms_module_name
 
         "#{@form_name_mod}::#{state.to_s.camelize}Form"
+      end
+
+      def state_name(form)
+        return form.chomp('Form').underscore if form.is_a?(String)
+        form.class.name.chomp('Form').underscore
       end
 
       private
@@ -36,10 +47,10 @@ module DatashiftJourney
         @null_form_list ||= Configuration.call.null_form_list.map!(&:to_s)
       end
 
+      # Find the current state and its associated Form
       def form_class_for(journey_plan)
         form_name(journey_plan.state).constantize
       rescue => x
-
         null_form = null_form_for_state(journey_plan)
 
         unless null_form

@@ -20,12 +20,6 @@ module DatashiftJourney
     # Add a load path for this specific Engine
     config.autoload_paths += Dir["#{config.root}/lib"]
 
-    config.to_prepare do
-      # Helpers for dealing with back and next
-      # DatashiftJourney.journey_plan_class.send :include, DatashiftJourney::StateMachines::Extensions
-      # DatashiftJourney.journey_plan_class.send :extend, DatashiftJourney::StateMachines::Extensions
-    end
-
     # Make Shared examples and Support files available to Apps and other Engines
     # TODO: - make this optional - i.e installable so Apps/Engines can easily pull this in themselves if they wish
     # if Rails.env.test? && defined?(RSpec)

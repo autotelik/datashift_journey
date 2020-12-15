@@ -25,7 +25,7 @@ Gem::Specification.new do |s|
   s.add_dependency "state_machines-activerecord"#, "~> 0.2"
 
   # Reform 2.1 causes odd issues once AR Validations brought in
-  s.add_dependency "reform"#, "2.0.5"
+  s.add_dependency "reform"#, "2.0.5"               # https://github.com/trailblazer/reform
   s.add_dependency "reform-rails"#, "~> 0.1"
 
   # This supplies alternative validations from Reform > 2.0

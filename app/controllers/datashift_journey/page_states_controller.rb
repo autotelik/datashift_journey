@@ -8,13 +8,13 @@ module DatashiftJourney
     # PageState contains details for rendering and storing a Page related to a single State
     #
     def index
-      @collector_forms = Collector::Form.all
+      @collector_forms = Collector::FormDefinition.all
 
       render json: @collector_forms, status: :ok
     end
 
     def create
-      @collector_form = Collector::Form.new(page_state_params)
+      @collector_form = Collector::FormDefinition.new(page_state_params)
 
       if @collector_form.save
         render json: @collector_form, status: :created
@@ -37,9 +37,9 @@ module DatashiftJourney
 
     def set_user
       begin
-        @collector_form = Collector::Form.find params[:id]
+        @collector_form = Collector::FormDefinition.find params[:id]
       rescue ActiveRecord::RecordNotFound
-        collector_form = Collector::Form.new
+        collector_form = Collector::FormDefinition.new
         collector_form.errors.add(:id, "Wrong ID provided")
         render_error(collector_form, 404) and return
       end

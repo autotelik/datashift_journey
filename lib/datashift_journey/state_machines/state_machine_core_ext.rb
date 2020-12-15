@@ -29,12 +29,12 @@ StateMachines::Machine.class_eval do
     end
   end
 
-  # We use skip_fwd as he event type to avoid keyword next
+  # We use skip_fwd as the event type to avoid keyword next
   #
   # This will add usual helpers like
   #
-  # vehicle.skip_fwd?                 # => true
-  # vehicle.can_skip_fwd?             # => true
+  #   vehicle.skip_fwd?                 # => true
+  #   vehicle.can_skip_fwd?             # => true
   #
   def create_next(from, to)
     raise "Bad transitions supplied for Next - FROM #{from} - TO #{to}" if from.nil? || to.nil?
@@ -62,6 +62,8 @@ StateMachines::Machine.class_eval do
   # You can exclude  any other steps with the except list
   #
   def create_next_transitions(journey, except = [])
+
+    #puts "DEBUG: Creating NEXT transitions for #{journey.inspect}"
     journey[0...-1].each_with_index do |t, i|
       next if except.include?(t)
       create_next(t, journey[i + 1])

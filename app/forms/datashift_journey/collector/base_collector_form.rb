@@ -1,50 +1,48 @@
-require_relative '../base_form'
+require_relative '../concerns/form_mixin'
 
 module DatashiftJourney
   module Collector
-    class BaseCollectorForm < DatashiftJourney::BaseForm
 
-      collection :data_nodes do
-        property :field_value
-      end
+    # This class represents the View backing Form
+    #
+    # Reform API :
+    #
+    #   initialize always requires a model that the form represents.
+    #   validate(params) updates the form's fields with the input data (only the form, not the model) and then runs all validations. The return value is the boolean result of the validations.
+    #   errors returns validation messages in a classic ActiveModel style.
+    #   sync writes form data back to the model. This will only use setter methods on the model(s).
+    #   save (optional) will call #save on the model and nested models. Note that this implies a #sync call.
+    #   prepopulate! (optional) will run pre-population hooks to "fill out" your form before rendering.
+    #
+    class BaseCollectorForm < Reform::Form
 
-      # Build DB structures to hold the data we collect as we traverse the Plan
+      include DatashiftJourney::FormMixin
+
+      feature Reform::Form::Dry # override the default.
+
+      attr_accessor :definition
+
+      # Called from CONTROLLER
       #
-      def self.factory(journey_plan)
-        collector_form = find_or_create_collector_form
+      # Creates a form object backed by the current Plan object
+      #
+      # Data is collected generically from fields defined by FormDefinition and stored
+      # in data nodes associated with current JourneyPlan instance (through polymorphic plan association)
+      #
+      def initialize(journey_plan)
+        super(journey_plan)
 
-        create_missing_collector_field(collector_form) if collector_form.form_fields.empty?
+        @journey_plan = journey_plan
 
-        form_fields = collector_form.form_fields
+        @definition = DatashiftJourney::Collector::FormDefinition.where(klass: self.class.name).first
 
-        # This assumes the journey_plan model has been decorated with - include DatashiftJourney::Collector
-        #
-        # Add one data node per form field - data nodes hold the COLLECTED VALUES
+        # For brand new forms, add one data node per form field - data nodes hold the COLLECTED VALUES
+        # If this page already been visited we should have completed data nodes already
+        form_definition.form_fields.map(&:id).each do |id|
+          next if journey_plan.data_nodes.where('form_field_id = ?', id).exists?
+          journey_plan.data_nodes << DatashiftJourney::Collector::DataNode.new(plan: journey_plan, form_field_id: id)
+        end
 
-        puts '\nCREATING DATA NODES'
-        pp journey_plan.data_nodes
-        pp journey_plan
-        form_fields.collect { |ff| pp ff ; journey_plan.data_nodes.build(plan: journey_plan, form_field: ff) }
-
-        puts '\nForm CREATED', collector_form, journey_plan
-        new(collector_form, journey_plan)
-      end
-
-      alias_attribute :collector, :journey_plan
-
-      # Convention is a database Collector Form with same name as this view's Form class
-      def self.collector_form_name
-        name.chomp('Form')
-      end
-
-      def self.find_or_create_collector_form
-        Collector::Form.where(form_name: collector_form_name).first_or_create
-      end
-
-      def self.create_missing_collector_field(form_object)
-        Collector::FormField.create(form: form_object,
-                                    field: collector_form_name.underscore,
-                                    field_type: :string)
       end
 
     end

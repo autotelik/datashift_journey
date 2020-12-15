@@ -12,9 +12,7 @@
 
   <%= render_if_exists state, form: form, f: f, journey_plan: journey_plan %>
 
-  <% if form.show_submit_button? %>
-    <div class="form-group">
-      <%= f.submit submit_button_text(form), class: "button"  %>
-    </div>
-  <% end %>
+  <%# if form.show_submit_button? %>
+      <%#= f.submit submit_button_text(form), class: "button journey_plans-submit-button"  %>
+  <%# end %>
 <% end %>
