@@ -1,0 +1,6 @@
+<% css = local_assigns[:form_group_css] ?  form_group_css : "col pull-right" %>
+
+<div class="form-group <%= css %>">
+  <%= f.submit t('.', :default => t("global.continue")), class: "journey-plans-submit-button"  %>
+  <%= back_a_state_link(@journey_plan) %>
+</div>

@@ -5,7 +5,7 @@ class Question2Form < DatashiftJourney::BaseCollectorForm
   end
 
   property :field_value
-  validates :field_value, presence: true
+  validate :field_value, presence: true
 
 
 end

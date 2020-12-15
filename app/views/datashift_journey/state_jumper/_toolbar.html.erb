@@ -1,17 +1,16 @@
-<% unless(Rails.env.production?) %>
-  <%
-    if( DatashiftJourney::Configuration.call.add_state_jumper_toolbar &&
-        DatashiftJourney::Configuration.call.state_jumper_states.size > 0)
-  %>
-    <%- content_for :datashift_journey_state_jumper do %>
-      <div id="datashift_journey_state_jumper">
-        <ul>
-          <li>DS Journey State Jumper: </li>
-          <% DatashiftJourney::Configuration.call.state_jumper_states.each do |entry| %>
-            <li> <%= link_to entry.display, datashift_journey.build_and_display_path(entry.state, entry.factory) %></li>
-          <% end %>
-        </ul>
-      </div>
-    <% end %>
+<%
+  if( Rails.env.development? &&
+      DatashiftJourney::Configuration.call.add_state_jumper_toolbar &&
+      DatashiftJourney::Configuration.call.state_jumper_states.size > 0)
+%>
+  <%- content_for :datashift_journey_state_jumper do %>
+    <div id="datashift_journey_state_jumper">
+      <ul>
+        <li>DS Journey State Jumper: </li>
+        <% DatashiftJourney::Configuration.call.state_jumper_states.each do |entry| %>
+          <li> <%= link_to entry.display, datashift_journey.build_and_display_path(entry.state, entry.factory) %></li>
+        <% end %>
+      </ul>
+    </div>
   <% end %>
 <% end %>

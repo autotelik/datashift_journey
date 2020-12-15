@@ -5,7 +5,25 @@ module DatashiftJourney
 
   module StateMachines
 
+    # Mixed into the State Machine class, so your JourneyPlan class has access to these methods and
+    # attributes
+    #
     module Planner
+
+      def init_plan
+        sequence_list.clear                        # In development context where models get reloaded, this could duplicate
+        branch_sequence_map.clear
+      end
+
+      # The complete, Ordered collection of sequences, used to generate the steps (states) of the plan
+      def sequence_list
+        @sequence_list ||= StateList.new
+      end
+
+      # Key - sequence ID
+      def branch_sequence_map
+        @branch_sequence_map ||= BranchSequenceMap.new
+      end
 
       def sequence(*list)
         raise PlannerApiError, 'Empty list passed to sequence - check your MachineBuilder syntax' if list.empty?
@@ -62,13 +80,15 @@ module DatashiftJourney
       def build_journey_plan
         # The Order of sequences should have been preserved as insertion order
 
+        #puts "DEBUG: START PLAN - Processing SEQUENCES\n#{sequence_list.inspect}"
+
         sequence_list.each_with_index do |sequence, i|
           prev_seq = i.zero? ? EmptySequence.new : sequence_list[i - 1]
 
           next_seq = sequence_list[i + 1] || EmptySequence.new
 
           if sequence.split?
-            # puts "\nDEBUG: *** BUILDING SPLITTER #{sequence.inspect} (#{i})"
+            #puts "\nDEBUG: *** BUILDING SPLITTER #{sequence.inspect} (#{i})"
             build_split_sequence_events(sequence, prev_seq, next_seq)
           else
 
@@ -76,7 +96,7 @@ module DatashiftJourney
             # of each branch (based on the same criteria that originally split the branch)
             if prev_seq.split?
               begin
-                # puts "\nDEBUG: *** BUILDING SEQ TO SPLIT #{sequence.inspect} (#{i})"
+                #puts "\nDEBUG: *** BUILDING SEQ TO SPLIT #{sequence.inspect} (#{i})"
                 build_triggered_back(sequence, prev_seq)
               rescue => x
                 puts x.inspect
@@ -85,14 +105,15 @@ module DatashiftJourney
               end
 
             elsif prev_seq.last
-              # puts "\nDEBUG: *** BUILDING SEQ #{sequence.inspect} (#{i})"
+              #puts "\nDEBUG: *** BUILDING SEQ #{sequence.inspect} (#{i})"
               create_back(sequence.first, prev_seq.last)
             end
 
             # The simple navigation through states within the sequence
             create_pairs sequence
 
-            create_next(sequence.last, next_seq.first) if next_seq.first
+            #puts "\nDEBUG: *** CREATED PAIRS FOR SEQ #{sequence.inspect} (#{i})"
+            create_next(sequence.last, next_seq.first) if next_seq.first.present?
           end
         end
       end
@@ -147,7 +168,7 @@ module DatashiftJourney
       end
 
       def build_triggered_back(sequence, prev_seq)
-        # puts "DEBUG: * BUILD triggered Back for #{sequence.inspect}"
+        #puts "DEBUG: * BUILD triggered Back for #{sequence.inspect}"
 
         # Create back from FIRST item of THIS sequence to LAST entry of EACH previous BRANCH
         branch_sequence_map.branches_for(prev_seq).each do |branch|
@@ -178,16 +199,6 @@ module DatashiftJourney
             o.send(branch.trigger_method) == branch.trigger_value
           end
         end
-      end
-
-      # Ordered collection of sequences
-      def sequence_list
-        @sequence_list ||= StateList.new
-      end
-
-      # Key - sequence ID
-      def branch_sequence_map
-        @split_sequence_map ||= BranchSequenceMap.new
       end
 
     end

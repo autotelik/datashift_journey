@@ -2,14 +2,18 @@
 # Helper class for constructing back links for navigating backward through the journey
 #
 module DatashiftJourney
-  class BackLink
-    include ActionView::Helpers::UrlHelper
-    attr_reader :current_request, :journey_plan, :engine_routes
 
-    def initialize(request, engine_routes:, journey_plan: nil)
+  class BackLink
+
+    include ActionView::Helpers::UrlHelper
+
+    attr_reader :css, :current_request, :journey_plan, :engine_routes
+
+    def initialize(request, engine_routes:, journey_plan: nil, css: nil)
       @current_request = request
       @engine_routes = engine_routes
       @journey_plan = journey_plan
+      @css = css
     end
 
     def tag(text = nil, html_opts = {})
@@ -17,7 +21,7 @@ module DatashiftJourney
         content_tag(:br)
       else
         title, url = link_arguments(text)
-        link_to title, url, html_opts.merge(class: 'back-link')
+        link_to title, url, html_opts.merge(class: css || 'journey-plan-back-link')
       end
     end
 
@@ -28,7 +32,7 @@ module DatashiftJourney
     end
 
     def link_text
-      I18n.t(journey_plan ? 'global.back' : 'global.backto_start_link')
+      I18n.t(journey_plan ? 'global.back' : 'global.back_to_start_link')
     end
 
     def link_url

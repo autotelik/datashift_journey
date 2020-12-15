@@ -28,7 +28,7 @@ module DatashiftJourney
       end
 
       def next_state_name
-        transitions_for.find { |t| t.event == :next }.try(:to_name)
+        transitions_for.find { |t| t.event == :skip_fwd }.try(:to_name)
       end
 
       def previous_state_name

@@ -1,0 +1,7 @@
+class BaseForm <%= "< #{@datashift_journey_baseform}" if @datashift_journey_baseform %>
+
+  def initialize(model, journey_plan = nil)
+    super(model, journey_plan)
+  end
+
+end

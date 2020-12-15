@@ -19,10 +19,10 @@ DatashiftJourney::Engine.routes.draw do
   # These forms enables us to copy and paste url and see the state in the browser url
   get '/journey_plans/:state/:id', :to => 'journey_plans#edit', :as => :journey_plan_state
 
-  unless(Rails.env.production?)
-    # factory is optional - without it will create bare bones journey_class object with state set
-    get '/state_jumper/:state/(:factory)', :to => 'state_jumper#build_and_display', :as => :build_and_display
-  end
+  # factory is optional - without it will create bare bones journey_class object with state set
+  get '/state_jumper/:state/(:factory)', :to => 'state_jumper#build_and_display', :as => :build_and_display
+
+  resources :journey_ends, only: [:show]
 
 =begin
 

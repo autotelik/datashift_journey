@@ -1,0 +1,37 @@
+
+  DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :TO_DO_SET_INITIAL_STATE) do
+
+=begin
+    The available API is defined in : datashift_journey/lib/datashift_journey/state_machines/planner.rb
+
+    A basic example with 2 simple steps, followed by one set of branches, which reconnect to another common
+    section starting at :review
+
+    DatashiftJourney::Journey::MachineBuilder.create_journey_plan(initial: :ship_address) do
+
+        # Two simple sequential steps
+        sequence [:ship_address, :bill_address]
+
+        # first define the sequences
+        branch_sequence :visa_sequence, [:visa_page1, :visa_page2]
+
+        branch_sequence :mastercard_sequence, [:page_mastercard1, :page_mastercard2, :page_mastercard3]
+
+        branch_sequence :paypal_sequence, []
+
+        # now define the parent state and the routing criteria to each sequence
+        # So after bill address we reach payment - then we split to a single step, depending on the card type entered
+
+        split_on_equality( :payment,
+                            "payment_card",    # Helper method on Checkout that returns card type from Payment
+                            visa_sequence: 'visa',
+                            mastercard_sequence: 'mastercard',
+                            paypal_sequence: 'paypal'
+        )
+
+      # All different card type branches, recombine here at review
+      sequence [:review, :complete ]
+    end
+=end
+
+  end

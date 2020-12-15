@@ -36,7 +36,7 @@ module DatashiftJourney
                end
 
         if plan.state != state
-          plan.next(state.to_sym) until !plan.can_next? || plan.state == state
+          plan.skip_fwd(state.to_sym) until !plan.can_skip_fwd? || plan.state == state
         end
 
         plan.update_attribute(:state, state) if plan.state != state

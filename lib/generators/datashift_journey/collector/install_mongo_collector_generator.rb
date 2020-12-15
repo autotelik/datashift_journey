@@ -1,4 +1,4 @@
-require_relative 'initializer_common'
+require_relative '../initializer_common'
 
 module DatashiftJourney
 

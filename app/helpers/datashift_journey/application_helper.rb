@@ -1,17 +1,11 @@
 module DatashiftJourney
   module ApplicationHelper
 
+    # This is the main hook to insert a States partial view into the main Form
     def render_if_exists(state, *args)
       lookup_context.prefixes.prepend DatashiftJourney::Configuration.call.partial_location
 
-      Rails.logger.debug("DSJ search path(s) [#{lookup_context.prefixes.inspect}]")
-
-      if lookup_context.exists?(state, lookup_context.prefixes, true)
-        render(state, *args)
-      elsif DatashiftJourney.using_collector?
-        Rails.logger.debug("DSJ - Using generic Collector viws, no partial found for state #{state}")
-        render('datashift_journey/collector/generic_form', *args)
-      end
+      render(state, *args) if lookup_context.exists?(state, lookup_context.prefixes, true)
     end
 
     # Returns true if '_state' partial exists in configured location (Configuration.partial_location)
@@ -28,10 +22,6 @@ module DatashiftJourney
     def journey_plan_partial_location(state)
       Rails.logger.debug("DatashiftJourney RENDER #{DatashiftJourney::Configuration.call.partial_location}/#{state}}")
       File.join(DatashiftJourney::Configuration.call.partial_location.to_s, state)
-    end
-
-    def submit_button_text(_form)
-      t('global.journey_plan.continue')
     end
 
     def error_link_id(attribute)

@@ -21,22 +21,29 @@ StateMachines::Machine.class_eval do
   def create_back(from, to)
     raise "Bad transitions supplied for Back - FROM #{from} - TO #{to}" if from.nil? || to.nil?
     if block_given?
-      # puts "DEBUG: Creating BACK transition from #{from} to #{to} with Block"
+      #puts "DEBUG: Creating BACK transition from #{from} to #{to} with Block"
       transition(from => to, on: :back, if: yield)
     else
-      # puts "DEBUG: Creating BACK transition from #{from} to #{to}"
+      #puts "DEBUG: Creating BACK transition from #{from} to #{to}"
       transition(from => to, on: :back)
     end
   end
 
+  # We use skip_fwd as the event type to avoid keyword next
+  #
+  # This will add usual helpers like
+  #
+  #   vehicle.skip_fwd?                 # => true
+  #   vehicle.can_skip_fwd?             # => true
+  #
   def create_next(from, to)
     raise "Bad transitions supplied for Next - FROM #{from} - TO #{to}" if from.nil? || to.nil?
     if block_given?
-      # puts "DEBUG: Creating NEXT transition from #{from} to #{to} with Block "
-      transition(from => to, on: :next, if: yield)
+      #puts "DEBUG: Creating NEXT transition from #{from} to #{to} with Block "
+      transition(from => to, on: :skip_fwd, if: yield)
     else
-      # puts "DEBUG: Creating NEXT transition from #{from} to #{to}"
-      transition(from => to, on: :next)
+      #puts "DEBUG: Creating NEXT transition from #{from} to #{to}"
+      transition(from => to, on: :skip_fwd)
     end
   end
 
@@ -55,6 +62,8 @@ StateMachines::Machine.class_eval do
   # You can exclude  any other steps with the except list
   #
   def create_next_transitions(journey, except = [])
+
+    #puts "DEBUG: Creating NEXT transitions for #{journey.inspect}"
     journey[0...-1].each_with_index do |t, i|
       next if except.include?(t)
       create_next(t, journey[i + 1])

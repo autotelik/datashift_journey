@@ -1,5 +1,5 @@
 require 'rails/generators/active_record'
-require_relative 'initializer_common'
+require_relative '../initializer_common'
 
 module DatashiftJourney
 
@@ -12,6 +12,7 @@ module DatashiftJourney
     desc 'This generator copies over DSJ migrations to use the generic Collector data collector'
 
     def copy_collector_migration
+      migration_template "migration.rb", "db/migrate/add_foo_to_bar.rb"
       migration_template 'collector_migration.rb', 'db/migrate/datashift_journey_create_collector.rb', migration_version: migration_version
     end
 

@@ -2,41 +2,13 @@ require_dependency 'reform'
 
 module DatashiftJourney
 
-  class BaseForm < Reform::Form
+  # Collection of tools to support the Forms
+  module FormMixin
 
-    # include ActionView::Helpers::TranslationHelper
-    include Reform::Form::ActiveModel::Validations
-
-    # Hmmmm the reform ActiveModel::Validations include requires some odd stuff
-    delegate :model_name, to: :model
-
-    # def build_errors
-    #  model.errors
-    # end
-
-    # Ok our stuff now
+    extend ActiveSupport::Concern
 
     attr_reader :journey_plan
     attr_accessor :redirection_url
-
-    # Default factory when the form model == main journey plan model
-    def self.factory(journey_plan)
-      new(journey_plan)
-    end
-
-    # The form can  manage the main journey plan model and/or an associated model
-    # for example Payment or Address collector associated with your main Checkout model.
-    # To supply an associated model, your factory could look something like
-    #
-    #   def self.factory(checkout)
-    #      address = Address.new(address_type: :billing)
-    #      new(address, checkout)
-    #   end
-    #
-    def initialize(model, journey_plan = nil)
-      @journey_plan = journey_plan || model
-      super(model)
-    end
 
     def validate(params)
       Rails.logger.debug "VALIDATING #{model.inspect} - Params - #{form_params(params)}"
@@ -56,6 +28,19 @@ module DatashiftJourney
       true
     end
 
+    class_methods do
+      def form_definition
+        # In this situation self is the class of the including form eg PaymentForm, AddressFrom
+        @form_definition ||= DatashiftJourney::Collector::FormDefinition.find_or_create_by!(klass: self.name)
+      end
+
+      # TODO: define valid list of category
+      #
+      def journey_plan_form_field(name:, category:)
+        DatashiftJourney::Collector::FormField.find_or_create_by!(form_definition: form_definition, name: name,  category: category)
+      end
+    end
+
     protected
 
     def form_params(params)
@@ -66,9 +51,14 @@ module DatashiftJourney
       Rails.logger
     end
 
+    def form_definition
+      @form_definition ||= self.class.form_definition
+    end
+
     # Class methods as used heavily from class method validation methods
 
     class << self
+
       def locale_key
         name.underscore
       end

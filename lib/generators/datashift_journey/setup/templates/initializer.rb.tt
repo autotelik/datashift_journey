@@ -1,0 +1,17 @@
+DatashiftJourney.journey_plan_class = '<%= class_name %>'
+
+DatashiftJourney::Configuration.configure do |config|
+  config.partial_location = '<%= class_name.pluralize.underscore %>'
+
+  config.add_state_jumper_toolbar = false
+
+  config.state_jumper_states = {}
+end
+
+# For Form validation options see - https://github.com/trailblazer/reform#installation
+#
+require "reform/form/dry"
+
+Reform::Form.class_eval do
+  feature Reform::Form::Dry
+end
