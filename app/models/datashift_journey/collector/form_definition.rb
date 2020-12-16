@@ -19,6 +19,10 @@ module DatashiftJourney
       validates_presence_of :state
       validates_uniqueness_of :state
 
+      def field_ids
+        form_fields.collect(&:id)
+      end
+
       private
 
       # N.B Validations are called BEFORE before_create or before_save

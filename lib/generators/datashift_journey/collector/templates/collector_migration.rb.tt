@@ -13,7 +13,7 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration[<%= @migration_v
     create_table :dsj_form_fields do |t|
       t.references :form_definition, index: true, null: false
       t.string     :name, index: true,  null: false, limit: 100
-      t.string     :category, index: true, null: false
+      t.integer    :category, index: true, null: false
       t.text       :presentation
       t.timestamps null: false
     end

@@ -10,7 +10,6 @@ module DatashiftJourney
     prepend_before_action :set_journey_plan, only: [:new, :destroy, :back_a_state]
 
     prepend_before_action :set_reform_object, only: [:create, :edit, :update]
-    #prepend_before_action :set_journey_plan_class, only: [:create]
 
     # Validate state and state related params - covers certain edge cases such as browser refresh
     before_action :validate_state, only: [:edit, :update]
@@ -23,39 +22,15 @@ module DatashiftJourney
     end
 
     def create
-      # TOFIX - Validation from params is broken
+      # TOFIX - Validation from params is now broken
       # NoMethodError (undefined method `each_with_index' for #<ActionController::Parameters:0x000055eacfa2c370>):
-      # 16:50:36 web.1       | representable (3.0.4) lib/representable/pipeline.rb:38:in `call'
-      result = true
-      #result = form.validate(params)
-      #logger.debug("VALIDATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
-
-      #redirect_to(form.redirection_url) && return if form.redirect?
-
+      # result = form.validate(params)
+      # logger.debug("VALIDATION FAILED - Form Errors [#{form.errors.inspect}]") unless result
       journey_plan = journey_plan_class.new
 
-      form_params = params.fetch(@reform.params_key, {})
+      form_fields_to_data_nodes
 
-      form_params["data_nodes"] # =>{"form_field"=>{"0"=>"name", "1"=>"namespace"}, "field_value"=>{"0"=>"dfsdf", "1"=>"ghfghf"}}}
-
-      fields = form_params["data_nodes"]["form_field"]
-      values = form_params["data_nodes"]["field_value"]
-
-      fields.each do |idx, name|
-        ff = Collector::FormField.where(name: name, form_definition: @reform.definition).first
-        next unless ff
-        Collector::DataNode.find_or_create_by!(plan: journey_plan, form_field: ff) do |node|
-          node.field_value = values[idx]
-        end
-      end
-
-      #if result && form.save
-      logger.debug("CREATED Plan [#{journey_plan.inspect}] - Move to Next")
-      puts journey_plan.inspect
       move_next(journey_plan)
-      # else
-      #  render :new, locals: { journey_plan: form.journey_plan, form: form }
-      # end
     end
 
     def back_a_state
@@ -84,10 +59,7 @@ module DatashiftJourney
     end
 
     def update
-      # form = FormObjectFactory.form_object_for(journey_plan)
-      #
-      # logger.debug("UPDATE - CALLING VALIDATE ON Form #{form.class}")
-      #
+
       # result = form.validate(params)
       #
       # redirect_to(form.redirection_url) && return if form.redirect?
@@ -101,22 +73,8 @@ module DatashiftJourney
       #
       #   render :edit, locals: { journey_plan: journey_plan, form: form }
       # end
-      form_params = params.fetch(@reform.params_key, {})
 
-      data_nodes = form_params["data_nodes"] # =>{"form_field"=>{"0"=>"name", "1"=>"namespace"}, "field_value"=>{"0"=>"dfsdf", "1"=>"ghfghf"}}}
-
-      if data_nodes.present?
-        fields = form_params["data_nodes"]["form_field"]
-        values = form_params["data_nodes"]["field_value"]
-
-        fields.each do |idx, name|
-          ff = Collector::FormField.where(name: name, form_definition: @reform.definition).first
-          next unless ff
-          Collector::DataNode.find_or_create_by!(plan: journey_plan, form_field: ff) do |node|
-            node.field_value = values[idx]
-          end
-        end
-      end
+      form_fields_to_data_nodes
 
       logger.debug("UPDATED Plan [#{journey_plan.inspect}] - Move to Next")
       puts journey_plan.inspect
@@ -124,10 +82,36 @@ module DatashiftJourney
       move_next(journey_plan) && return
     end # UPDATE
 
+    def form_fields_to_data_nodes
+      form_params = params.fetch(@reform.params_key, {})
+
+      data_nodes = form_params["data_nodes"] # =>{"form_field"=>{"0"=>"name", "1"=>"namespace"}, "field_value"=>{"0"=>"dfsdf", "1"=>"ghfghf"}}}
+
+      if data_nodes.present?
+
+        fields = data_nodes["form_field"]
+        values = data_nodes["field_value"]
+
+        fields.each do |idx, name|
+          ff = Collector::FormField.where(name: name, form_definition: @reform.definition).first
+          next unless ff
+
+          # Ensure when user goes back and changes a value we reflect the changed value
+          Collector::DataNode.find_or_initialize_by(plan: journey_plan, form_field: ff).tap do |node|
+            node.field_value = values[idx]
+            node.save
+          end
+
+        end
+      end
+    end
+
     private
 
     def move_next(journey_plan)
       journey_plan.reload
+
+      redirect_to(@reform.redirection_url) && return if @reform.redirect?
 
       if journey_plan.next_state_name.blank?
         logger.error("JOURNEY ENDED - no next transition - rendering 'journey_end'")
@@ -135,21 +119,15 @@ module DatashiftJourney
       end
 
       # if there is no next event, state_machine dynamic helper can_next? not available
-      unless journey_plan.respond_to?('can_skip_fwd?')
+      unless journey_plan.respond_to?('can_skip_fwd?') && journey_plan.can_skip_fwd?
         logger.error("JOURNEY Cannot proceed - no next transition - rendering 'journey_end'")
         redirect_to(datashift_journey.journey_end_path(journey_plan)) && return
       end
 
-      if journey_plan.can_skip_fwd?
-        logger.error("JOURNEY Can proceed - transitioning to next event'")
-        pp journey_plan.state
-        journey_plan.skip_fwd!
-        pp journey_plan.state
-      else
-        logger.error('JOURNEY Cannot Continue - not able to transition to next event')
-      end
+      journey_plan.skip_fwd!
 
-      pp journey_plan
+      logger.info("JOURNEY moved to next state - Current Plan :")
+      logger.info(journey_plan)
 
       redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
     end
@@ -163,6 +141,8 @@ module DatashiftJourney
 
       token = params[:id] || params[:journey_plan_id]
 
+      # TOFIX: Rails 6 probably has this inbuilt now and makes this much simpler - see ActiveSupport::MessageEncryptor, KeyGenerator
+      #
       # https://github.com/robertomiranda/has_secure_token
       # TODO: how to auto insert has_secure_token into the underlying journey plan model
       # and add in migration thats adds the token column

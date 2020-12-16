@@ -17,9 +17,7 @@ module DatashiftJourney
     end
 
     def tag(text = nil, html_opts = {})
-      if journey_plan && (current_request.path == journey_plan_reviewing_path)
-        content_tag(:br)
-      else
+      if journey_plan && (journey_plan.can_back?)
         title, url = link_arguments(text)
         link_to title, url, html_opts.merge(class: css || 'journey-plan-back-link')
       end

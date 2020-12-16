@@ -11,8 +11,4 @@
   <%= hidden_field_tag "rendered_state", local_assigns[:rendered_state] || state  %>
 
   <%= render_if_exists state, form: form, f: f, journey_plan: journey_plan %>
-
-  <%# if form.show_submit_button? %>
-      <%#= f.submit submit_button_text(form), class: "button journey_plans-submit-button"  %>
-  <%# end %>
 <% end %>

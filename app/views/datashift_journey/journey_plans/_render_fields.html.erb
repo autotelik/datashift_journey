@@ -1,11 +1,24 @@
-<% ids = form.definition.form_fields.map(&:id)  %>
+<% ids = form.definition.field_ids  %>
+
+<% key = form.params_key %>
 
 <% form.journey_plan.data_nodes.select { |dn| ids.include?(dn.form_field_id)  }.sort.each_with_index do |data_node, i| %>
   <%= f.fields_for :data_nodes, data_node do |a| %>
+
+    <% name = data_node.form_field.name %>
+
     <div class="form-group">
-      <%= a.label data_node.form_field.name %>
-      <%= hidden_field_tag "deployment[data_nodes][form_field][#{i}]", data_node.form_field.name %>
-      <%= text_field_tag "deployment[data_nodes][field_value][#{i}]", data_node.field_value, size: "64", class: "form-control", required: true %>
+      <%= a.label name %>
+      <%= hidden_field_tag "#{key}[data_nodes][form_field][#{i}]", name %>
+
+      <% if data_node.form_field.select_option? %>
+        <%= select_tag "#{key}[data_nodes][field_value][#{i}]", form.send("options_for_select_#{name}"),  { class: 'form-control', required: true } %>
+      <% elsif data_node.form_field.number? %>
+        <%= number_field_tag "#{key}[data_nodes][field_value][#{i}]", data_node.field_value,  { class: 'form-control', required: true } %>
+      <% else %>
+        <%= text_field_tag "#{key}[data_nodes][field_value][#{i}]", data_node.field_value, size: "64", class: "form-control", required: true %>
+      <% end %>
+
     </div>
   <% end  %>
 <% end  %>

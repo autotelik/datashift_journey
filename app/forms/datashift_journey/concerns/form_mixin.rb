@@ -7,6 +7,9 @@ module DatashiftJourney
 
     extend ActiveSupport::Concern
 
+    # These forms are used to back Views so need to be able to prepare and present data for views
+    include ActionView::Helpers::FormOptionsHelper
+
     attr_reader :journey_plan
     attr_accessor :redirection_url
 
@@ -20,21 +23,23 @@ module DatashiftJourney
       !redirection_url.nil?
     end
 
-    # Default is to display a submit button - which essentially calls our Controller and
-    # moves the state forwards, if validate/save etc all pass
-    # Individual forms/views may want to over ride, e.g at journey's end or to use their own buttons
-    #
-    def show_submit_button?
-      true
-    end
-
     class_methods do
+
       def form_definition
         # In this situation self is the class of the including form eg PaymentForm, AddressFrom
         @form_definition ||= DatashiftJourney::Collector::FormDefinition.find_or_create_by!(klass: self.name)
       end
 
-      # TODO: define valid list of category
+      # Form helper to add fields inside a class definition
+      #
+      # N.B Currently this will create a permanent entry in the DB,
+      # so removing this code will not remove the Field - must be deleted from DB
+      #
+      # Usage
+      #
+      #   journey_plan_form_field name: :model_uri, category: :string
+      #   journey_plan_form_field name: :run_time,  category: :select_option
+      #   journey_plan_form_field name: :memory,    category: :number
       #
       def journey_plan_form_field(name:, category:)
         DatashiftJourney::Collector::FormField.find_or_create_by!(form_definition: form_definition, name: name,  category: category)
@@ -55,21 +60,5 @@ module DatashiftJourney
       @form_definition ||= self.class.form_definition
     end
 
-    # Class methods as used heavily from class method validation methods
-
-    class << self
-
-      def locale_key
-        name.underscore
-      end
-
-      # Scope for locales that initially matches view scope
-      def locale_errors
-        # When called from a derived class DerivedForm - self.class.name = Class but self.name = DerivedForm
-        "#{DatashiftJourney.journey_plan_class.name.tableize}.#{name.underscore}.errors"
-      end
-    end
-
   end
-
 end

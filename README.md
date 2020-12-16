@@ -65,7 +65,7 @@ Inside the initializer you can change which model to use as the plan and set var
      
 ### Defining the Journey Plan
 
-A skeleton journey definition is added to the concern of the plan model.
+A skeleton journey definition is added as a comment seciton to the plan model.
 
 In here you defines the steps of the apps journey and set the initial step.
 
@@ -288,74 +288,32 @@ DatashiftJourney::Configuration.configure do |config|
 end
 ```
 
-Once the Form class has been identified the Controller will attempt to create the new form object
-passing in the current journey plan object.
-
-The visibility of the default continue or submit button is driven by the 'show_submit_button?`
-method on your Form. If you are deriving from DatashiftJourney::BaseForm this is already implemented
-to return true by default.
-
-Over ride and return false if you wish to **hide** the button.
-
-```ruby
- def show_submit_button?
-    false
- end
-```
-
 ### DatashiftJourney::Collector
 
-This option uses DatashiftJourney::Collector as the journey plan class, which stored  the data collected,
- from each state/page in  `collector_data_nodes`
+This option uses the journey plan class itself to store the data collected from each state/page in `data_nodes`
 
-This collection is a series of `DatashiftJourney::DataNode` objects.
+This collection is a series of `DatashiftJourney::Collector::DataNode` objects.
 
-When there's a single field on a page to collect, you can inherit from the BaseCollectorForm
+The generator will geneate a series of forms that inherit from `DatashiftJourney::Collector::BaseCollectorForm`
 and your state form becomes very simple, for example
 
 ```ruby
-class OtherBusinessesForm < DatashiftJourney::BaseCollectorForm
-
-  def params_key
-    :other_businesses
-  end
-
-  property :field_value
-
-  # basic validation - has field been filled in
-  validates :field_value, presence: true
-
+class ResourcesForm < ::BaseForm
+  journey_plan_form_field name: :namespace, category: :string
+  journey_plan_form_field name: :number_of_cpu, category: :number
+  journey_plan_form_field name: :memory, category: :number
 end
 ```
 
-Collected data will be stored as a `DatashiftJourney::DataNode` field name is the **underscore** name of the state
-for example given a state BusinessTypeForm, a From BusinessTypeForm, the field name is 'business_type'
+This will create field definitions, which can then be rendered automatically using the default views,
+and on submit, the data entered will be saved to the DB as a DataNode, one per field name
 
-For example
-
-```ruby
-DatashiftJourney::DataNode
-    id: 5,
-    form_name: "BusinessTypeForm",
-    field: "business_type",
-    field_presentation: "Business Type",
-    field_type: "string",
-    field_value: "sole_trader"
-```
-
-In Rails form tags within the viwe/partial, the object_name to use is 'field_value'
-
-For example, to select a single field from set of radio buttons :
-
-```ruby
-    <%= f.label :field_value, for: "registration_field_value_soletrader",  class: 'block-label' do %>
-      <%= f.radio_button :field_value, 'sole_trader' %>
-      <%= t '.sole_trader' %>
-    <% end %>
-    <%= f.label :field_value, for: "registration_field_value_partnership",  class: 'block-label' do %>
-      <%= f.radio_button :field_value, 'partnership' %>
-      <%= t '.partnership' %>
-    <% end %>
+```JSON
+DataNode: {
+    "id":8, 
+    "form_field_id": 1,
+    "field_value": "My New Namespace"
+  }
 ```
 
 ### Routes
