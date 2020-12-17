@@ -45,6 +45,33 @@ module DatashiftJourney
 
       end
 
+      def save(params)
+        form_params = params.fetch(params_key, {})
+
+        data_nodes = form_params["data_nodes"] # =>{"form_field"=>{"0"=>"name", "1"=>"namespace"}, "field_value"=>{"0"=>"dfsdf", "1"=>"ghfghf"}}}
+
+        if data_nodes.present?
+
+          fields = data_nodes["form_field"]
+          values = data_nodes["field_value"]
+
+          fields.each do |idx, name|
+            ff = Collector::FormField.where(name: name, form_definition: definition).first
+            next unless ff
+
+            # Ensure when user goes back and changes a value we reflect the changed value
+
+            pp journey_plan
+
+            Collector::DataNode.find_or_initialize_by(plan: journey_plan, form_field: ff).tap do |node|
+              node.field_value = values[idx]
+              node.save
+            end
+
+          end
+        end
+      end
+
       # Over ride in your form if your view forms have non standard key field.
       #
       # The default naming format for form elements in the view is : "#{params_key}[data_nodes][field_value][#{i}]"

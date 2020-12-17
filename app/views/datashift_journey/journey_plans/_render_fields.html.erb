@@ -16,7 +16,7 @@
       <% elsif data_node.form_field.number? %>
         <%= number_field_tag "#{key}[data_nodes][field_value][#{i}]", data_node.field_value,  { class: 'form-control', required: true } %>
       <% else %>
-        <%= text_field_tag "#{key}[data_nodes][field_value][#{i}]", data_node.field_value, size: "64", class: "form-control", required: true %>
+        <%= text_field_tag "#{key}[data_nodes][field_value][#{i}]", data_node.field_value, { size: "64", class: "form-control", required: true } %>
       <% end %>
 
     </div>
