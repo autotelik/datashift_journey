@@ -2,6 +2,7 @@ begin
   require_relative 'exceptions'
   require_relative 'configuration'
   require_relative 'journey/machine_builder'
+  require_relative 'form_mixin'
 
   require_relative 'reference_generator'
   require_relative 'helpers/back_link'

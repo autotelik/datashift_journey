@@ -27,7 +27,12 @@ module DatashiftJourney
 
       def form_definition
         # In this situation self is the class of the including form eg PaymentForm, AddressFrom
-        @form_definition ||= DatashiftJourney::Collector::FormDefinition.find_or_create_by!(klass: self.name)
+        begin
+          @form_definition ||= DatashiftJourney::Collector::FormDefinition.find_or_create_by(klass: self.name)
+        rescue
+          Rails.logger.error "Could not find or create FormDefinition [#{x}]"
+          nil
+        end
       end
 
       # Form helper to add fields inside a class definition
@@ -42,7 +47,12 @@ module DatashiftJourney
       #   journey_plan_form_field name: :memory,    category: :number
       #
       def journey_plan_form_field(name:, category:)
+        begin
         DatashiftJourney::Collector::FormField.find_or_create_by!(form_definition: form_definition, name: name,  category: category)
+        rescue => x
+          Rails.logger.error "Could not find or create FormField [#{x}]"
+          nil
+        end
       end
     end
 

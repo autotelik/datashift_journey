@@ -1,5 +1,3 @@
-require_relative '../concerns/form_mixin'
-
 module DatashiftJourney
   module Collector
 
@@ -16,7 +14,7 @@ module DatashiftJourney
     #
     class BaseCollectorForm < Reform::Form
 
-      include DatashiftJourney::FormMixin
+      include ::DatashiftJourney::FormMixin
 
       feature Reform::Form::Dry # override the default.
 
