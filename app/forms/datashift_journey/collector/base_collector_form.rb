@@ -33,12 +33,20 @@ module DatashiftJourney
       #   journey_plan_form_field name: :memory,    category: :number
       #
       def self.journey_plan_form_field(name:, category:)
+        form_definition = begin
+                            DatashiftJourney::Collector::FormDefinition.find_or_create_by(klass: self.name)
+                          rescue
+                            Rails.logger.error "Could not find or create FormDefinition for Form [#{self.name}]"
+                            nil
+                          end
+
+        return nil unless form_definition.present?
+
         begin
-          form_definition = DatashiftJourney::Collector::FormDefinition.where(klass: self.name).first
           DatashiftJourney::Collector::FormField.find_or_create_by!(form_definition: form_definition, name: name,  category: category)
         rescue => x
           Rails.logger.error "Could not find or create FormField [#{x}]"
-          nil
+          return nil
         end
       end
 
