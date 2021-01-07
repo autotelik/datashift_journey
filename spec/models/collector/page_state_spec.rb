@@ -1,5 +1,6 @@
 require 'rails_helper'
 
+=begin
 module DatashiftJourney
   module Collector
     RSpec.describe PageState, type: :model do
@@ -28,3 +29,4 @@ module DatashiftJourney
     end
   end
 end
+=end

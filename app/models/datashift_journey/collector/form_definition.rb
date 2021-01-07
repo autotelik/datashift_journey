@@ -19,6 +19,16 @@ module DatashiftJourney
       validates_presence_of :state
       validates_uniqueness_of :state
 
+      # Data currently collected on a Plan for THIS Form
+      #
+      def data_nodes(journey_plan)
+        DatashiftJourney::Collector::DataNode.where(plan: journey_plan, form_field: form_fields)
+      end
+
+      def field_ids
+        form_fields.collect(&:id)
+      end
+
       private
 
       # N.B Validations are called BEFORE before_create or before_save

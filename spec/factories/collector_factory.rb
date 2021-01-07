@@ -1,3 +1,4 @@
+=begin
 FactoryGirl.define do
   factory :collector, class: DatashiftJourney::Collector::Collector do
     reference FFaker::Product.model
@@ -14,3 +15,4 @@ FactoryGirl.define do
     #     end
   end
 end
+=end

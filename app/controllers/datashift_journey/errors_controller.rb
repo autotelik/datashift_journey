@@ -1,7 +1,7 @@
 module DatashiftJourney
   class ErrorsController < ApplicationController
     def show
-      @exception = env['action_dispatch.exception']
+      @exception = request.env['action_dispatch.exception']
       action = request.path[1..-1].gsub(/[^0-9]/, '')
       action = 500 if action.blank?
 
@@ -10,7 +10,7 @@ module DatashiftJourney
           trace = Rails.backtrace_cleaner.clean(@exception.backtrace)
           Rails.logger.fatal trace.join("#\n")
 
-          ActionDispatch::ExceptionWrapper.new(env, @exception).status_code
+          ActionDispatch::ExceptionWrapper.new(request.env, @exception).status_code
         else
           action.to_i
         end

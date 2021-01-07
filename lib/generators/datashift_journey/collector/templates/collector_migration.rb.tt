@@ -1,4 +1,4 @@
-class DatashiftJourneyCreateCollector < ActiveRecord::Migration[<%= @migration_version %>]
+class DatashiftJourneyCreateCollector < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
 
   # rubocop:disable Metrics/MethodLength
 
@@ -13,10 +13,12 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration[<%= @migration_v
     create_table :dsj_form_fields do |t|
       t.references :form_definition, index: true, null: false
       t.string     :name, index: true,  null: false, limit: 100
-      t.string     :category, index: true, null: false
-      t.text       :presentation
+      t.integer    :category, index: true, null: false
+      t.jsonb      :options, null: false, default: {}
       t.timestamps null: false
     end
+
+    add_index :dsj_form_fields, :options, using: :gin   # see GIN vs GiST
 
     # The plan is an instance of a JourneyPlan class
     create_table :dsj_data_nodes do |t|

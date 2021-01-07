@@ -1,30 +1,28 @@
-class DatashiftJourneyCreateCollector < ActiveRecord::Migration
+class DatashiftJourneyCreateCollector < ActiveRecord::Migration[6.1]
+
+  # rubocop:disable Metrics/MethodLength
+
   def change
 
-    # The Container - one per journey - in most situations this would belong to a user account
-    # of person logged in and taking journey
-
-    create_table :dsj_collectors do |t|
+    create_table :dsj_form_definitions do |t|
       t.string :state, index: true, null: false
-      t.string :reference, index: true, unique: true, null: false
-      t.timestamps null: false
-    end
-
-    create_table :dsj_page_states do |t|
-      t.string :form_name,    index: true,  null: false
+      t.string :klass, index: true, null: false
       t.timestamps null: false
     end
 
     create_table :dsj_form_fields do |t|
-      t.references :page_state,  index: true,  null: false
-      t.string     :field, index: true,  null: false, :limit => 100
-      t.string     :field_type,          null: false
-      t.string     :field_presentation,  limit: 100
+      t.references :form_definition, index: true, null: false
+      t.string     :name, index: true,  null: false, limit: 100
+      t.integer    :category, index: true, null: false
+      t.jsonb      :options, null: false, default: {}
       t.timestamps null: false
     end
 
-    create_table :dsj_collectors_data_nodes do |t|
-      t.references  :collector,  null: false
+    add_index :dsj_form_fields, :options, using: :gin   # see GIN vs GiST
+
+    # The plan is an instance of a JourneyPlan class
+    create_table :dsj_data_nodes do |t|
+      t.references  :plan,  null: false, polymorphic: true
       t.references  :form_field, null: false
       t.text        :field_value
       t.timestamps  null: false
@@ -36,8 +34,8 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
       t.timestamps  null: false
     end
 
-    create_table :dsj_page_states_snippets do |t|
-      t.references  :page_state, null: false
+    create_table :dsj_forms_snippets do |t|
+      t.references  :form_model, null: false
       t.references  :snippet, null: false
     end
 
@@ -45,12 +43,6 @@ class DatashiftJourneyCreateCollector < ActiveRecord::Migration
       t.references  :form_field, null: false
       t.references  :snippet, null: false
     end
-
-
-    add_foreign_key :collectors_data_nodes, :dsj_collectors, column: :form_field_id
-
-    add_index :dsj_collectors_data_nodes, [:collector_id, :form_field_id], unique: true,
-              name: 'collectors_data_nodes_collector_id_form_field_id'
 
   end
 end

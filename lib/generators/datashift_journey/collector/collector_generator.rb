@@ -17,14 +17,8 @@ module DatashiftJourney
 
       migration_template 'collector_migration.rb', 'db/migrate/datashift_journey_create_collector.rb'#, migration_version: migration_version
 
-      code = <<-EOS
-  has_many :data_nodes, class_name: 'DatashiftJourney::Collector::DataNode', as: :plan, foreign_key: :plan_id, dependent: :destroy
-  accepts_nested_attributes_for :data_nodes
-
-EOS
-
       inject_into_file model_path, :after => /class.* < ApplicationRecord/ do
-        "\n#{code}"
+        "\ninclude DatashiftJourney::Collector::PlanConcern"
       end
 
       route(%(

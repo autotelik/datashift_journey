@@ -10,6 +10,10 @@ module DatashiftJourney
 
     def show
       logger.info('User has abandoned')
+
+      # high voltage expects  id => name of page
+      # params[:id] = params['page']
+
       super
     end
   end

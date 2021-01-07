@@ -9,12 +9,12 @@ module DatashiftJourney
     # and this is easier than trying to manage diff state machines in one class
 
     class Checkout < ActiveRecord::Base
-      belongs_to :bill_address, class_name: 'Address'
-      belongs_to :ship_address, class_name: 'Address'
-      belongs_to :payment
+      belongs_to :bill_address, class_name: 'Address', required: false
+      belongs_to :ship_address, class_name: 'Address', required: false
+      belongs_to :payment, required: false
 
       def payment_card
-        payment.present? ? payment.card : ''
+        payment.try(:card)
       end
     end
 
@@ -81,13 +81,13 @@ module DatashiftJourney
             expect(checkout.page4?).to eq false
 
             # SO StateMachines::PathCollection seems to map related transitions together, and
-            # progressively, so by the last it reports all 6 possible transitions (back/next )
+            # progressively, so by the last it reports all 6 possible transitions (back/skip_fwd )
             # not sure based on what yet
             expect(checkout.checkout_a_paths.last.size).to eq 6
 
             # events is a StateMachines::EventCollection
             # puts CheckoutA.state_machines[:checkout_a].events.each{|e| puts e.inspect }
-            expect(CheckoutA.state_machines[:checkout_a].events.keys.sort).to eq [:back, :next]
+            expect(CheckoutA.state_machines[:checkout_a].events.keys.sort).to eq [:back, :skip_fwd]
 
             # puts CheckoutA.state_machines[:checkout_a].events[:back].known_states.inspect
             expect(
@@ -105,8 +105,8 @@ module DatashiftJourney
             expect(checkout.checkout_a_transitions.size).to eq 1
 
             expect(checkout.can_back?).to eq false
-            expect(checkout.can_next?).to eq true
-            checkout.next!
+            expect(checkout.can_skip_fwd?).to eq true
+            checkout.skip_fwd!
 
             # puts checkout.methods.sort.grep( /trans/ ).inspect
 
@@ -115,7 +115,7 @@ module DatashiftJourney
             expect(checkout.checkout_a_transitions.size).to eq 2
 
             expect(checkout.can_back?).to eq true
-            expect(checkout.can_next?).to eq true
+            expect(checkout.can_skip_fwd?).to eq true
           end
         end
 
@@ -153,13 +153,13 @@ module DatashiftJourney
             expect(checkout.array2?).to eq false
 
             expect(checkout.can_back?).to eq false
-            expect(checkout.can_next?).to eq true
-            checkout.next!
+            expect(checkout.can_skip_fwd?).to eq true
+            checkout.skip_fwd!
             expect(checkout.can_back?).to eq true
-            expect(checkout.can_next?).to eq true
-            checkout.next!
+            expect(checkout.can_skip_fwd?).to eq true
+            checkout.skip_fwd!
             expect(checkout.can_back?).to eq true
-            expect(checkout.can_next?).to eq false
+            expect(checkout.can_skip_fwd?).to eq false
           end
         end
 
@@ -204,14 +204,16 @@ module DatashiftJourney
 
             expect(checkout.state?(:ship_address)).to eq true
             expect(checkout.can_back?).to eq false # this is the initial state
-            expect(checkout.can_next?).to eq true
-            checkout.next!
+            expect(checkout.can_skip_fwd?).to eq true
+            checkout.skip_fwd!
 
-            expect_state_canback_cannext_and_next!(checkout, :bill_address)
+            expect(checkout).to match_state_can_back_and_fwd(:bill_address)
+            checkout.skip_fwd!
 
-            expect_state_matches(checkout, :payment)
+            expect(checkout).to match_state(:payment)
+
             # But non of the conditions to move on from payment have been met yet so cannot next
-            expect(checkout.can_next?).to eq false
+            expect(checkout.can_skip_fwd?).to eq false
             expect(checkout.can_back?).to eq true
 
             # TODO: - should we also create an Event per state ?
@@ -221,30 +223,35 @@ module DatashiftJourney
             checkout.create_payment!(card: :mastercard)
 
             # now the conditions should have been met - one block (mastercard_page) should match payment_card value
-            expect(checkout.can_next?).to eq true
-            checkout.next!
+            expect(checkout.can_skip_fwd?).to eq true
+            checkout.skip_fwd!
 
-            expect_state_canback_cannext_and_next!(checkout, :page_mastercard_1)
-            expect_state_canback_cannext_and_next!(checkout, :page_mastercard_2)
-            expect_state_canback_cannext_and_next!(checkout, :page_mastercard_3)
+            expect(checkout).to match_state_can_back_and_fwd(:page_mastercard_1)
+            checkout.skip_fwd!
+            expect(checkout).to match_state_can_back_and_fwd(:page_mastercard_2)
+            checkout.skip_fwd!
+            expect(checkout).to match_state_can_back_and_fwd(:page_mastercard_3)
+            checkout.skip_fwd!
 
-            expect_state_matches(checkout, :review)
+            expect(checkout).to match_state(:review)
 
-            expect(checkout.can_next?).to eq true
+            expect(checkout.can_skip_fwd?).to eq true
 
             # We should go back based on same conditions
             expect(checkout.can_back?).to eq true
             checkout.back!
 
-            expect_state_canback_cannext_and_next!(checkout, :page_mastercard_3)
+            expect(checkout).to match_state_can_back_and_fwd(:page_mastercard_3)
+            checkout.skip_fwd!
 
-            expect_state_matches(checkout, :review)
+            expect(checkout).to match_state(:review)
 
-            checkout.next!
+            checkout.skip_fwd!
 
-            expect_state_matches(checkout, :complete)
+            expect(checkout).to match_state(:complete)
+
             # End point so no next
-            expect(checkout.can_next?).to eq false
+            expect(checkout.can_skip_fwd?).to eq false
             expect(checkout.can_back?).to eq true
 
             # TODO: Implement BACK with event transitions - reverse criteria of the start of split next
@@ -252,14 +259,14 @@ module DatashiftJourney
             # Now go all way back to split point and try another path
             #             checkout.back until(!checkout.can_back? || checkout.payment?)
             #
-            #             expect_state_matches( checkout, :payment )
+            #             expect(checkout).to match_state(:payment)
             #
             #             checkout.payment.update(card: :paypal)
             #
-            #             checkout.next!
+            #             checkout.skip_fwd!
             #
-            #             check_state_and_next!(checkout, :paypal_page )
-            #             check_state_and_next!(checkout, :review )
+            #             check_state_and_skip_fwd!(checkout, :paypal_page )
+            #             check_state_and_skip_fwd!(checkout, :review )
           end
         end
       end

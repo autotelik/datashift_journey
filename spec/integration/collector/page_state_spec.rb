@@ -1,3 +1,4 @@
+=begin
 require 'rails_helper'
 require 'swagger_helper'
 
@@ -43,3 +44,4 @@ module DatashiftJourney
 
   end
 end
+=end

@@ -14,15 +14,16 @@ StateMachines::Machine.class_eval do
   end
 
   def create_pairs(sequence)
+    #puts "DEBUG: Create Pairs - PROCESS #{sequence} "
     create_back_transitions sequence
     create_next_transitions sequence
   end
 
-  def create_back(from, to)
-    raise "Bad transitions supplied for Back - FROM #{from} - TO #{to}" if from.nil? || to.nil?
+  def create_back(from, to, &block)
+    #raise "Bad transitions supplied for Back - FROM #{from} - TO #{to}" if from.nil? || to.nil?
     if block_given?
-      #puts "DEBUG: Creating BACK transition from #{from} to #{to} with Block"
-      transition(from => to, on: :back, if: yield)
+      #puts "DEBUG: Creating BACK transition from #{from} to #{to} with Block from:\n#{caller.first}"
+      transition(from => to, on: :back, if: block.call)
     else
       #puts "DEBUG: Creating BACK transition from #{from} to #{to}"
       transition(from => to, on: :back)
@@ -36,11 +37,11 @@ StateMachines::Machine.class_eval do
   #   vehicle.skip_fwd?                 # => true
   #   vehicle.can_skip_fwd?             # => true
   #
-  def create_next(from, to)
+  def create_next(from, to, &block)
     raise "Bad transitions supplied for Next - FROM #{from} - TO #{to}" if from.nil? || to.nil?
     if block_given?
-      #puts "DEBUG: Creating NEXT transition from #{from} to #{to} with Block "
-      transition(from => to, on: :skip_fwd, if: yield)
+      #puts "DEBUG: Creating NEXT transition from #{from} to #{to} with Block from:\n#{caller.first}"
+      transition(from => to, on: :skip_fwd, if: block.call)
     else
       #puts "DEBUG: Creating NEXT transition from #{from} to #{to}"
       transition(from => to, on: :skip_fwd)
@@ -52,6 +53,7 @@ StateMachines::Machine.class_eval do
   # You can exclude any other steps with the except list
   #
   def create_back_transitions(journey, except = [])
+    # puts "DEBUG: Creating BACK transitions for #{journey.inspect}"
     journey.drop(1).each_with_index do |t, i|
       next if except.include?(t)
       create_back(t, journey[i]) # n.b previous index is actually i not (i-1) due to the drop
@@ -62,7 +64,6 @@ StateMachines::Machine.class_eval do
   # You can exclude  any other steps with the except list
   #
   def create_next_transitions(journey, except = [])
-
     #puts "DEBUG: Creating NEXT transitions for #{journey.inspect}"
     journey[0...-1].each_with_index do |t, i|
       next if except.include?(t)

@@ -40,3 +40,5 @@ spec/dummy/app/views
 
 #  however we do need the spec/dummy env for travis
 !spec/dummy/.env
+
+datashift_journey-*.gem

@@ -20,7 +20,10 @@ module DatashiftJourney
       generator_instance = self
 
       host.class_eval do
-        validates(:reference, presence: true, uniqueness: { allow_blank: true })
+        #validates(:reference, presence: true, uniqueness: { allow_blank: true })
+
+        validates_presence_of :reference
+        validates_uniqueness_of :reference
 
         before_validation do |instance|
           instance.reference ||= generator_method.call(host)
