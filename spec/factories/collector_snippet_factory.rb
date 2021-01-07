@@ -1,3 +1,4 @@
+=begin
 FactoryGirl.define do
   factory :snippet, class: DatashiftJourney::Collector::Snippet do
     raw_text { FFaker::Lorem.sentence }
@@ -7,3 +8,4 @@ FactoryGirl.define do
     I18n_key :rspec_snippet_text
   end
 end
+=end

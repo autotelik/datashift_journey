@@ -1,27 +1,24 @@
-RSpec.configure do |_config|
-  # Set of standard checks
-  #
-  #   Is our current state == expected_state
-  #
-  def expect_state_matches(journey, expected_state, message = nil)
-    expect(journey.state_name).to eq(expected_state), message
-    expect(journey.state).to eq(expected_state.to_s), message
-    expect(journey.state?(expected_state)).to eq(true), message
+require 'rspec/expectations'
+
+RSpec::Matchers.define :match_state do |expected|
+  match do |plan|
+    expect(plan.state_name.to_s).to eq(expected.to_s)
+    expect(plan.state).to eq(expected.to_s)
+    expect(plan.state?(expected)).to eq(true)
   end
+end
 
-  # Set of standard checks
-  #
-  #   Is our current state == expected_state
-  #   We can transition to back
-  #   We can transition to next
-  #   Fire next
-  #
-  def expect_state_canback_cannext_and_next!(journey, expected_state, message = nil)
-    expect_state_matches(journey, expected_state, message)
+RSpec::Matchers.define :match_state_can_back_and_fwd do |expected|
+  match do |plan|
+    expect(plan.state_name.to_s).to eq(expected.to_s)
+    expect(plan.can_back?).to eq(true), 'Expected can_back?  to be true'
+    expect(plan.can_skip_fwd?).to eq(true), 'Expected can_skip_fwd?  to be true'
+  end
+end
 
-    expect(journey.can_back?).to eq(true), 'Expected can_back?  to be true'
-    expect(journey.can_next?).to eq(true), 'Expected can_next?  to be true'
-
-    journey.next!
+RSpec::Matchers.define :match_state_can_back do |expected|
+  match do |plan|
+    expect(plan.state_name.to_s).to eq(expected.to_s)
+    expect(plan.can_back?).to eq(true), 'Expected can_back?  to be true'
   end
 end

@@ -11,12 +11,28 @@
       <%= a.label name %>
       <%= hidden_field_tag "#{key}[data_nodes][form_field][#{i}]", name %>
 
+      <% element = "#{key}[data_nodes][field_value][#{i}]"  %>
+
       <% if data_node.form_field.select_option? %>
-        <%= select_tag "#{key}[data_nodes][field_value][#{i}]", form.send("options_for_select_#{name}"),  { class: 'form-control', required: true } %>
+        <%= select_tag element, form.send("options_for_select_#{name}"),  { class: 'form-control', required: true } %>
+
+      <% elsif data_node.form_field.radio_button? %>
+
+        <% form.send("radio_button_values_#{name}").each do |v|  %>
+          <div class="form-check">
+            <%= radio_button_tag element, v, false, { class: 'form-check-input', required: true } %>
+            <label class="form-check-label">
+              <strong><%= v.to_s.humanize %></strong>
+            </label>
+          </div>
+        <% end if form.respond_to?("radio_button_values_#{name}") %>
+
       <% elsif data_node.form_field.number? %>
-        <%= number_field_tag "#{key}[data_nodes][field_value][#{i}]", data_node.field_value,  { class: 'form-control', required: true } %>
+        <%= number_field_tag element, data_node.field_value,  { class: 'form-control', required: true } %>
+
       <% else %>
-        <%= text_field_tag "#{key}[data_nodes][field_value][#{i}]", data_node.field_value, { size: "64", class: "form-control", required: true } %>
+        <%= text_field_tag element, data_node.field_value, { size: "64", class: "form-control", required: true } %>
+
       <% end %>
 
     </div>

@@ -38,8 +38,8 @@ module DatashiftJourney
       #         @run_times ||= %w[PyTorch TensorFlow TensorRT]
       #       end
       #
-      enum category: [:string, :select_option, :text_area, :number, :date ]
-      #  :check_box, :radio_button, password range date time datetime_local month week search email telephone url color }
+      enum category: [:string, :select_option, :text_area, :number, :date, :radio_button ]
+      #  :check_box, , password range date time datetime_local month week search email telephone url color }
 
       scope :for_form_and_field, ->(form_name, field_name) {
         page_state = DatashiftJourney::Collector::FormDefinition.where('state = ?', form_name).first

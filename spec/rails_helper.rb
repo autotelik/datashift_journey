@@ -1,9 +1,18 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
-ENV['RAILS_ENV'] ||= 'test'
 require 'spec_helper'
+ENV['RAILS_ENV'] ||= 'test'
+require File.expand_path('./dummy/config/environment', __dir__)
 
-# Load support files
-Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each { |f| require f }
+# Prevent database truncation if the environment is production
+abort('The Rails environment is running in production mode!') if Rails.env.production?
+
+require 'rspec/rails'
+
+require 'factory_bot_rails'
+# pp FactoryBot.definition_file_paths.inspect
+# pp FactoryBot.factories.collect(&:name).inspect
+
+Dir[DatashiftJourney::Engine.root.join('spec', 'support', '**', '*.rb')].each { |f| require f }
 
 RSpec.configure do |config|
   StateMachines::Machine.ignore_method_conflicts = true
@@ -25,7 +34,7 @@ RSpec.configure do |config|
   # https://relishapp.com/rspec/rspec-rails/docs
   config.infer_spec_type_from_file_location!
 
-  config.include FactoryGirl::Syntax::Methods
+  config.include FactoryBot::Syntax::Methods
 
   ActiveRecord::Migration.maintain_test_schema!
 
@@ -63,11 +72,4 @@ RSpec.configure do |config|
 
   # Enables shortcut, t() instead of I18n.t() in tests
   config.include AbstractController::Translation
-end
-
-Shoulda::Matchers.configure do |config|
-  config.integrate do |with|
-    with.test_framework :rspec
-    with.library :rails
-  end
 end

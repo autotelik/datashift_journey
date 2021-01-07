@@ -32,33 +32,34 @@ module DatashiftJourney
             # First branch
             journey.new_or_renew_value = 'new'
 
-            expect_state_matches(journey, :new_or_renew)
+            expect(journey).to match_state(:new_or_renew)
             expect(journey.can_back?).to eq false # this is the initial state
-            expect(journey.can_next?).to eq true
-            journey.next!
+            expect(journey.can_skip_fwd?).to eq true
+            journey.skip_fwd!
 
-            expect_state_matches(journey, :new_sequence_start_page)
+            expect(journey).to match_state(:new_sequence_start_page)
+
             expect(journey.can_back?).to eq true
-            expect(journey.can_next?).to eq false # the end
+            expect(journey.can_skip_fwd?).to eq false # the end
 
             journey.back!
-            expect_state_matches(journey, :new_or_renew)
+            expect(journey).to match_state(:new_or_renew)
 
             # Other branch
             journey = DatashiftJourney.journey_plan_class.new
 
             journey.new_or_renew_value = 'renew'
 
-            expect_state_matches(journey, :new_or_renew)
+            expect(journey).to match_state(:new_or_renew)
             expect(journey.can_back?).to eq false # this is the initial state
-            expect(journey.can_next?).to eq true
-            journey.next!
+            expect(journey.can_skip_fwd?).to eq true
+            journey.skip_fwd!
 
-            expect_state_canback_cannext_and_next!(journey, :renew_sequence_start_page)
+            expect(journey).to match_state_can_back_and_fwd(:renew_sequence_start_page)
+            expect(journey).to match_state(:enter_reg_number)
 
-            expect_state_matches(journey, :enter_reg_number)
             expect(journey.can_back?).to eq true
-            expect(journey.can_next?).to eq false # the end
+            expect(journey.can_skip_fwd?).to eq false # the end
           end
         end
 
@@ -98,30 +99,30 @@ module DatashiftJourney
           # First branch
           journey.new_or_renew_value = 'new'
 
-          expect_state_matches(journey, :new_or_renew)
+          expect(journey).to match_state(:new_or_renew)
           expect(journey.can_back?).to eq false # this is the initial state
 
           # new sequence is empty - use case where we just stored the split value and moved onto next sequence
           # which is :business_type
-          expect(journey.can_next?).to eq true
+          expect(journey.can_skip_fwd?).to eq true
 
-          journey.next!
+          journey.skip_fwd!
 
-          expect_state_matches(journey, :business_type)
+          expect(journey).to match_state(:business_type)
           expect(journey.can_back?).to eq true
 
           # We don't yet have a valid value for business_type_value so should not be able to proceed
-          expect(journey.can_next?).to eq false
+          expect(journey.can_skip_fwd?).to eq false
 
           journey.business_type_value = 'partnership'
 
-          expect(journey.can_next?).to eq true
+          expect(journey.can_skip_fwd?).to eq true
 
-          journey.next!
+          journey.skip_fwd!
 
-          expect_state_matches(journey, :partnership_start)
+          expect(journey).to match_state(:partnership_start)
           expect(journey.can_back?).to eq true
-          expect(journey.can_next?).to eq false
+          expect(journey.can_skip_fwd?).to eq false
         end
       end
     end

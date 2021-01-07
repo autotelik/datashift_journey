@@ -100,7 +100,7 @@ module DatashiftJourney
       journey_plan.skip_fwd!
 
       logger.info("JOURNEY moved to next state - Current Plan :")
-      logger.info(journey_plan)
+      logger.info(journey_plan.inspect)
 
       redirect_to(datashift_journey.journey_plan_state_path(journey_plan.state, journey_plan)) && return
     end
@@ -131,6 +131,7 @@ module DatashiftJourney
       journey_plan = token ? journey_plan_class.find(token) : journey_plan_class.new
       @reform = FormObjectFactory.form_object_for(journey_plan)
 
+      puts "DEBUG - set_reform_object - Created #{@reform} Form"
       @journey_plan = @reform.journey_plan
     end
 

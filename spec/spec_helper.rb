@@ -1,34 +1,31 @@
-ENV['RAILS_ENV'] ||= 'test'
-
-require File.expand_path("../dummy/config/environment.rb",  __FILE__)
-
-require "simplecov"
-
-SimpleCov.start do
-  add_filter "spec/factories"
-  add_filter "spec/dummy"
-  add_filter "app"
-end
-
-require 'rspec/rails'
-require 'factory_girl_rails'
-require 'capybara/rails'
-require 'capybara/rspec'
-require 'shoulda-matchers'
-require "shoulda/matchers"
-
-Rails.backtrace_cleaner.remove_silencers!
-
-# Load our Engine
-require File.expand_path("../../lib/datashift_journey",  __FILE__)
-
 RSpec.configure do |config|
 
-  config.mock_with :rspec
-  config.use_transactional_fixtures = true
-  config.infer_base_class_for_anonymous_controllers = false
+  config.expect_with :rspec do |expectations|
+    # This option will default to `true` in RSpec 4. It makes the `description`
+    # and `failure_message` of custom matchers include text for helper methods
+    # defined using `chain`, e.g.:
+    #     be_bigger_than(2).and_smaller_than(4).description
+    #     # => "be bigger than 2 and smaller than 4"
+    # ...rather than:
+    #     # => "be bigger than 2"
+    expectations.include_chain_clauses_in_custom_matcher_descriptions = true
+  end
 
-  config.include FactoryGirl::Syntax::Methods
+  # rspec-mocks config goes here. You can use an alternate test double
+  # library (such as bogus or mocha) by changing the `mock_with` option here.
+  config.mock_with :rspec do |mocks|
+    # Prevents you from mocking or stubbing a method that does not exist on
+    # a real object. This is generally recommended, and will default to
+    # `true` in RSpec 4.
+    mocks.verify_partial_doubles = true
+  end
+
+  # This option will default to `:apply_to_host_groups` in RSpec 4 (and will
+  # have no way to turn it off -- the option exists only for backwards
+  # compatibility in RSpec 3). It causes shared context metadata to be
+  # inherited by the metadata hash of host groups and examples, rather than
+  # triggering implicit auto-inclusion in groups with matching metadata.
+  config.shared_context_metadata_behavior = :apply_to_host_groups
 
   config.filter_run :focus
   config.run_all_when_everything_filtered = true
@@ -45,19 +42,4 @@ RSpec.configure do |config|
     puts response.body
   end
 
-end
-
-# Decorate model with helper methods required for BRANCHING in Test journey plans
-
-DatashiftJourney::Collector::Collector.class_eval do
-  def construction_demolition_value
-    'yes'
-  end
-
-  def registration_type_value
-    # carrier_dealer_sequence:
-    'carrier_dealer'
-    # broker_dealer_sequence: 'broker_dealer',
-    # carrier_broker_dealer_sequence: 'carrier_broker_dealer')
-  end
 end

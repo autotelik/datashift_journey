@@ -1,3 +1,4 @@
+=begin
 require 'rails_helper'
 
 module DatashiftJourney
@@ -83,3 +84,5 @@ module DatashiftJourney
     end
   end
 end
+
+=end

@@ -1,4 +1,4 @@
-class DatashiftJourneyCreateCollector < ActiveRecord::Migration[<%= @migration_version %>]
+class DatashiftJourneyCreateCollector < ActiveRecord::Migration[<%= ActiveRecord::Migration.current_version %>]
 
   # rubocop:disable Metrics/MethodLength
 

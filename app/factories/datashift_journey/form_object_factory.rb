@@ -15,6 +15,8 @@ module DatashiftJourney
         raise(FormObjectError, "Failed to load form class #{form_name(journey_plan.state)} for state #{journey_plan.state}") unless klass
 
         # Create new instance of form for current journey instance
+
+        puts "DEBUG - Create #{klass} Form Object for #{journey_plan.state}"
         klass.new(journey_plan)
       end
 

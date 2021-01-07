@@ -7,7 +7,7 @@ module DatashiftJourney
     class StateList
       extend Forwardable
 
-      def_delegators :@states, :each, :clear, :each_with_index, :[], :<<, :<=>, :<<, :==, :[], :[]=
+      def_delegators :@states, :each, :clear, :each_with_index, :size, :slice, :[], :<<, :<=>, :<<, :==, :[], :[]=
 
       def initialize
         @states = []
