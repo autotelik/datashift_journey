@@ -62,14 +62,19 @@ module DatashiftJourney
 
         @journey_plan = journey_plan
 
-        @definition = DatashiftJourney::Collector::FormDefinition.where(klass: self.class.name).first
+        @definition = begin
+                        DatashiftJourney::Collector::FormDefinition.find_or_create_by(klass: self.class.name)
+                      rescue
+                        Rails.logger.error "Could not find or create FormDefinition for Form [#{self.name}]"
+                        nil
+                      end
 
         # For brand new forms, add one data node per form field - data nodes hold the COLLECTED VALUES
         # If this page already been visited we should have a completed data node already
         definition.form_fields.map(&:id).each do |id|
           next if journey_plan.data_nodes.where('form_field_id = ?', id).exists?
           journey_plan.data_nodes << DatashiftJourney::Collector::DataNode.new(plan: journey_plan, form_field_id: id)
-        end
+        end if definition
 
       end
 
