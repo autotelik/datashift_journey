@@ -40,5 +40,6 @@ DatashiftJourney::Engine.routes.draw do
   get "/abandon_journey_plans/:page/:id", to: 'abandon_journey_plans#show', as: :abandon_journey_plan
 =end
 
-  match '(errors)/:status', to: 'errors#show', via: :all, constraints: { status: /\d{3}/ }
+  # TODO - make this configurable so clients can use it if they wish, or not
+  # match '(errors)/:status', to: 'errors#show', via: :all, constraints: { status: /\d{3}/ }
 end
